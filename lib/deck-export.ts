@@ -361,22 +361,37 @@ async function captureSlideImages(ctx: ExportContext): Promise<string[]> {
       lab.mount.replaceChildren(clone);
       await waitForRender(lab.hostDoc);
 
-      const canvas = await withTimeout(
-        html2canvas(clone, {
-          width: ctx.width,
-          height: ctx.height,
-          scale: 1,
-          useCORS: true,
-          logging: false,
-          backgroundColor: "#0a0a0a",
-          scrollX: 0,
-          scrollY: 0,
-          foreignObjectRendering: useForeignObject,
-          onclone: (_clonedDoc, element) => sanitizeCloneForCapture(element as HTMLElement),
-        }),
-        SLIDE_CAPTURE_TIMEOUT_MS,
-        `diapositiva ${i + 1} / ${sections.length}`
-      );
+      let canvas;
+      try {
+        canvas = await withTimeout(
+          html2canvas(clone, {
+            width: ctx.width,
+            height: ctx.height,
+            scale: 1,
+            useCORS: true,
+            logging: false,
+            backgroundColor: "#0a0a0a",
+            scrollX: 0,
+            scrollY: 0,
+            foreignObjectRendering: useForeignObject,
+            onclone: (_clonedDoc, element) => sanitizeCloneForCapture(element as HTMLElement),
+          }),
+          SLIDE_CAPTURE_TIMEOUT_MS,
+          `diapositiva ${i + 1} / ${sections.length}`
+        );
+      } catch (err) {
+        const isBrowserIncompatible =
+          err instanceof SyntaxError ||
+          (err instanceof Error && /SafariAppExtension|duplicate variable/i.test(err.message));
+
+        if (isBrowserIncompatible) {
+          throw new Error(
+            "La exportación no está disponible en este navegador. " +
+              "Prueba en Chrome o desactiva las extensiones activas (AdGuard, 1Password, etc.)."
+          );
+        }
+        throw err;
+      }
 
       images.push(canvas.toDataURL("image/jpeg", 0.92));
     }
