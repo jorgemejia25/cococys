@@ -2,19 +2,10 @@
  * Client-side deck export — captures slides from a loaded deck iframe and
  * downloads PDF or PPTX without opening windows or print/save dialogs.
  *
- * Strategy: clones go into a plain off-screen div in the *parent* document
- * (window.top). This avoids two separate problems:
- *
- * 1. A sandboxed iframe (allow-same-origin, no allow-scripts) blocks the
- *    internal iframes html2canvas creates for capture — causing failures.
- *
- * 2. Using the presentation iframe's own document exposes html2canvas's
- *    internal about:blank frames to extension injection (SafariAppExtensionPage).
- *
- * Moving the lab to the parent document keeps html2canvas happy and, when
- * combined with `foreignObjectRendering: true` on Safari, avoids the
- * document.write path that extension injectors interfere with.
- * Slide clones are sanitized (scripts + event handlers removed) before mounting.
+ * Slide clones are rendered in an off-screen div inside the presentation's
+ * own iframe document, which is same-origin and isolated from the app layout.
+ * On Safari with extensions (AdGuard, etc.) html2canvas may fail due to
+ * document.write interference; a friendly error is shown in that case.
  */
 
 const LAB_ID = "deck-export-lab";
@@ -26,7 +17,6 @@ const SLIDE_CAPTURE_TIMEOUT_MS = 45_000;
 
 interface DeckStageElement extends HTMLElement {
   goTo?: (index: number) => void;
-  index?: number;
 }
 
 interface ExportContext {
@@ -37,15 +27,10 @@ interface ExportContext {
 }
 
 interface CaptureLab {
-  /** The document that owns the mount node (parent window's document). */
-  hostDoc: Document;
   mount: HTMLDivElement;
   cleanup: () => void;
 }
 
-/**
- * Triggers a file download in the browser from a Blob.
- */
 function downloadBlob(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
@@ -57,8 +42,8 @@ function downloadBlob(blob: Blob, filename: string): void {
 
 /**
  * Returns true when the runtime is Safari (including iOS WebKit).
- * On Safari, html2canvas must use foreignObjectRendering to avoid
- * the document.write path that extension injectors interfere with.
+ * On Safari, html2canvas should use foreignObjectRendering to avoid
+ * the document.write path that extensions like AdGuard interfere with.
  */
 function isSafari(): boolean {
   if (typeof navigator === "undefined") return false;
@@ -72,7 +57,7 @@ function isSafari(): boolean {
 function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(
-      () => reject(new Error(`Tiempo agotado (${label}). Desactiva extensiones del navegador e intenta de nuevo.`)),
+      () => reject(new Error(`Tiempo agotado (${label}).`)),
       ms
     );
     promise
@@ -81,21 +66,6 @@ function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise
   });
 }
 
-/**
- * Returns the top-level browsing context document. Slide capture runs there
- * so html2canvas can create its own iframes without hitting a sandbox boundary.
- */
-function getHostDocument(sourceDoc: Document): Document {
-  try {
-    return sourceDoc.defaultView?.top?.document ?? sourceDoc;
-  } catch {
-    return sourceDoc;
-  }
-}
-
-/**
- * Builds a safe export filename from the deck label or source file.
- */
 export function buildExportFilename(label: string, file: string, extension: "pdf" | "pptx"): string {
   const base = label.trim() || file.replace(/\.html?$/i, "");
   const sanitized = base
@@ -107,27 +77,18 @@ export function buildExportFilename(label: string, file: string, extension: "pdf
   return `${sanitized || "presentacion"}.${extension}`;
 }
 
-/**
- * Returns slide sections that are not marked as skipped.
- */
 function getExportableSlides(stage: HTMLElement): HTMLElement[] {
   return Array.from(stage.querySelectorAll(":scope > section")).filter(
     (s) => !s.hasAttribute("data-deck-skip")
   ) as HTMLElement[];
 }
 
-/**
- * Reads the authored design size from deck-stage attributes.
- */
 function getDesignSize(stage: HTMLElement): { width: number; height: number } {
   const width = parseInt(stage.getAttribute("width") ?? String(DEFAULT_WIDTH), 10) || DEFAULT_WIDTH;
   const height = parseInt(stage.getAttribute("height") ?? String(DEFAULT_HEIGHT), 10) || DEFAULT_HEIGHT;
   return { width, height };
 }
 
-/**
- * Waits for fonts and a paint frame so captures match on-screen rendering.
- */
 async function waitForRender(doc: Document): Promise<void> {
   if (doc.fonts) {
     await Promise.race([doc.fonts.ready, new Promise<void>((r) => setTimeout(r, 2000))]);
@@ -137,11 +98,11 @@ async function waitForRender(doc: Document): Promise<void> {
 }
 
 /**
- * Snapshots the presentation's CSS and rewrites selectors so they apply to
- * the cloned mount container in the host document.
+ * Snapshots the presentation CSS and rewrites selectors so they apply
+ * to slide clones inside the capture mount container.
  */
-function buildCaptureStyles(sourceDoc: Document, stage: HTMLElement): string {
-  const raw = Array.from(sourceDoc.styleSheets)
+function buildCaptureStyles(doc: Document, stage: HTMLElement): string {
+  const raw = Array.from(doc.styleSheets)
     .map((sheet) => {
       try {
         return Array.from(sheet.cssRules).map((r) => r.cssText).join("\n");
@@ -154,7 +115,7 @@ function buildCaptureStyles(sourceDoc: Document, stage: HTMLElement): string {
     .replace(/deck-stage\b/g, `.${MOUNT_CLASS}`);
 
   const vars = new Set(raw.match(/--[\w-]+/g) ?? []);
-  const live = sourceDoc.defaultView?.getComputedStyle(stage);
+  const live = doc.defaultView?.getComputedStyle(stage);
   const varDecls: string[] = [];
   if (live) {
     vars.forEach((name) => {
@@ -174,63 +135,21 @@ function buildCaptureStyles(sourceDoc: Document, stage: HTMLElement): string {
   );
 }
 
-/**
- * Injects animation-freeze styles into the host document so entrance
- * animations render at their end state during capture.
- */
-function injectFreezeStyle(hostDoc: Document): void {
-  if (hostDoc.getElementById(FREEZE_STYLE_ID)) return;
-  const s = hostDoc.createElement("style");
+function injectFreezeStyle(doc: Document): void {
+  if (doc.getElementById(FREEZE_STYLE_ID)) return;
+  const s = doc.createElement("style");
   s.id = FREEZE_STYLE_ID;
   s.textContent =
     `.${MOUNT_CLASS} *,.${MOUNT_CLASS} *::before,.${MOUNT_CLASS} *::after{` +
     "animation-delay:-99s!important;animation-duration:.001s!important;" +
     "animation-iteration-count:1!important;animation-fill-mode:both!important;" +
     "animation-play-state:running!important;transition-duration:0s!important;}";
-  hostDoc.head.appendChild(s);
+  doc.head.appendChild(s);
 }
 
 /**
- * Copies font-related assets from the presentation document to the host so
- * cloned slides render with the correct typefaces.
- */
-function copyFontAssets(sourceDoc: Document, hostDoc: Document): void {
-  if (hostDoc.getElementById(`${LAB_ID}-fonts`)) return;
-
-  const frag = hostDoc.createDocumentFragment();
-
-  sourceDoc
-    .querySelectorAll('link[rel="preconnect"], link[rel="stylesheet"]')
-    .forEach((link) => {
-      const clone = link.cloneNode(true) as HTMLLinkElement;
-      frag.appendChild(clone);
-    });
-
-  // Inline @font-face rules extracted from the presentation stylesheets.
-  const fontFaces = Array.from(sourceDoc.styleSheets)
-    .flatMap((sheet) => {
-      try {
-        return Array.from(sheet.cssRules).filter((r) => r instanceof CSSFontFaceRule);
-      } catch {
-        return [];
-      }
-    })
-    .map((r) => r.cssText)
-    .join("\n");
-
-  if (fontFaces) {
-    const s = hostDoc.createElement("style");
-    s.id = `${LAB_ID}-fonts`;
-    s.textContent = fontFaces;
-    frag.appendChild(s);
-  }
-
-  hostDoc.head.appendChild(frag);
-}
-
-/**
- * Removes all executable content from a DOM subtree so html2canvas never
- * triggers script evaluation during capture.
+ * Removes all executable content from a DOM subtree so it is safe to mount
+ * for html2canvas capture.
  */
 function sanitizeCloneForCapture(root: HTMLElement): void {
   root.querySelectorAll("script, noscript, template").forEach((el) => el.remove());
@@ -243,51 +162,41 @@ function sanitizeCloneForCapture(root: HTMLElement): void {
 }
 
 /**
- * Creates a plain off-screen div in the host (parent) document where slide
- * clones are rendered for capture. No sandbox — html2canvas is free to create
- * the internal iframes it needs.
+ * Creates an off-screen div inside the presentation's own iframe document.
+ * Styles are scoped to the mount class so they cannot escape to the app layout.
  */
 function createCaptureLab(
-  sourceDoc: Document,
+  doc: Document,
   stage: HTMLElement,
   width: number,
   height: number
 ): CaptureLab {
-  const hostDoc = getHostDocument(sourceDoc);
+  doc.getElementById(LAB_ID)?.remove();
+  doc.getElementById(FREEZE_STYLE_ID)?.remove();
 
-  // Clean any leftover lab from a previous failed export.
-  hostDoc.getElementById(LAB_ID)?.remove();
-  hostDoc.getElementById(FREEZE_STYLE_ID)?.remove();
+  injectFreezeStyle(doc);
 
-  copyFontAssets(sourceDoc, hostDoc);
-  injectFreezeStyle(hostDoc);
-
-  const container = hostDoc.createElement("div");
+  const container = doc.createElement("div");
   container.id = LAB_ID;
   container.setAttribute("aria-hidden", "true");
   container.style.cssText =
     "position:fixed;left:-30000px;top:0;overflow:hidden;" +
     "pointer-events:none;visibility:hidden;z-index:-1;";
 
-  const style = hostDoc.createElement("style");
-  style.textContent = buildCaptureStyles(sourceDoc, stage);
+  const style = doc.createElement("style");
+  style.textContent = buildCaptureStyles(doc, stage);
   container.appendChild(style);
 
-  const mount = hostDoc.createElement("div") as HTMLDivElement;
+  const mount = doc.createElement("div") as HTMLDivElement;
   mount.className = MOUNT_CLASS;
   mount.style.cssText =
     `position:relative;width:${width}px;height:${height}px;overflow:hidden;background:#0a0a0a;`;
   container.appendChild(mount);
 
-  hostDoc.body.appendChild(container);
-
-  return { hostDoc, mount, cleanup: () => container.remove() };
+  doc.body.appendChild(container);
+  return { mount, cleanup: () => { container.remove(); doc.getElementById(FREEZE_STYLE_ID)?.remove(); } };
 }
 
-/**
- * Deep-clones a slide section and strips all executable and media content
- * so it is safe to mount in the capture lab.
- */
 function cloneSlideForCapture(section: HTMLElement, width: number, height: number): HTMLElement {
   const clone = section.cloneNode(true) as HTMLElement;
   clone.removeAttribute("id");
@@ -321,9 +230,6 @@ function cloneSlideForCapture(section: HTMLElement, width: number, height: numbe
   return clone;
 }
 
-/**
- * Prepares the iframe document for slide capture.
- */
 async function beginExport(doc: Document): Promise<ExportContext> {
   const stage = doc.querySelector("deck-stage") as DeckStageElement | null;
   if (!stage) throw new Error("No se encontró deck-stage en la presentación.");
@@ -336,18 +242,11 @@ async function beginExport(doc: Document): Promise<ExportContext> {
   return { doc, stage, width, height };
 }
 
-/**
- * Removes all capture artifacts from the host document.
- */
 function endExport(ctx: ExportContext): void {
-  const hostDoc = getHostDocument(ctx.doc);
-  hostDoc.getElementById(LAB_ID)?.remove();
-  hostDoc.getElementById(FREEZE_STYLE_ID)?.remove();
+  ctx.doc.getElementById(LAB_ID)?.remove();
+  ctx.doc.getElementById(FREEZE_STYLE_ID)?.remove();
 }
 
-/**
- * Captures every exportable slide as a JPEG data URL using off-screen clones.
- */
 async function captureSlideImages(ctx: ExportContext): Promise<string[]> {
   const { default: html2canvas } = await import("html2canvas");
   const sections = getExportableSlides(ctx.stage);
@@ -359,7 +258,7 @@ async function captureSlideImages(ctx: ExportContext): Promise<string[]> {
     for (let i = 0; i < sections.length; i += 1) {
       const clone = cloneSlideForCapture(sections[i], ctx.width, ctx.height);
       lab.mount.replaceChildren(clone);
-      await waitForRender(lab.hostDoc);
+      await waitForRender(ctx.doc);
 
       let canvas;
       try {
@@ -380,14 +279,17 @@ async function captureSlideImages(ctx: ExportContext): Promise<string[]> {
           `diapositiva ${i + 1} / ${sections.length}`
         );
       } catch (err) {
-        const isBrowserIncompatible =
+        // Safari + extensions (AdGuard, 1Password, etc.) inject scripts via
+        // document.write into html2canvas's internal iframes, producing a
+        // SyntaxError that aborts capture. Surface a clear message instead.
+        const isBrowserBlock =
           err instanceof SyntaxError ||
           (err instanceof Error && /SafariAppExtension|duplicate variable/i.test(err.message));
 
-        if (isBrowserIncompatible) {
+        if (isBrowserBlock) {
           throw new Error(
-            "La exportación no está disponible en este navegador. " +
-              "Prueba en Chrome o desactiva las extensiones activas (AdGuard, 1Password, etc.)."
+            "La exportación no está disponible en este navegador con las extensiones actuales. " +
+              "Desactiva AdGuard u otras extensiones e intenta de nuevo, o usa Chrome."
           );
         }
         throw err;
@@ -402,9 +304,6 @@ async function captureSlideImages(ctx: ExportContext): Promise<string[]> {
   return images;
 }
 
-/**
- * Exports the loaded deck iframe to a PDF file and triggers download.
- */
 export async function exportDeckToPdf(doc: Document, filename: string): Promise<void> {
   const ctx = await beginExport(doc);
   try {
@@ -422,9 +321,6 @@ export async function exportDeckToPdf(doc: Document, filename: string): Promise<
   }
 }
 
-/**
- * Exports the loaded deck iframe to a PPTX file and triggers download.
- */
 export async function exportDeckToPptx(doc: Document, filename: string): Promise<void> {
   const ctx = await beginExport(doc);
   try {
