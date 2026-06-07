@@ -32,7 +32,7 @@ export const COURSES: Course[] = [
     id: "flujos",
     tag: "FLUJOS",
     title: "Introducción a los Flujos y Algoritmos",
-    subtitle: "Pensamiento algorítmico.",
+    subtitle: "Primer semestre.",
     decks: [
       {
         label: "Semana 1 — Diagnóstico",
