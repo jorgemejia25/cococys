@@ -50,6 +50,7 @@ export function PresentationViewer() {
   const [slideTotal, setSlideTotal] = useState(deck?.slides ?? 0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [exportingFormat, setExportingFormat] = useState<"pdf" | "pptx" | null>(null);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   const controller = useDeckController(iframeRef);
 
@@ -131,6 +132,7 @@ export function PresentationViewer() {
 
       isExportingRef.current = true;
       setExportingFormat(format);
+      setExportError(null);
       try {
         const filename = buildExportFilename(deck.label, deck.file, format);
         if (format === "pdf") {
@@ -139,7 +141,12 @@ export function PresentationViewer() {
           await exportDeckToPptx(doc, filename);
         }
       } catch (error) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : `No se pudo exportar a ${format.toUpperCase()}.`;
         console.error(`Error al exportar ${format.toUpperCase()}:`, error);
+        setExportError(message);
       } finally {
         isExportingRef.current = false;
         setExportingFormat(null);
@@ -307,6 +314,10 @@ export function PresentationViewer() {
           {exportingFormat && (
             <ExportOverlay format={exportingFormat} slideCount={slides.length || deck.slides} />
           )}
+
+          {exportError && !exportingFormat && (
+            <ExportErrorBanner message={exportError} onDismiss={() => setExportError(null)} />
+          )}
         </main>
       </div>
 
@@ -386,6 +397,38 @@ function ExportOverlay({ format, slideCount }: ExportOverlayProps) {
           <div className="export-shimmer export-shimmer-bar absolute inset-y-0 w-1/2" />
         </div>
       </div>
+    </div>
+  );
+}
+
+function ExportErrorBanner({
+  message,
+  onDismiss,
+}: {
+  message: string;
+  onDismiss: () => void;
+}) {
+  return (
+    <div
+      className="absolute inset-x-6 bottom-6 z-50 flex items-start justify-between gap-4 border border-destructive/40 bg-card/95 px-5 py-4 backdrop-blur-sm"
+      role="alert"
+    >
+      <div className="min-w-0">
+        <p className="font-mono text-[11px] tracking-widest uppercase text-destructive mb-1.5">
+          Error al exportar
+        </p>
+        <p className="font-mono text-[11px] leading-relaxed text-foreground/80">{message}</p>
+        <p className="font-mono text-[10px] tracking-wide text-muted-foreground mt-2">
+          En Safari, desactiva extensiones del navegador si el error persiste.
+        </p>
+      </div>
+      <button
+        type="button"
+        onClick={onDismiss}
+        className="shrink-0 font-mono text-[10px] tracking-widest uppercase text-muted-foreground hover:text-foreground"
+      >
+        Cerrar
+      </button>
     </div>
   );
 }

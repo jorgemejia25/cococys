@@ -2,14 +2,17 @@
  * Client-side deck export — captures slides from a loaded deck iframe and
  * downloads PDF or PPTX without opening windows or print/save dialogs.
  *
- * Slides are cloned into an off-screen capture lab so the live deck-stage
- * is never navigated and the user sees no slide cycling during export.
+ * Slides are cloned into a sandboxed off-screen iframe (parent document) so
+ * html2canvas never re-executes deck scripts and Safari extension injections
+ * in the presentation frame are less likely to break capture.
  */
 
 const LAB_ID = "deck-export-lab";
+const MOUNT_CLASS = "deck-export-mount";
 const FREEZE_STYLE_ID = "deck-export-freeze";
 const DEFAULT_WIDTH = 1920;
 const DEFAULT_HEIGHT = 1080;
+const SLIDE_CAPTURE_TIMEOUT_MS = 45_000;
 
 interface DeckStageElement extends HTMLElement {
   goTo?: (index: number) => void;
@@ -24,6 +27,7 @@ interface ExportContext {
 }
 
 interface CaptureLab {
+  sandboxDoc: Document;
   mount: HTMLDivElement;
   cleanup: () => void;
 }
@@ -38,6 +42,40 @@ function downloadBlob(blob: Blob, filename: string): void {
   anchor.download = filename;
   anchor.click();
   URL.revokeObjectURL(url);
+}
+
+/**
+ * Returns true when the runtime is Safari (including iOS WebKit).
+ */
+function isSafari(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent;
+  return /Safari/i.test(ua) && !/Chrome|Chromium|CriOS|Edg|OPR|Android/i.test(ua);
+}
+
+/**
+ * Rejects when `promise` does not settle within `ms`.
+ */
+function withTimeout<T>(promise: Promise<T>, ms: number, message: string): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(message)), ms);
+    promise
+      .then((value) => {
+        clearTimeout(timer);
+        resolve(value);
+      })
+      .catch((error: unknown) => {
+        clearTimeout(timer);
+        reject(error instanceof Error ? error : new Error(message));
+      });
+  });
+}
+
+/**
+ * Host document for the sandbox capture iframe (parent of the deck iframe).
+ */
+function getHostDocument(sourceDoc: Document): Document {
+  return sourceDoc.defaultView?.parent?.document ?? sourceDoc;
 }
 
 /**
@@ -102,8 +140,8 @@ function buildCaptureStyles(doc: Document, stage: HTMLElement): string {
       }
     })
     .join("\n")
-    .replace(/deck-stage\s*>/g, `#${LAB_ID} > .deck-export-mount > `)
-    .replace(/deck-stage\b/g, `#${LAB_ID}`);
+    .replace(/deck-stage\s*>/g, `.${MOUNT_CLASS} > `)
+    .replace(/deck-stage\b/g, `.${MOUNT_CLASS}`);
 
   const vars = new Set(raw.match(/--[\w-]+/g) ?? []);
   const live = doc.defaultView?.getComputedStyle(stage);
@@ -116,12 +154,12 @@ function buildCaptureStyles(doc: Document, stage: HTMLElement): string {
     });
   }
 
-  const hostVars = varDecls.length ? `#${LAB_ID}{${varDecls.join(";")}}` : "";
+  const hostVars = varDecls.length ? `.${MOUNT_CLASS}{${varDecls.join(";")}}` : "";
 
   return (
     hostVars +
     raw +
-    `#${LAB_ID} > .deck-export-mount > section{` +
+    `.${MOUNT_CLASS} > section{` +
     "visibility:visible!important;opacity:1!important;position:relative!important;" +
     "inset:auto!important;pointer-events:none!important;" +
     "}"
@@ -129,32 +167,82 @@ function buildCaptureStyles(doc: Document, stage: HTMLElement): string {
 }
 
 /**
- * Creates a fixed off-screen lab where slide clones are rendered for capture.
+ * Removes executable content from a clone so mounting it cannot re-run scripts
+ * (which would break html2canvas on Safari, especially with extensions active).
  */
-function createCaptureLab(doc: Document, stage: HTMLElement, width: number, height: number): CaptureLab {
-  doc.getElementById(LAB_ID)?.remove();
+function sanitizeCloneForCapture(root: HTMLElement): void {
+  root.querySelectorAll("script, noscript, template").forEach((el) => el.remove());
 
-  const container = doc.createElement("div");
-  container.id = LAB_ID;
-  container.setAttribute("aria-hidden", "true");
-  container.style.cssText =
-    "position:fixed;left:-30000px;top:0;overflow:hidden;" +
+  root.querySelectorAll("*").forEach((el) => {
+    if (!(el instanceof HTMLElement)) return;
+    for (const attr of Array.from(el.attributes)) {
+      if (attr.name.startsWith("on")) {
+        el.removeAttribute(attr.name);
+      }
+    }
+  });
+}
+
+/**
+ * Copies stylesheet links and inline styles needed for faithful rendering.
+ */
+function copyDocumentAssets(sourceDoc: Document, targetDoc: Document): void {
+  const base = targetDoc.createElement("base");
+  base.href = sourceDoc.baseURI;
+  targetDoc.head.appendChild(base);
+
+  sourceDoc
+    .querySelectorAll('link[rel="stylesheet"], link[rel="preconnect"]')
+    .forEach((link) => {
+      targetDoc.head.appendChild(link.cloneNode(true));
+    });
+
+  sourceDoc.querySelectorAll("style").forEach((style) => {
+    targetDoc.head.appendChild(style.cloneNode(true));
+  });
+}
+
+/**
+ * Creates a sandboxed off-screen iframe where slide clones are rendered for capture.
+ */
+function createCaptureLab(sourceDoc: Document, stage: HTMLElement, width: number, height: number): CaptureLab {
+  const hostDoc = getHostDocument(sourceDoc);
+  hostDoc.getElementById(LAB_ID)?.remove();
+
+  const iframe = hostDoc.createElement("iframe");
+  iframe.id = LAB_ID;
+  iframe.setAttribute("aria-hidden", "true");
+  iframe.setAttribute("tabindex", "-1");
+  iframe.sandbox = "allow-same-origin";
+  iframe.style.cssText =
+    "position:fixed;left:-30000px;top:0;width:0;height:0;border:0;" +
     "pointer-events:none;visibility:hidden;z-index:-1;";
 
-  const style = doc.createElement("style");
-  style.textContent = buildCaptureStyles(doc, stage);
-  container.appendChild(style);
+  hostDoc.body.appendChild(iframe);
 
-  const mount = doc.createElement("div");
-  mount.className = "deck-export-mount";
-  mount.style.cssText = `position:relative;width:${width}px;height:${height}px;overflow:hidden;`;
-  container.appendChild(mount);
+  const sandboxDoc = iframe.contentDocument;
+  if (!sandboxDoc) {
+    iframe.remove();
+    throw new Error("No se pudo preparar el entorno de captura.");
+  }
 
-  doc.body.appendChild(container);
+  copyDocumentAssets(sourceDoc, sandboxDoc);
+
+  const style = sandboxDoc.createElement("style");
+  style.textContent = buildCaptureStyles(sourceDoc, stage);
+  sandboxDoc.head.appendChild(style);
+
+  injectFreezeStyle(sandboxDoc);
+
+  const mount = sandboxDoc.createElement("div");
+  mount.className = MOUNT_CLASS;
+  mount.style.cssText = `position:relative;width:${width}px;height:${height}px;overflow:hidden;background:#0a0a0a;`;
+  sandboxDoc.body.appendChild(mount);
 
   return {
+    sandboxDoc,
     mount,
-    cleanup: () => container.remove(),
+    cleanup: () => iframe.remove(),
   };
 }
 
@@ -188,6 +276,8 @@ function cloneSlideForCapture(section: HTMLElement, width: number, height: numbe
     el.replaceWith(img);
   });
 
+  sanitizeCloneForCapture(clone);
+
   clone.setAttribute("data-deck-active", "");
   clone.style.cssText =
     `position:relative;width:${width}px;height:${height}px;` +
@@ -205,7 +295,7 @@ function injectFreezeStyle(doc: Document): void {
   const freezeStyle = doc.createElement("style");
   freezeStyle.id = FREEZE_STYLE_ID;
   freezeStyle.textContent =
-    `#${LAB_ID} *,#${LAB_ID} *::before,#${LAB_ID} *::after{` +
+    `.${MOUNT_CLASS} *,.${MOUNT_CLASS} *::before,.${MOUNT_CLASS} *::after{` +
     "animation-delay:-99s!important;animation-duration:.001s!important;" +
     "animation-iteration-count:1!important;animation-fill-mode:both!important;" +
     "animation-play-state:running!important;transition-duration:0s!important;}";
@@ -227,17 +317,16 @@ async function beginExport(doc: Document): Promise<ExportContext> {
   }
 
   const { width, height } = getDesignSize(stage);
-  injectFreezeStyle(doc);
   await waitForRender(doc);
 
   return { doc, stage, width, height };
 }
 
 /**
- * Restores the iframe document after export completes or fails.
+ * Restores documents after export completes or fails.
  */
 function endExport(doc: Document): void {
-  doc.getElementById(LAB_ID)?.remove();
+  getHostDocument(doc).getElementById(LAB_ID)?.remove();
   doc.getElementById(FREEZE_STYLE_ID)?.remove();
 }
 
@@ -248,24 +337,37 @@ async function captureSlideImages(ctx: ExportContext): Promise<string[]> {
   const [{ default: html2canvas }] = await Promise.all([import("html2canvas")]);
   const sections = getExportableSlides(ctx.stage);
   const lab = createCaptureLab(ctx.doc, ctx.stage, ctx.width, ctx.height);
+  const useForeignObject = isSafari();
   const images: string[] = [];
 
   try {
-    for (const section of sections) {
+    for (let index = 0; index < sections.length; index += 1) {
+      const section = sections[index];
       const clone = cloneSlideForCapture(section, ctx.width, ctx.height);
       lab.mount.replaceChildren(clone);
-      await waitForRender(ctx.doc);
+      await waitForRender(lab.sandboxDoc);
 
-      const canvas = await html2canvas(clone, {
-        width: ctx.width,
-        height: ctx.height,
-        scale: 1,
-        useCORS: true,
-        logging: false,
-        backgroundColor: null,
-        scrollX: 0,
-        scrollY: 0,
-      });
+      const canvas = await withTimeout(
+        html2canvas(clone, {
+          width: ctx.width,
+          height: ctx.height,
+          scale: 1,
+          useCORS: true,
+          logging: false,
+          backgroundColor: "#0a0a0a",
+          scrollX: 0,
+          scrollY: 0,
+          foreignObjectRendering: useForeignObject,
+          onclone: (_clonedDoc, element) => {
+            sanitizeCloneForCapture(element as HTMLElement);
+          },
+        }),
+        SLIDE_CAPTURE_TIMEOUT_MS,
+        `Tiempo agotado capturando la diapositiva ${index + 1} de ${sections.length}.` +
+          (useForeignObject
+            ? ""
+            : " Si usas Safari, prueba desactivar extensiones del navegador.")
+      );
 
       images.push(canvas.toDataURL("image/jpeg", 0.92));
     }
