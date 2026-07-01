@@ -19,9 +19,9 @@ export default async function CoursePage({ params }: PageProps) {
   if (!course) notFound();
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-background bg-grid">
+    <div className="fixed inset-0 flex flex-col bg-background bg-grid overflow-x-hidden">
       {/* Top bar */}
-      <header className="h-[54px] flex items-center justify-between px-10 border-b border-border shrink-0">
+      <header className="h-[54px] flex items-center justify-between px-5 md:px-10 border-b border-border shrink-0">
         <Link
           href="/"
           className="flex items-center gap-2.5 text-muted-foreground font-mono text-[11px]
@@ -36,13 +36,13 @@ export default async function CoursePage({ params }: PageProps) {
       </header>
 
       {/* Body */}
-      <main className="flex-1 flex flex-col items-center justify-center gap-16 p-10">
+      <main className="flex-1 flex flex-col items-center justify-center gap-10 md:gap-16 p-6 md:p-10 overflow-y-auto">
         {/* Heading */}
         <div className="text-center">
           <p className="font-mono text-[11px] tracking-widest uppercase text-brand mb-4">
             {course.tag}
           </p>
-          <h1 className="font-sans text-[56px] font-bold tracking-[-0.03em] leading-[0.92] mb-3">
+          <h1 className="font-sans text-3xl md:text-[56px] font-bold tracking-[-0.03em] leading-[0.92] mb-3">
             {course.title.split(" ").slice(0, 3).join(" ")}{" "}
             <em className="font-(family-name:--font-cormorant-garamond) not-italic font-normal text-foreground/60">
               {course.title.split(" ").slice(3).join(" ")}
@@ -54,7 +54,7 @@ export default async function CoursePage({ params }: PageProps) {
         </div>
 
         {/* Deck cards */}
-        <div className="flex flex-wrap gap-6 justify-center max-w-4xl">
+        <div className="flex flex-col md:flex-row flex-wrap gap-4 md:gap-6 justify-center items-center md:items-stretch w-full md:w-auto max-w-4xl">
           {course.decks.map((deck, index) => (
             <DeckCard key={deck.file} courseId={id} deck={deck} index={index} />
           ))}
@@ -77,8 +77,8 @@ function DeckCard({ courseId, deck, index }: DeckCardProps) {
   return (
     <Link
       href={`/viewer?course=${courseId}&deck=${index}`}
-      className="group w-[340px] border border-border bg-card p-8 cursor-pointer relative overflow-hidden
-                 flex flex-col gap-6 transition-colors duration-200
+      className="group w-full max-w-sm md:w-[340px] md:max-w-none border border-border bg-card p-6 md:p-8 cursor-pointer relative overflow-hidden
+                 flex flex-col gap-5 md:gap-6 transition-colors duration-200
                  hover:border-white/20 hover:bg-secondary
                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
@@ -95,7 +95,7 @@ function DeckCard({ courseId, deck, index }: DeckCardProps) {
       </span>
 
       {/* Label */}
-      <p className="font-sans text-[26px] font-bold tracking-[-0.02em] leading-[1.1] text-foreground">
+      <p className="font-sans text-xl md:text-[26px] font-bold tracking-[-0.02em] leading-[1.1] text-foreground">
         {deck.label}
       </p>
 

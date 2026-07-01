@@ -46,9 +46,10 @@ export default function RootLayout({
         spaceGrotesk.variable,
         cormorantGaramond.variable,
         jetbrainsMono.variable,
+        "overflow-x-hidden",
       ].join(" ")}
     >
-      <body className="antialiased overflow-hidden h-screen bg-background text-foreground">
+      <body className="antialiased overflow-hidden overflow-x-hidden h-screen bg-background text-foreground">
         <TooltipProvider delay={300}>{children}</TooltipProvider>
       </body>
     </html>

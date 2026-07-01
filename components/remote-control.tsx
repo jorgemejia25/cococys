@@ -61,7 +61,7 @@ function ConnectedRemote({ room }: ConnectedRemoteProps) {
   const pad = (n: number) => String(n).padStart(2, "0");
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-background text-foreground select-none">
+    <div className="fixed inset-0 flex flex-col bg-background text-foreground select-none overflow-x-hidden">
       {/* Header */}
       <header className="shrink-0 border-b border-border px-5 py-4 flex items-center justify-between gap-3">
         <div className="min-w-0">
@@ -126,7 +126,7 @@ function ConnectedRemote({ room }: ConnectedRemoteProps) {
           </button>
         </div>
 
-        <div className="grid grid-cols-6 gap-2 max-h-[22vh] overflow-y-auto">
+        <div className="grid grid-cols-5 sm:grid-cols-6 gap-2 max-h-[22vh] overflow-y-auto">
           {Array.from({ length: total }).map((_, i) => (
             <button
               key={i}
@@ -211,7 +211,7 @@ function RoomEntryForm({ onSubmit }: RoomEntryFormProps) {
   const valid = isValidRoomCode(normalized);
 
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center gap-8 bg-background bg-grid px-6">
+    <div className="fixed inset-0 flex flex-col items-center justify-center gap-8 bg-background bg-grid px-6 overflow-x-hidden">
       <div className="text-center">
         <p className="font-mono text-[10px] tracking-widest uppercase text-brand mb-3">
           Control Remoto

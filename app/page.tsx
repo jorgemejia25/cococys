@@ -9,25 +9,25 @@ import { COURSES, type Course } from "@/lib/presentations";
  */
 export default function HomePage() {
   return (
-    <div className="fixed inset-0 flex flex-col bg-background bg-grid">
+    <div className="fixed inset-0 flex flex-col bg-background bg-grid overflow-x-hidden">
       {/* Top bar */}
-      <header className="h-[54px] flex items-center justify-between px-10 border-b border-border shrink-0">
+      <header className="h-[54px] flex items-center justify-between px-5 md:px-10 border-b border-border shrink-0">
         <div className="flex items-center gap-3">
           <span className="size-2 rounded-full bg-brand shrink-0" />
           <span className="font-mono text-[11px] tracking-[0.12em] uppercase text-muted-foreground">
             Jorge Mejía · Presentaciones
           </span>
         </div>
-        <span className="font-mono text-[11px] tracking-widest uppercase text-muted-foreground">
+        <span className="font-mono text-[11px] tracking-widest uppercase text-muted-foreground hidden sm:inline">
           2S · 2026
         </span>
       </header>
 
       {/* Body */}
-      <main className="flex-1 flex flex-col items-center justify-center gap-16 p-10">
+      <main className="flex-1 flex flex-col items-center justify-center gap-10 md:gap-16 p-6 md:p-10 overflow-y-auto">
         {/* Heading */}
         <div className="text-center">
-          <h1 className="font-sans text-[64px] font-bold tracking-[-0.03em] leading-[0.9] mb-3">
+          <h1 className="font-sans text-4xl md:text-[64px] font-bold tracking-[-0.03em] leading-[0.9] mb-3">
             Elige un{" "}
             <span className="text-foreground/60">curso.</span>
           </h1>
@@ -37,7 +37,7 @@ export default function HomePage() {
         </div>
 
         {/* Course cards */}
-        <div className="flex gap-6">
+        <div className="flex flex-col md:flex-row gap-4 md:gap-6 w-full md:w-auto items-center">
           {COURSES.map((course) => (
             <CourseCard key={course.id} course={course} />
           ))}
@@ -94,8 +94,8 @@ function CourseCard({ course }: { course: Course }) {
   return (
     <Link
       href={`/curso/${course.id}`}
-      className="group w-[380px] border border-border bg-card p-9 cursor-pointer relative overflow-hidden
-                 flex flex-col gap-7 transition-colors duration-200
+      className="group w-full max-w-sm md:w-[380px] md:max-w-none border border-border bg-card p-7 md:p-9 cursor-pointer relative overflow-hidden
+                 flex flex-col gap-6 md:gap-7 transition-colors duration-200
                  hover:border-white/20 hover:bg-secondary
                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >

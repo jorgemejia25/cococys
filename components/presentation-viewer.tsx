@@ -7,6 +7,7 @@ import { SlideNavigator } from "@/components/slide-sidebar";
 import { RemoteHostControls } from "@/components/remote-host-controls";
 import { useDeckController } from "@/hooks/use-deck-controller";
 import { buildExportFilename, exportDeckToPdf, exportDeckToPptx } from "@/lib/deck-export";
+import { enableLaserCursor } from "@/lib/laser-cursor";
 import { getCourseById } from "@/lib/presentations";
 import { fetchSlideMetadata, prepareDeckForViewer, type SlideInfo } from "@/lib/slide-preview";
 import { cn } from "@/lib/utils";
@@ -20,6 +21,7 @@ import {
   Maximize2,
   Minimize2,
   MonitorPlay,
+  Zap,
 } from "lucide-react";
 
 interface SlideChangeDetail {
@@ -49,6 +51,8 @@ export function PresentationViewer() {
   const [slideIndex, setSlideIndex] = useState(0);
   const [slideTotal, setSlideTotal] = useState(deck?.slides ?? 0);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [laserActive, setLaserActive] = useState(false);
+  const [deckDoc, setDeckDoc] = useState<Document | null>(null);
   const [exportingFormat, setExportingFormat] = useState<"pdf" | "pptx" | null>(null);
   const [exportError, setExportError] = useState<string | null>(null);
 
@@ -60,6 +64,8 @@ export function PresentationViewer() {
     },
     [controller]
   );
+
+  const toggleLaser = useCallback(() => setLaserActive((v) => !v), []);
 
   /** Load the deck into the iframe on mount */
   useEffect(() => {
@@ -77,6 +83,7 @@ export function PresentationViewer() {
         const doc = iframe.contentDocument;
         if (!doc) return;
         prepareDeckForViewer(doc);
+        setDeckDoc(doc);
         const stage = doc.querySelector("deck-stage");
         if (!stage) return;
         stage.addEventListener("slidechange", (e: Event) => {
@@ -117,10 +124,17 @@ export function PresentationViewer() {
       if (e.key === "ArrowLeft") goToSlide(slideIndex - 1);
       if (e.key === "ArrowRight") goToSlide(slideIndex + 1);
       if (e.key === "f" || e.key === "F") toggleFullscreen();
+      if (e.key === "l" || e.key === "L") toggleLaser();
     };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
-  }, [goToSlide, slideIndex, toggleFullscreen]);
+  }, [goToSlide, slideIndex, toggleFullscreen, toggleLaser]);
+
+  /** Laser cursor overlay — injected into the deck iframe document. */
+  useEffect(() => {
+    if (!deckDoc || !laserActive) return;
+    return enableLaserCursor(deckDoc);
+  }, [deckDoc, laserActive]);
 
   /** Exports the loaded deck to PDF or PPTX and downloads immediately. */
   const runExport = useCallback(
@@ -184,39 +198,39 @@ export function PresentationViewer() {
   }
 
   return (
-    <div className="fixed inset-0 flex flex-col">
+    <div className="fixed inset-0 flex flex-col overflow-x-hidden">
       {/* ── Top bar ──────────────────────────────────────────────────── */}
-      <header className="h-[54px] flex items-center justify-between border-b border-border bg-card shrink-0 gap-3 pr-4">
-        {/* Left: aligns with sidebar width */}
-        <div className="flex items-center h-full border-r border-border w-[272px] shrink-0">
+      <header className="h-[54px] flex items-center justify-between border-b border-border bg-card shrink-0 gap-2 md:gap-3 pr-3 md:pr-4 overflow-x-hidden">
+        {/* Left: aligns with sidebar width on desktop */}
+        <div className="flex items-center h-full border-r border-border w-auto md:w-[272px] shrink-0">
           <button
             onClick={() => router.push(`/curso/${courseId}`)}
-            className="flex items-center gap-2.5 h-full px-5 bg-transparent
+            className="flex items-center gap-2.5 h-full px-3 md:px-5 bg-transparent
                        text-muted-foreground font-mono text-[11px] tracking-widest uppercase
                        transition-colors hover:text-brand focus-visible:outline-none"
           >
             <ChevronLeft className="size-3.5 shrink-0" />
-            Presentaciones
+            <span className="hidden md:inline">Presentaciones</span>
           </button>
         </div>
 
         {/* Center */}
-        <div className="flex-1 flex items-center gap-4 px-4 min-w-0">
-          <span className="font-mono text-[12px] tracking-[0.07em] uppercase text-foreground/60 truncate">
+        <div className="flex-1 flex items-center gap-2 md:gap-4 px-2 md:px-4 min-w-0">
+          <span className="font-mono text-[11px] md:text-[12px] tracking-[0.07em] uppercase text-foreground/60 truncate">
             {deck.label}
           </span>
-          <span className="font-mono text-[10px] tracking-widest uppercase text-muted-foreground border border-border px-2.5 py-0.5 whitespace-nowrap shrink-0">
+          <span className="hidden md:inline font-mono text-[10px] tracking-widest uppercase text-muted-foreground border border-border px-2.5 py-0.5 whitespace-nowrap shrink-0">
             {course.tag}
           </span>
         </div>
 
         {/* Controls */}
-        <div className="flex items-center gap-2 shrink-0">
-          <span className="font-mono text-[11px] tracking-widest text-muted-foreground whitespace-nowrap">
+        <div className="flex items-center gap-1.5 md:gap-2 shrink-0">
+          <span className="font-mono text-[10px] md:text-[11px] tracking-widest text-muted-foreground whitespace-nowrap">
             {counterText}
           </span>
 
-          <Divider />
+          <Divider className="hidden md:block" />
 
           <NavButton onClick={() => goToSlide(slideIndex - 1)} aria-label="Anterior">
             <ArrowLeft className="size-[14px]" />
@@ -225,50 +239,67 @@ export function PresentationViewer() {
             <ArrowRight className="size-[14px]" />
           </NavButton>
 
-          <Divider />
+          <Divider className="hidden md:block" />
 
-          <Tooltip>
-            <TooltipTrigger render={
-              <IconButton onClick={handlePdf} disabled={!!exportingFormat}>
-                <FileText className="size-[11px]" />
-                PDF
-              </IconButton>
-            } />
-            <TooltipContent side="bottom">Exportar a PDF</TooltipContent>
-          </Tooltip>
+          <div className="hidden md:flex items-center gap-2">
+            <Tooltip>
+              <TooltipTrigger render={
+                <IconButton onClick={handlePdf} disabled={!!exportingFormat}>
+                  <FileText className="size-[11px]" />
+                  PDF
+                </IconButton>
+              } />
+              <TooltipContent side="bottom">Exportar a PDF</TooltipContent>
+            </Tooltip>
 
-          <Tooltip>
-            <TooltipTrigger render={
-              <IconButton onClick={handlePptx} disabled={!!exportingFormat}>
-                <MonitorPlay className="size-[11px]" />
-                PPTX
-              </IconButton>
-            } />
-            <TooltipContent side="bottom">Exportar a PPTX</TooltipContent>
-          </Tooltip>
+            <Tooltip>
+              <TooltipTrigger render={
+                <IconButton onClick={handlePptx} disabled={!!exportingFormat}>
+                  <MonitorPlay className="size-[11px]" />
+                  PPTX
+                </IconButton>
+              } />
+              <TooltipContent side="bottom">Exportar a PPTX</TooltipContent>
+            </Tooltip>
 
-          <Divider />
+            <Divider />
 
-          <Tooltip>
-            <TooltipTrigger render={
-              <NavButton
-                onClick={() => window.open(`/presentations/${encodeURIComponent(deck.file)}`, "_blank")}
-                aria-label="Abrir en nueva pestaña"
-              >
-                <ExternalLink className="size-[11px]" />
-              </NavButton>
-            } />
-            <TooltipContent side="bottom">Nueva pestaña</TooltipContent>
-          </Tooltip>
+            <Tooltip>
+              <TooltipTrigger render={
+                <NavButton
+                  onClick={() => window.open(`/presentations/${encodeURIComponent(deck.file)}`, "_blank")}
+                  aria-label="Abrir en nueva pestaña"
+                >
+                  <ExternalLink className="size-[11px]" />
+                </NavButton>
+              } />
+              <TooltipContent side="bottom">Nueva pestaña</TooltipContent>
+            </Tooltip>
 
-          <RemoteHostControls
-            controller={controller}
-            slideIndex={slideIndex}
-            slideTotal={slideTotal}
-            slides={slides}
-            deckLabel={deck.label}
-            courseTag={course.tag}
-          />
+            <RemoteHostControls
+              controller={controller}
+              slideIndex={slideIndex}
+              slideTotal={slideTotal}
+              slides={slides}
+              deckLabel={deck.label}
+              courseTag={course.tag}
+            />
+
+            <Tooltip>
+              <TooltipTrigger render={
+                <IconButton
+                  onClick={toggleLaser}
+                  aria-pressed={laserActive}
+                  aria-label="Cursor láser"
+                  className={cn(laserActive && "border-brand text-brand hover:bg-brand/6")}
+                >
+                  <Zap className="size-[11px]" />
+                  Láser
+                </IconButton>
+              } />
+              <TooltipContent side="bottom">Cursor láser (L)</TooltipContent>
+            </Tooltip>
+          </div>
 
           <Tooltip>
             <TooltipTrigger render={
@@ -279,7 +310,7 @@ export function PresentationViewer() {
                 {isFullscreen
                   ? <Minimize2 className="size-[11px]" />
                   : <Maximize2 className="size-[11px]" />}
-                {isFullscreen ? "Salir" : "Fullscreen"}
+                <span className="hidden md:inline">{isFullscreen ? "Salir" : "Fullscreen"}</span>
               </IconButton>
             } />
             <TooltipContent side="bottom">
@@ -291,12 +322,14 @@ export function PresentationViewer() {
 
       {/* ── Content ──────────────────────────────────────────────────── */}
       <div className="flex flex-1 overflow-hidden">
-        <SlideNavigator
-          deck={deck}
-          slides={slides}
-          activeIndex={slideIndex}
-          onSelect={goToSlide}
-        />
+        <div className="hidden md:block">
+          <SlideNavigator
+            deck={deck}
+            slides={slides}
+            activeIndex={slideIndex}
+            onSelect={goToSlide}
+          />
+        </div>
 
         <main className="flex-1 relative bg-black flex items-center justify-center overflow-hidden">
           {slides.length === 0 && <LoadingState />}
@@ -444,8 +477,8 @@ function LoadingDots() {
   );
 }
 
-function Divider() {
-  return <span className="w-px h-[22px] bg-border" />;
+function Divider({ className }: { className?: string }) {
+  return <span className={cn("w-px h-[22px] bg-border", className)} />;
 }
 
 function NavButton({
