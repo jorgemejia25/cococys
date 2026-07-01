@@ -322,14 +322,12 @@ export function PresentationViewer() {
 
       {/* ── Content ──────────────────────────────────────────────────── */}
       <div className="flex flex-1 overflow-hidden">
-        <div className="hidden md:block">
-          <SlideNavigator
-            deck={deck}
-            slides={slides}
-            activeIndex={slideIndex}
-            onSelect={goToSlide}
-          />
-        </div>
+        <SlideNavigator
+          deck={deck}
+          slides={slides}
+          activeIndex={slideIndex}
+          onSelect={goToSlide}
+        />
 
         <main className="flex-1 relative bg-black flex items-center justify-center overflow-hidden">
           {slides.length === 0 && <LoadingState />}

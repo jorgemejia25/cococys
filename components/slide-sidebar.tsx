@@ -23,7 +23,7 @@ export function SlideNavigator({
   onSelect,
 }: SlideNavigatorProps) {
   return (
-    <aside className="w-[272px] shrink-0 border-r border-border bg-card flex flex-col overflow-hidden">
+    <aside className="hidden md:flex w-[272px] shrink-0 border-r border-border bg-card flex-col overflow-hidden">
       {/* Deck info */}
       <div className="px-5 py-4 border-b border-border shrink-0">
         <p className="font-sans text-[13px] font-semibold text-foreground leading-snug">
