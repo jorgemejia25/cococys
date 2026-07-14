@@ -25,6 +25,8 @@ export interface Course {
   subtitle: string;
   /** Presentation decks for this course */
   decks: Deck[];
+  /** Optional WhatsApp group invite link */
+  whatsapp?: string;
 }
 
 export const COURSES: Course[] = [
@@ -33,11 +35,17 @@ export const COURSES: Course[] = [
     tag: "FLUJOS",
     title: "Introducción a los Flujos y Algoritmos",
     subtitle: "Primer semestre.",
+    whatsapp: "https://chat.whatsapp.com/Hx3YcfYICNV6O0IZEbjJxd?mode=gi_t",
     decks: [
       {
         label: "Semana 1 — Diagnóstico",
         file: "Semana 1 - Flujos y Algoritmos.html",
         slides: 11,
+      },
+      {
+        label: "Semana 2 — Arquitectura de la computadora",
+        file: "Semana 2 - Flujos y Algoritmos.html",
+        slides: 17,
       },
     ],
   },
@@ -46,11 +54,17 @@ export const COURSES: Course[] = [
     tag: "PROG 2",
     title: "Programación y Computación 2",
     subtitle: "Introducción a la programación.",
+    whatsapp: "https://chat.whatsapp.com/Fq6Dfsd6xsJIZznmGet6AI?mode=gi_t",
     decks: [
       {
         label: "Semana 1 — Diagnóstico",
         file: "Semana 1 - Programacion 2.html",
         slides: 11,
+      },
+      {
+        label: "Semana 2 — Fundamentos de C#",
+        file: "Semana 2 - Programacion 2.html",
+        slides: 18,
       },
     ],
   },
