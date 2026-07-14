@@ -59,8 +59,40 @@ export default async function CoursePage({ params }: PageProps) {
             <DeckCard key={deck.file} courseId={id} deck={deck} index={index} />
           ))}
         </div>
+
+        {/* WhatsApp group callout */}
+        {course.whatsapp && <WhatsAppGroup href={course.whatsapp} title={course.title} />}
       </main>
     </div>
+  );
+}
+
+/**
+ * WhatsApp group callout — invites students to join the course's group.
+ */
+function WhatsAppGroup({ href, title }: { href: string; title: string }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group inline-flex items-center gap-3 border border-border bg-card px-5 py-3
+                 transition-colors duration-200 hover:border-white/20 hover:bg-secondary
+                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <span
+        aria-hidden
+        className="font-mono text-[11px] tracking-[0.12em] uppercase text-brand"
+      >
+        Grupo
+      </span>
+      <p className="font-mono text-[11px] tracking-widest uppercase text-muted-foreground">
+        Click aquí para unirte al grupo de WhatsApp de {title}
+      </p>
+      <span className="text-lg text-muted-foreground transition-transform duration-200 group-hover:translate-x-1 group-hover:text-brand">
+        →
+      </span>
+    </a>
   );
 }
 

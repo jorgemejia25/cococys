@@ -92,19 +92,13 @@ function CourseCard({ course }: { course: Course }) {
   const deckCount = course.decks.length;
 
   return (
-    <div
+    <Link
+      href={`/curso/${course.id}`}
       className="group w-full max-w-sm md:w-[380px] md:max-w-none border border-border bg-card p-7 md:p-9 cursor-pointer relative overflow-hidden
                  flex flex-col gap-6 md:gap-7 transition-colors duration-200
-                 hover:border-white/20 hover:bg-secondary"
+                 hover:border-white/20 hover:bg-secondary
+                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
-      {/* Navigational overlay — covers the whole card so the outer Link
-          doesn't wrap any nested anchors. */}
-      <Link
-        href={`/curso/${course.id}`}
-        aria-label={course.title}
-        className="absolute inset-0 z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-      />
-
       {/* Accent top bar — slides in on hover */}
       <span
         className="absolute top-0 left-0 right-0 h-[2px] bg-brand
@@ -136,23 +130,10 @@ function CourseCard({ course }: { course: Course }) {
         <span>
           {deckCount} presentaci{deckCount > 1 ? "ones" : "ón"} · {totalSlides} diapositivas
         </span>
-        <div className="flex items-center gap-4">
-          {course.whatsapp && (
-            <a
-              href={course.whatsapp}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`Grupo de WhatsApp de ${course.title}`}
-              className="relative z-20 text-[10px] tracking-widest uppercase text-muted-foreground transition-colors hover:text-brand"
-            >
-              WhatsApp
-            </a>
-          )}
-          <span className="text-lg transition-transform duration-200 group-hover:translate-x-1 group-hover:text-brand">
-            →
-          </span>
-        </div>
+        <span className="text-lg transition-transform duration-200 group-hover:translate-x-1 group-hover:text-brand">
+          →
+        </span>
       </div>
-    </div>
+    </Link>
   );
 }
