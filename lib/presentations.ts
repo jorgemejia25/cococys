@@ -54,7 +54,7 @@ export const COURSES: Course[] = [
     tag: "PROG 2",
     title: "Programación y Computación 2",
     subtitle: "Introducción a la programación.",
-    whatsapp: "https://chat.whatsapp.com/Fq6Dfsd6xsJIZznmGet6AI?mode=gi_t",
+    whatsapp: "https://chat.whatsapp.com/FqXJnHWoJBJHSYv7xHt56N",
     decks: [
       {
         label: "Semana 1 — Diagnóstico",
