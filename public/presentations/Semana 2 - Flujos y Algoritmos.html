@@ -1,0 +1,1121 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Algoritmos — Semana 2 · Arquitectura de la computadora</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      deck-stage:not(:defined) {
+        visibility: hidden;
+      }
+    </style>
+    <script src="deck-stage.js"></script>
+
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #f0eeeb;
+        --fg-dim: rgba(240, 238, 235, 0.52);
+        --fg-muted: rgba(240, 238, 235, 0.22);
+        --fg-faint: rgba(240, 238, 235, 0.12);
+        --accent: #00e8d0;
+        --line: rgba(255, 255, 255, 0.09);
+        --grid: rgba(255, 255, 255, 0.022);
+        --wm: rgba(240, 238, 235, 0.035);
+
+        --sans: "Space Grotesk", "Helvetica Neue", sans-serif;
+        --serif: "Cormorant Garamond", ui-serif, Georgia, serif;
+        --mono: "JetBrains Mono", "Courier New", monospace;
+
+        /* type scale */
+        --th: 116px; /* hero */
+        --td: 88px; /* display */
+        --tt: 66px; /* title */
+        --tct: 58px; /* content title */
+        --ts: 46px; /* subtitle */
+        --tb: 34px; /* body */
+        --tsm: 26px; /* small */
+        --tmeta: 24px; /* meta */
+
+        /* spacing */
+        --px: 120px;
+        --pt: 90px;
+        --pb: 78px;
+        --gxl: 56px;
+        --glg: 40px;
+        --gmd: 28px;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: #000;
+      }
+
+      /* ─── Progress bar (portfolio-style) ──────────────────────── */
+      #deck-progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: rgba(255, 255, 255, 0.05);
+        z-index: 99999;
+      }
+      #deck-progress-fill {
+        height: 100%;
+        width: 9.09%;
+        background: var(--accent);
+        box-shadow: 0 0 14px rgba(0, 232, 208, 0.55);
+        transition: width 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      /* ─── All slides ─────────────────────────────────────────── */
+      deck-stage > section {
+        background: var(--bg);
+        color: var(--fg);
+        display: flex;
+        flex-direction: column;
+        padding: var(--pt) var(--px) var(--pb);
+        overflow: hidden;
+      }
+      /* elevate real content above the decoration layer */
+      deck-stage > section > *:not(.layer) {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* ─── Decoration layer: grid + watermark + geo ───────────── */
+      .layer {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+        pointer-events: none;
+        background-image:
+          linear-gradient(var(--grid) 1px, transparent 1px),
+          linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+        background-size: 88px 88px;
+        background-position: center center;
+      }
+
+      .geo {
+        position: absolute;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+      }
+
+      /* giant ghost watermark */
+      .wm {
+        position: absolute;
+        font-family: var(--sans);
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        color: var(--wm);
+        line-height: 0.78;
+        white-space: nowrap;
+        user-select: none;
+      }
+      .wm.serif {
+        font-family: var(--serif);
+        font-style: italic;
+        font-weight: 600;
+        letter-spacing: 0;
+      }
+
+      /* floating accent dot */
+      .fdot {
+        display: none;
+      }
+      .fdot.white {
+        display: none;
+      }
+
+      /* ─── Reusable type / layout ─────────────────────────────── */
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .meta {
+        font-family: var(--mono);
+        font-size: var(--tmeta);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--fg-muted);
+        white-space: nowrap;
+      }
+      .meta.faint {
+        color: var(--fg-faint);
+      }
+
+      .stag {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-family: var(--mono);
+        font-size: var(--tmeta);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--fg-muted);
+      }
+      .stag .tl {
+        display: inline-block;
+        width: 32px;
+        height: 1px;
+        background: currentColor;
+        flex-shrink: 0;
+      }
+      .stag.ac {
+        color: var(--accent);
+      }
+
+      .cbody {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: var(--glg);
+        max-width: 1180px;
+      }
+      .ctitle {
+        font-family: var(--sans);
+        font-weight: 700;
+        font-size: var(--tct);
+        line-height: 1.08;
+        letter-spacing: -0.025em;
+        color: var(--fg);
+      }
+      .body {
+        font-family: var(--sans);
+        font-size: var(--tb);
+        line-height: 1.6;
+        color: var(--fg-dim);
+      }
+      .note {
+        font-family: var(--mono);
+        font-size: var(--tmeta);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--fg-muted);
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+      }
+      .chip {
+        display: inline-block;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        padding: 11px 26px;
+        font-family: var(--mono);
+        font-size: 24px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--fg-dim);
+        transition:
+          border-color 0.3s,
+          color 0.3s;
+      }
+
+      .hr {
+        width: 100%;
+        height: 1px;
+        background: var(--line);
+        flex-shrink: 0;
+      }
+
+      /* stat box */
+      .sbox {
+        border: 1px solid var(--line);
+        padding: 30px 38px;
+        min-width: 200px;
+        flex: 1;
+      }
+      .sbox-n {
+        font-family: var(--sans);
+        font-size: 76px;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        color: var(--fg);
+        line-height: 1;
+      }
+      .sbox-l {
+        font-family: var(--mono);
+        font-size: 24px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--fg-muted);
+        margin-top: 12px;
+      }
+
+      /* ─── Animations ─────────────────────────────────────────── */
+      @media (prefers-reduced-motion: no-preference) {
+        [data-deck-active] .anim-up {
+          animation: slideUp 0.62s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        [data-deck-active] .anim-up.d2 {
+          animation-delay: 0.09s;
+        }
+        [data-deck-active] .anim-up.d3 {
+          animation-delay: 0.18s;
+        }
+        [data-deck-active] .anim-up.d4 {
+          animation-delay: 0.27s;
+        }
+        [data-deck-active] .anim-up.d5 {
+          animation-delay: 0.36s;
+        }
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(26px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        [data-deck-active] .layer {
+          animation: gridIn 1.1s ease both;
+        }
+        @keyframes gridIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        [data-deck-active] .wm {
+          animation: wmIn 1.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        @keyframes wmIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        [data-deck-active] .grow {
+          animation: grow 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+          transform-origin: left center;
+        }
+        @keyframes grow {
+          from {
+            transform: scaleX(0);
+            opacity: 0;
+          }
+          to {
+            transform: scaleX(1);
+            opacity: 1;
+          }
+        }
+      }
+
+      /* ═══ Terminal / code window ══════════════════════════════ */
+      .term {
+        width: 100%;
+        border: 1px solid var(--line);
+        background: #0d0d0d;
+        box-shadow: 0 40px 90px -50px rgba(0, 0, 0, 0.9);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .term-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 18px 26px;
+        background: #111;
+        border-bottom: 1px solid var(--line);
+      }
+      .term-dot {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .term-dot.r { background: #ff5f56; }
+      .term-dot.y { background: #ffbd2e; }
+      .term-dot.g { background: #27c93f; }
+      .term-name {
+        margin-left: 14px;
+        font-family: var(--mono);
+        font-size: 22px;
+        letter-spacing: 0.04em;
+        color: var(--fg-muted);
+      }
+      .term-body {
+        padding: 34px 40px;
+        font-family: var(--mono);
+        font-size: 28px;
+        line-height: 1.62;
+        color: var(--fg);
+        min-height: 120px;
+        white-space: pre;
+        overflow: hidden;
+      }
+      .term-body.sm { font-size: 24px; line-height: 1.6; }
+      /* typed.js output + cursor */
+      .term-body .typed-cursor {
+        color: var(--accent);
+        opacity: 1;
+        font-weight: 400;
+      }
+      /* syntax accents inside typed strings */
+      .tk { color: #c792ea; }   /* keyword */
+      .ts { color: var(--accent); } /* string */
+      .tn { color: #ffcb6b; }   /* number */
+      .tc { color: var(--fg-muted); font-style: italic; } /* comment */
+      .tf { color: #82aaff; }   /* function */
+      .tp { color: var(--accent); } /* prompt $ */
+
+      /* two-column code layout */
+      .split {
+        display: grid;
+        grid-template-columns: 1fr 1.05fr;
+        gap: var(--gxl);
+        align-items: center;
+        flex: 1;
+      }
+
+      /* live badge */
+      .live {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-family: var(--mono);
+        font-size: 22px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--accent);
+        border: 1px solid rgba(0, 232, 208, 0.35);
+        padding: 9px 22px;
+      }
+      .live::before {
+        content: "";
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 0 0 rgba(0, 232, 208, 0.5);
+        animation: livePulse 1.8s infinite;
+      }
+      @keyframes livePulse {
+        0% { box-shadow: 0 0 0 0 rgba(0, 232, 208, 0.5); }
+        70% { box-shadow: 0 0 0 14px rgba(0, 232, 208, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(0, 232, 208, 0); }
+      }
+
+      /* numbered step list */
+      .steps { display: flex; flex-direction: column; gap: 22px; }
+      .stepr {
+        display: flex;
+        align-items: flex-start;
+        gap: 22px;
+        font-family: var(--sans);
+        font-size: var(--tb);
+        line-height: 1.4;
+        color: var(--fg-dim);
+      }
+      .stepn {
+        flex-shrink: 0;
+        width: 44px;
+        height: 44px;
+        border: 1px solid rgba(0, 232, 208, 0.4);
+        color: var(--accent);
+        font-family: var(--mono);
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* feature / bullet list with tick */
+      .flist { display: flex; flex-direction: column; gap: 24px; }
+      .fitem {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+        font-family: var(--sans);
+        font-size: var(--tb);
+        line-height: 1.4;
+        color: var(--fg-dim);
+      }
+      .fitem b { color: var(--fg); font-weight: 600; }
+      .ftick {
+        flex-shrink: 0;
+        color: var(--accent);
+        font-family: var(--mono);
+        font-size: 30px;
+        line-height: 1.2;
+      }
+
+      /* card grid */
+      .cards3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--gmd);
+      }
+      .qcard { border: 1px solid var(--line); padding: 34px 36px; }
+      .qcard-t {
+        font-family: var(--mono);
+        font-size: 26px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 18px;
+      }
+      .qcard-b {
+        font-family: var(--sans);
+        font-size: 27px;
+        line-height: 1.5;
+        color: var(--fg-dim);
+      }
+      .qcard-b b { color: var(--fg); font-weight: 600; }
+
+      /* agenda rows */
+      .arow {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        padding: 26px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .arow-n {
+        font-family: var(--mono);
+        font-size: 30px;
+        color: var(--accent);
+        width: 60px;
+        flex-shrink: 0;
+      }
+      .arow-t {
+        font-family: var(--sans);
+        font-size: 34px;
+        font-weight: 600;
+        color: var(--fg);
+        flex: 1;
+      }
+      .arow-d {
+        font-family: var(--sans);
+        font-size: 26px;
+        color: var(--fg-dim);
+        flex: 2;
+      }
+      .arow-time {
+        font-family: var(--mono);
+        font-size: 26px;
+        color: var(--fg-muted);
+        letter-spacing: 0.08em;
+      }
+
+      /* ═══ Diagramas SVG ═══════════════════════════════════════ */
+      .diagram {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex: 1;
+      }
+      .diagram svg {
+        width: 100%;
+        height: auto;
+        max-height: 760px;
+        overflow: visible;
+      }
+      /* estilos reutilizables dentro del SVG */
+      .d-box { fill: #101010; stroke: rgba(255, 255, 255, 0.16); stroke-width: 1.5; }
+      .d-box-accent { fill: rgba(0, 232, 208, 0.06); stroke: rgba(0, 232, 208, 0.55); stroke-width: 1.8; }
+      .d-cpu { fill: rgba(255, 255, 255, 0.015); stroke: rgba(255, 255, 255, 0.22); stroke-width: 1.8; }
+      .d-t { fill: var(--fg); font-family: var(--sans); font-weight: 600; }
+      .d-t-mono { fill: var(--fg); font-family: var(--mono); }
+      .d-t-dim { fill: var(--fg-dim); font-family: var(--sans); }
+      .d-t-acc { fill: var(--accent); font-family: var(--mono); letter-spacing: 0.04em; }
+      .d-line { stroke: rgba(255, 255, 255, 0.28); stroke-width: 1.6; fill: none; }
+      .d-line-acc { stroke: var(--accent); stroke-width: 2; fill: none; }
+
+      /* timeline de generaciones */
+      .gen { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; }
+      .gen-col {
+        position: relative;
+        padding: 30px 22px 0;
+        border-left: 1px solid var(--line);
+      }
+      .gen-col:first-child { border-left: none; }
+      .gen-dot {
+        position: absolute;
+        top: -7px;
+        left: -7px;
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+        background: var(--accent);
+      }
+      .gen-n {
+        font-family: var(--mono);
+        font-size: 22px;
+        color: var(--accent);
+        letter-spacing: 0.1em;
+        margin-bottom: 10px;
+      }
+      .gen-y {
+        font-family: var(--sans);
+        font-weight: 700;
+        font-size: 30px;
+        color: var(--fg);
+        margin-bottom: 12px;
+      }
+      .gen-d {
+        font-family: var(--sans);
+        font-size: 23px;
+        line-height: 1.42;
+        color: var(--fg-dim);
+      }
+      .gen-tech {
+        font-family: var(--mono);
+        font-size: 20px;
+        color: var(--fg-muted);
+        margin-top: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+    </style>
+  </head>
+    <deck-stage width="1920" height="1080">
+      <!-- ═══ 01 · PORTADA ═══ -->
+      <section data-label="01" data-screen-label="Portada">
+        <div class="layer">
+          <div class="geo" style="width: 520px; height: 620px; top: 70px; left: 560px"></div>
+          <div class="geo" style="width: 320px; height: 420px; top: 150px; left: 820px; border-color: rgba(0,232,208,0.05)"></div>
+          <div class="wm" style="bottom: -100px; right: -30px; font-size: 300px; color: rgba(240,238,235,0.028)">CPU</div>
+        </div>
+        <div class="topbar">
+          <div style="display: flex; align-items: center; gap: 14px">
+            <span style="width: 9px; height: 9px; border-radius: 50%; background: var(--accent); display: inline-block"></span>
+            <span class="meta" style="letter-spacing: 0.12em">ECYS · 768 — ALGORITMOS</span>
+          </div>
+          <span class="meta">2S · 2026</span>
+        </div>
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 6px">
+          <div class="stag ac anim-up" style="margin-bottom: 34px">
+            <span class="tl grow"></span>
+            <span>Semana 02 — Sesión de laboratorio</span>
+          </div>
+          <h1 class="anim-up d2" style="font-family: var(--sans); font-size: var(--th); font-weight: 700; line-height: 0.9; letter-spacing: -0.03em; color: var(--fg)">
+            LA COMPUTADORA Y SU
+          </h1>
+          <h1 class="anim-up d3" style="font-family: var(--serif); font-size: var(--th); font-weight: 400; font-style: italic; line-height: 1; letter-spacing: -0.01em; color: rgba(240,238,235,0.62)">
+            arquitectura interna.
+          </h1>
+          <p class="body anim-up d4" style="margin-top: 40px; max-width: 1100px">Fundamentos del hardware, la arquitectura Von Neumann y el ciclo <b style="color:var(--fg)">fetch — decode — execute</b>.</p>
+        </div>
+        <div class="hr" style="margin-bottom: 28px"></div>
+        <div class="topbar">
+          <span class="meta">Jorge Mejía</span>
+          <span class="meta faint">Guatemala, GT · 100 MIN</span>
+        </div>
+      </section>
+
+      <!-- ═══ 02 · AGENDA ═══ -->
+      <section data-label="02" data-screen-label="Agenda">
+        <div class="layer">
+          <div class="wm serif" style="bottom: -70px; right: -30px; font-size: 300px; color: rgba(0,232,208,0.04)">02</div>
+        </div>
+        <div class="topbar">
+          <span class="stag ac"><span class="tl"></span><span>Ruta de la sesión</span></span>
+          <span class="meta">100 MIN</span>
+        </div>
+        <div class="cbody" style="max-width: 1500px">
+          <h2 class="ctitle anim-up">Estructura de la sesión</h2>
+          <div style="display: flex; flex-direction: column">
+            <div class="arow anim-up d2"><span class="arow-n">01</span><span class="arow-t">Curiosidad intelectual</span><span class="arow-d">Área actitudinal — saber ser</span><span class="arow-time">5 min</span></div>
+            <div class="arow anim-up d3"><span class="arow-n">02</span><span class="arow-t">Fundamentos y arquitectura</span><span class="arow-d">Evolución, Von Neumann y ciclo FDE</span><span class="arow-time">60 min</span></div>
+            <div class="arow anim-up d4"><span class="arow-n">03</span><span class="arow-t">Actividad de análisis</span><span class="arow-d">Traza del ciclo fetch-decode-execute</span><span class="arow-time">25 min</span></div>
+            <div class="arow anim-up d5"><span class="arow-n">04</span><span class="arow-t">Cierre y tarea</span><span class="arow-d">Asignación a 7 días</span><span class="arow-time">10 min</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 03 · CURIOSIDAD INTELECTUAL ═══ -->
+      <section data-label="03" data-screen-label="Curiosidad intelectual">
+        <div class="layer">
+          <div class="geo" style="width: 620px; height: 620px; top: -150px; right: -130px; border-color: rgba(0,232,208,0.05)"></div>
+          <div class="wm serif" style="bottom: -60px; left: -30px; font-size: 240px; color: rgba(0,232,208,0.04)">¿?</div>
+        </div>
+        <div class="topbar">
+          <span class="stag ac"><span class="tl"></span><span>Área actitudinal — Saber ser</span></span>
+          <span class="meta">5 MIN</span>
+        </div>
+        <div class="split" style="margin-top: 40px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Curiosidad intelectual</h2>
+            <p class="body anim-up d2">Disposición activa para explorar el origen, la evolución y el funcionamiento de la tecnología más allá de lo evidente.</p>
+          </div>
+          <div class="flist">
+            <div class="fitem anim-up d3"><span class="ftick">▹</span><span>Comprender la arquitectura exige <b>ir más allá de la memorización</b>.</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">▹</span><span>El estudiante <b>investiga por cuenta propia</b> la historia de la computadora antes de la sesión.</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">▹</span><span>Formula <b>preguntas</b> en clase que profundizan el tema.</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 04 · ¿QUÉ ES UNA COMPUTADORA? ═══ -->
+      <section data-label="04" data-screen-label="Definición">
+        <div class="layer"><div class="wm" style="bottom:-90px; right:-20px; font-size:260px; color:rgba(240,238,235,0.025)">01</div></div>
+        <div class="topbar">
+          <span class="stag ac"><span class="tl"></span><span>Unidad 1 — La computadora</span></span>
+          <span class="meta">DEFINICIÓN</span>
+        </div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">¿Qué es una computadora?</h2>
+            <p class="body anim-up d2">Máquina electrónica que <b style="color:var(--fg)">recibe datos</b>, los <b style="color:var(--fg)">procesa</b> según un programa almacenado y <b style="color:var(--fg)">entrega resultados</b>.</p>
+          </div>
+          <div class="flist">
+            <div class="fitem anim-up d3"><span class="ftick">→</span><span><b>Entrada.</b> Recibe datos e instrucciones.</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">⚙</span><span><b>Proceso.</b> Ejecuta operaciones sobre los datos.</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">←</span><span><b>Salida.</b> Comunica los resultados.</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">▤</span><span><b>Almacenamiento.</b> Conserva datos y programas.</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 05 · EVOLUCIÓN (TIMELINE) ═══ -->
+      <section data-label="05" data-screen-label="Evolución de la computadora">
+        <div class="layer"><div class="wm serif" style="bottom:-70px; right:-30px; font-size:280px; color:rgba(0,232,208,0.035)">→</div></div>
+        <div class="topbar">
+          <span class="stag ac"><span class="tl"></span><span>Unidad 1 — La computadora</span></span>
+          <span class="meta">EVOLUCIÓN</span>
+        </div>
+        <div class="cbody" style="max-width: 1680px; gap: var(--glg)">
+          <h2 class="ctitle anim-up">Generaciones de la computadora</h2>
+          <div class="gen">
+            <div class="gen-col anim-up d2"><span class="gen-dot"></span><div class="gen-n">1ª GEN</div><div class="gen-y">1940–56</div><div class="gen-d">Enormes, lentas y costosas. ENIAC.</div><div class="gen-tech">Tubos de vacío</div></div>
+            <div class="gen-col anim-up d2"><span class="gen-dot"></span><div class="gen-n">2ª GEN</div><div class="gen-y">1956–63</div><div class="gen-d">Menor tamaño y consumo, más fiables.</div><div class="gen-tech">Transistores</div></div>
+            <div class="gen-col anim-up d3"><span class="gen-dot"></span><div class="gen-n">3ª GEN</div><div class="gen-y">1964–71</div><div class="gen-d">Miles de componentes en un chip.</div><div class="gen-tech">Circuitos integrados</div></div>
+            <div class="gen-col anim-up d4"><span class="gen-dot"></span><div class="gen-n">4ª GEN</div><div class="gen-y">1971–hoy</div><div class="gen-d">La CPU completa en un solo chip.</div><div class="gen-tech">Microprocesador</div></div>
+            <div class="gen-col anim-up d5"><span class="gen-dot"></span><div class="gen-n">5ª GEN</div><div class="gen-y">Presente</div><div class="gen-d">Paralelismo e inteligencia artificial.</div><div class="gen-tech">IA · paralelismo</div></div>
+          </div>
+          <p class="note anim-up d5">El tamaño disminuye y la potencia crece — pero el modelo lógico sigue siendo el mismo desde 1945.</p>
+        </div>
+      </section>
+
+      <!-- ═══ 06 · ARQUITECTURA VON NEUMANN (DIAGRAMA) ═══ -->
+      <section data-label="06" data-screen-label="Arquitectura Von Neumann">
+        <div class="layer"></div>
+        <div class="topbar">
+          <span class="stag ac"><span class="tl"></span><span>Unidad 2 — Arquitectura y organización</span></span>
+          <span class="meta">VON NEUMANN</span>
+        </div>
+        <h2 class="ctitle anim-up" style="margin-top: 14px">Arquitectura Von Neumann</h2>
+        <div class="diagram anim-up d2" style="margin-top: 6px">
+          <svg viewBox="0 0 1600 830" role="img" aria-label="Diagrama de la arquitectura Von Neumann">
+            <defs>
+              <marker id="vn-end" markerWidth="11" markerHeight="11" refX="7.5" refY="4" orient="auto-start-reverse">
+                <path d="M0,0 L8,4 L0,8 Z" fill="#00e8d0" />
+              </marker>
+              <marker id="vn-endw" markerWidth="11" markerHeight="11" refX="7.5" refY="4" orient="auto-start-reverse">
+                <path d="M0,0 L8,4 L0,8 Z" fill="rgba(240,238,235,0.5)" />
+              </marker>
+            </defs>
+
+            <!-- ── Entrada ── -->
+            <rect class="d-box" x="60" y="150" width="250" height="150" rx="8" />
+            <text class="d-t" x="185" y="228" font-size="36" text-anchor="middle">Entrada</text>
+            <text class="d-t-dim" x="185" y="268" font-size="22" text-anchor="middle" style="font-family:'JetBrains Mono','Courier New',monospace">INPUT</text>
+
+            <!-- ── Salida ── -->
+            <rect class="d-box" x="1290" y="150" width="250" height="150" rx="8" />
+            <text class="d-t" x="1415" y="228" font-size="36" text-anchor="middle">Salida</text>
+            <text class="d-t-dim" x="1415" y="268" font-size="22" text-anchor="middle" style="font-family:'JetBrains Mono','Courier New',monospace">OUTPUT</text>
+
+            <!-- ── CPU ── -->
+            <rect class="d-cpu" x="390" y="70" width="820" height="310" rx="10" />
+            <text class="d-t-acc" x="800" y="118" font-size="24" text-anchor="middle">CPU · UNIDAD CENTRAL DE PROCESO</text>
+
+            <rect class="d-box-accent" x="420" y="160" width="360" height="180" rx="6" />
+            <text class="d-t" x="600" y="252" font-size="30" text-anchor="middle">Unidad de Control</text>
+            <text class="d-t-dim" x="600" y="292" font-size="21" text-anchor="middle">dirige y sincroniza</text>
+
+            <rect class="d-box-accent" x="800" y="160" width="180" height="180" rx="6" />
+            <text class="d-t" x="890" y="245" font-size="32" text-anchor="middle">ALU</text>
+            <text class="d-t-dim" x="890" y="285" font-size="20" text-anchor="middle">opera</text>
+
+            <rect class="d-box-accent" x="1000" y="160" width="180" height="180" rx="6" />
+            <text class="d-t" x="1090" y="245" font-size="27" text-anchor="middle">Registros</text>
+            <text class="d-t-dim" x="1090" y="285" font-size="20" text-anchor="middle">datos temporales</text>
+
+            <!-- ── Bus del sistema ── -->
+            <rect x="110" y="470" width="1380" height="170" rx="10" fill="rgba(0,232,208,0.05)" stroke="rgba(0,232,208,0.45)" stroke-width="1.6" />
+            <text class="d-t-acc" x="150" y="512" font-size="22">BUS DEL SISTEMA</text>
+
+            <line class="d-line-acc" x1="360" y1="545" x2="1450" y2="545" stroke-width="2.2" marker-end="url(#vn-end)" />
+            <text class="d-t-dim" x="150" y="552" font-size="21" style="font-family:'JetBrains Mono','Courier New',monospace">Direcciones</text>
+
+            <line class="d-line-acc" x1="360" y1="585" x2="1450" y2="585" stroke-width="2.2" marker-start="url(#vn-end)" marker-end="url(#vn-end)" />
+            <text class="d-t-dim" x="150" y="592" font-size="21" style="font-family:'JetBrains Mono','Courier New',monospace">Datos</text>
+
+            <line class="d-line-acc" x1="360" y1="625" x2="1450" y2="625" stroke-width="2.2" marker-start="url(#vn-end)" marker-end="url(#vn-end)" />
+            <text class="d-t-dim" x="150" y="632" font-size="21" style="font-family:'JetBrains Mono','Courier New',monospace">Control</text>
+
+            <!-- ── Conectores ── -->
+            <!-- Entrada → bus -->
+            <line class="d-line-acc" x1="185" y1="300" x2="185" y2="468" stroke-width="2.2" marker-end="url(#vn-end)" />
+            <!-- bus → Salida -->
+            <line class="d-line-acc" x1="1415" y1="468" x2="1415" y2="300" stroke-width="2.2" marker-end="url(#vn-end)" />
+            <!-- CPU ↔ bus -->
+            <line class="d-line-acc" x1="800" y1="380" x2="800" y2="468" stroke-width="2.4" marker-start="url(#vn-end)" marker-end="url(#vn-end)" />
+            <!-- Memoria ↔ bus -->
+            <line class="d-line-acc" x1="800" y1="642" x2="800" y2="700" stroke-width="2.4" marker-start="url(#vn-end)" marker-end="url(#vn-end)" />
+
+            <!-- ── Memoria ── -->
+            <rect class="d-box" x="560" y="700" width="480" height="120" rx="8" />
+            <text class="d-t" x="800" y="760" font-size="32" text-anchor="middle">Memoria principal</text>
+            <text class="d-t-dim" x="800" y="798" font-size="21" text-anchor="middle" style="font-family:'JetBrains Mono','Courier New',monospace">instrucciones + datos</text>
+          </svg>
+        </div>
+      </section>
+
+      <!-- ═══ 07 · PROGRAMA ALMACENADO ═══ -->
+      <section data-label="07" data-screen-label="Programa almacenado">
+        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:240px; color:rgba(240,238,235,0.022)">01011</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Unidad 2 — Arquitectura y organización</span></span><span class="meta">PRINCIPIO CLAVE</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">El programa almacenado</h2>
+            <p class="body anim-up d2">La idea central de Von Neumann: las <b style="color:var(--fg)">instrucciones</b> y los <b style="color:var(--fg)">datos</b> conviven en la misma memoria y viajan por los mismos buses.</p>
+          </div>
+          <div class="flist">
+            <div class="fitem anim-up d3"><span class="ftick">▤</span><span><b>Una sola memoria</b> guarda el programa y los datos.</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">↔</span><span>La CPU lee instrucciones y datos <b>de forma secuencial</b>.</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">⚠</span><span>Comparten el bus: el conocido <b>«cuello de botella» de Von Neumann</b>.</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 08 · LA CPU (DIAGRAMA INTERNO) ═══ -->
+      <section data-label="08" data-screen-label="La CPU por dentro">
+        <div class="layer"></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Hardware de procesamiento</span></span><span class="meta">CPU · INTERIOR</span></div>
+        <h2 class="ctitle anim-up" style="margin-top: 10px">La CPU por dentro</h2>
+        <div class="diagram anim-up d2" style="margin-top: 4px">
+          <svg viewBox="0 0 1520 660" role="img" aria-label="Componentes internos de la CPU">
+            <defs>
+              <marker id="a2" markerWidth="12" markerHeight="12" refX="8" refY="4" orient="auto">
+                <path d="M0,0 L8,4 L0,8 Z" fill="#00e8d0" />
+              </marker>
+            </defs>
+            <rect class="d-cpu" x="40" y="30" width="1440" height="600" rx="8" />
+            <text class="d-t-acc" x="72" y="72" font-size="24">UNIDAD CENTRAL DE PROCESO</text>
+
+            <!-- Control Unit -->
+            <rect class="d-box-accent" x="100" y="120" width="580" height="180" rx="6" />
+            <text class="d-t" x="390" y="175" font-size="34" text-anchor="middle">Unidad de Control (UC)</text>
+            <text class="d-t-dim" x="390" y="220" font-size="24" text-anchor="middle">Dirige y sincroniza todo el sistema:</text>
+            <text class="d-t-dim" x="390" y="254" font-size="24" text-anchor="middle">emite las señales de control.</text>
+
+            <!-- ALU -->
+            <rect class="d-box-accent" x="100" y="360" width="580" height="220" rx="6" />
+            <text class="d-t" x="390" y="418" font-size="34" text-anchor="middle">ALU</text>
+            <text class="d-t-dim" x="390" y="462" font-size="24" text-anchor="middle">Unidad Aritmético-Lógica.</text>
+            <text class="d-t-dim" x="390" y="500" font-size="24" text-anchor="middle">Realiza las operaciones:</text>
+            <text class="d-t-acc" x="390" y="540" font-size="24" text-anchor="middle" style="font-family:'JetBrains Mono','Courier New',monospace">+  −  ×  ÷   AND  OR  NOT</text>
+
+            <!-- Registers -->
+            <rect class="d-box-accent" x="760" y="120" width="640" height="460" rx="6" />
+            <text class="d-t" x="1080" y="172" font-size="32" text-anchor="middle">Registros</text>
+            <text class="d-t-dim" x="1080" y="208" font-size="22" text-anchor="middle">memoria interna, ultrarrápida</text>
+            <line x1="800" y1="234" x2="1360" y2="234" stroke="rgba(255,255,255,0.12)" />
+            <text class="d-t-mono" x="800" y="288" font-size="25">PC</text><text class="d-t-dim" x="920" y="288" font-size="23">Contador de programa</text>
+            <text class="d-t-mono" x="800" y="352" font-size="25">MAR</text><text class="d-t-dim" x="920" y="352" font-size="23">Registro de dirección</text>
+            <text class="d-t-mono" x="800" y="416" font-size="25">MDR</text><text class="d-t-dim" x="920" y="416" font-size="23">Registro de datos</text>
+            <text class="d-t-mono" x="800" y="480" font-size="25">CIR</text><text class="d-t-dim" x="920" y="480" font-size="23">Instrucción actual</text>
+            <text class="d-t-mono" x="800" y="544" font-size="25">ACC</text><text class="d-t-dim" x="920" y="544" font-size="23">Acumulador (resultados)</text>
+
+            <!-- internal data paths -->
+            <line class="d-line-acc" x1="390" y1="300" x2="390" y2="360" marker-end="url(#a2)" opacity="0.7" />
+            <line class="d-line-acc" x1="680" y1="210" x2="760" y2="210" marker-end="url(#a2)" opacity="0.7" />
+            <line class="d-line-acc" x1="680" y1="470" x2="760" y2="360" marker-end="url(#a2)" opacity="0.7" />
+          </svg>
+        </div>
+      </section>
+
+      <!-- ═══ 09 · LA ALU ═══ -->
+      <section data-label="09" data-screen-label="La ALU">
+        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:260px; color:rgba(240,238,235,0.022)">±</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Componentes — ALU</span></span><span class="meta">UNIDAD ARITMÉTICO-LÓGICA</span></div>
+        <div class="cbody" style="max-width: 1600px; gap: var(--glg)">
+          <h2 class="ctitle anim-up">La ALU</h2>
+          <p class="body anim-up d2" style="max-width: 60ch">Es la calculadora de la CPU: recibe operandos desde los registros y devuelve un resultado. No decide <b style="color:var(--fg)">cuándo</b> operar — eso lo ordena la Unidad de Control.</p>
+          <div class="cards3">
+            <div class="qcard anim-up d3"><div class="qcard-t">Aritméticas</div><div class="qcard-b">Suma, resta, multiplicación y división de valores.</div></div>
+            <div class="qcard anim-up d4"><div class="qcard-t">Lógicas</div><div class="qcard-b"><b>AND</b>, <b>OR</b>, <b>NOT</b> y comparaciones entre bits.</div></div>
+            <div class="qcard anim-up d5"><div class="qcard-t">Indicadores</div><div class="qcard-b">Señala estados: <b>cero</b>, <b>acarreo</b> o <b>desbordamiento</b>.</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 10 · LA UNIDAD DE CONTROL ═══ -->
+      <section data-label="10" data-screen-label="La Unidad de Control">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">UC</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Componentes — Unidad de Control</span></span><span class="meta">EL DIRECTOR</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">La Unidad de Control</h2>
+            <p class="body anim-up d2">Coordina a toda la computadora. Interpreta cada instrucción y genera las <b style="color:var(--fg)">señales de control</b> y de <b style="color:var(--fg)">temporización</b> que mueven al resto de componentes.</p>
+          </div>
+          <div class="flist">
+            <div class="fitem anim-up d3"><span class="ftick">▹</span><span><b>Lee</b> la instrucción desde la memoria.</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">▹</span><span><b>Decodifica</b> qué operación se pide.</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">▹</span><span><b>Ordena</b> a la ALU, registros y memoria cómo actuar.</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">▹</span><span><b>Marca el ritmo</b> con el reloj del sistema.</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 11 · CICLO FDE (DIAGRAMA) ═══ -->
+      <section data-label="11" data-screen-label="Ciclo Fetch-Decode-Execute">
+        <div class="layer"></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Hardware de procesamiento</span></span><span class="meta">EL CICLO DE INSTRUCCIÓN</span></div>
+        <h2 class="ctitle anim-up" style="margin-top: 8px">Ciclo Fetch — Decode — Execute</h2>
+        <div class="diagram anim-up d2" style="margin-top: 4px">
+          <svg viewBox="0 0 1560 600" role="img" aria-label="Ciclo fetch decode execute">
+            <defs>
+              <marker id="a3" markerWidth="13" markerHeight="13" refX="8" refY="4" orient="auto">
+                <path d="M0,0 L8,4 L0,8 Z" fill="#00e8d0" />
+              </marker>
+            </defs>
+
+            <!-- nodes -->
+            <rect class="d-box-accent" x="80" y="210" width="380" height="230" rx="10" />
+            <text class="d-t-acc" x="120" y="262" font-size="24">01</text>
+            <text class="d-t" x="270" y="300" font-size="42" text-anchor="middle">FETCH</text>
+            <text class="d-t-dim" x="270" y="342" font-size="26" text-anchor="middle">Buscar</text>
+            <text class="d-t-dim" x="270" y="392" font-size="21" text-anchor="middle" style="font-family:'JetBrains Mono','Courier New',monospace">PC → MAR → memoria</text>
+            <text class="d-t-dim" x="270" y="418" font-size="21" text-anchor="middle" style="font-family:'JetBrains Mono','Courier New',monospace">→ MDR → CIR</text>
+
+            <rect class="d-box-accent" x="590" y="210" width="380" height="230" rx="10" />
+            <text class="d-t-acc" x="630" y="262" font-size="24">02</text>
+            <text class="d-t" x="780" y="300" font-size="42" text-anchor="middle">DECODE</text>
+            <text class="d-t-dim" x="780" y="342" font-size="26" text-anchor="middle">Decodificar</text>
+            <text class="d-t-dim" x="780" y="392" font-size="21" text-anchor="middle" style="font-family:'JetBrains Mono','Courier New',monospace">la UC interpreta</text>
+            <text class="d-t-dim" x="780" y="418" font-size="21" text-anchor="middle" style="font-family:'JetBrains Mono','Courier New',monospace">el código de operación</text>
+
+            <rect class="d-box-accent" x="1100" y="210" width="380" height="230" rx="10" />
+            <text class="d-t-acc" x="1140" y="262" font-size="24">03</text>
+            <text class="d-t" x="1290" y="300" font-size="42" text-anchor="middle">EXECUTE</text>
+            <text class="d-t-dim" x="1290" y="342" font-size="26" text-anchor="middle">Ejecutar</text>
+            <text class="d-t-dim" x="1290" y="392" font-size="21" text-anchor="middle" style="font-family:'JetBrains Mono','Courier New',monospace">ALU / registros</text>
+            <text class="d-t-dim" x="1290" y="418" font-size="21" text-anchor="middle" style="font-family:'JetBrains Mono','Courier New',monospace">/ memoria actúan</text>
+
+            <!-- forward arrows -->
+            <line class="d-line-acc" x1="460" y1="325" x2="585" y2="325" marker-end="url(#a3)" stroke-width="2.4" />
+            <line class="d-line-acc" x1="970" y1="325" x2="1095" y2="325" marker-end="url(#a3)" stroke-width="2.4" />
+
+            <!-- loop back over the top -->
+            <path class="d-line-acc" d="M1290,210 C1290,80 1290,60 780,60 C270,60 270,80 270,205" stroke-width="2.4" marker-end="url(#a3)" stroke-dasharray="7 6" />
+            <text class="d-t-acc" x="780" y="46" font-size="24" text-anchor="middle">el ciclo se repite con la siguiente instrucción (PC + 1)</text>
+          </svg>
+        </div>
+      </section>
+
+      <!-- ═══ 12 · FETCH ═══ -->
+      <section data-label="12" data-screen-label="Fetch">
+        <div class="layer"><div class="wm" style="bottom:-80px; right:-20px; font-size:260px; color:rgba(240,238,235,0.022)">01</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Ciclo de instrucción</span></span><span class="meta">FASE 01 / 03</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Fetch — Buscar</h2>
+            <p class="body anim-up d2">La CPU trae desde la memoria la <b style="color:var(--fg)">siguiente instrucción</b> a ejecutar.</p>
+          </div>
+          <div class="steps">
+            <div class="stepr anim-up d3"><span class="stepn">1</span><span>El <b style="color:var(--fg)">PC</b> contiene la dirección de la instrucción; se copia al <b style="color:var(--fg)">MAR</b>.</span></div>
+            <div class="stepr anim-up d4"><span class="stepn">2</span><span>La memoria envía la instrucción de esa dirección al <b style="color:var(--fg)">MDR</b>.</span></div>
+            <div class="stepr anim-up d5"><span class="stepn">3</span><span>Se traslada al <b style="color:var(--fg)">CIR</b> y el <b style="color:var(--fg)">PC</b> avanza (+1).</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 13 · DECODE ═══ -->
+      <section data-label="13" data-screen-label="Decode">
+        <div class="layer"><div class="wm" style="bottom:-80px; right:-20px; font-size:260px; color:rgba(240,238,235,0.022)">02</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Ciclo de instrucción</span></span><span class="meta">FASE 02 / 03</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Decode — Decodificar</h2>
+            <p class="body anim-up d2">La <b style="color:var(--fg)">Unidad de Control</b> interpreta la instrucción que está en el CIR.</p>
+          </div>
+          <div class="steps">
+            <div class="stepr anim-up d3"><span class="stepn">1</span><span>Separa el <b style="color:var(--fg)">código de operación</b> (qué hacer) de los <b style="color:var(--fg)">operandos</b> (con qué datos).</span></div>
+            <div class="stepr anim-up d4"><span class="stepn">2</span><span>Determina qué componentes deben intervenir.</span></div>
+            <div class="stepr anim-up d5"><span class="stepn">3</span><span>Prepara las <b style="color:var(--fg)">señales de control</b> para la ejecución.</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 14 · EXECUTE ═══ -->
+      <section data-label="14" data-screen-label="Execute">
+        <div class="layer"><div class="wm" style="bottom:-80px; right:-20px; font-size:260px; color:rgba(240,238,235,0.022)">03</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Ciclo de instrucción</span></span><span class="meta">FASE 03 / 03</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Execute — Ejecutar</h2>
+            <p class="body anim-up d2">Se lleva a cabo la operación. El resultado suele quedar en el <b style="color:var(--fg)">acumulador</b>.</p>
+          </div>
+          <div class="steps">
+            <div class="stepr anim-up d3"><span class="stepn">1</span><span>La <b style="color:var(--fg)">ALU</b> opera, o se mueven datos entre registros y memoria.</span></div>
+            <div class="stepr anim-up d4"><span class="stepn">2</span><span>El resultado se guarda (p. ej. en el <b style="color:var(--fg)">ACC</b>).</span></div>
+            <div class="stepr anim-up d5"><span class="stepn">↻</span><span>El ciclo <b style="color:var(--fg)">vuelve a Fetch</b> con la siguiente instrucción.</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 15 · EJERCICIO DEMOSTRATIVO (TRAZA) ═══ -->
+      <section data-label="15" data-screen-label="Traza del ciclo">
+        <div class="layer"><div class="wm" style="bottom:-90px; left:-20px; font-size:220px; color:rgba(0,232,208,0.03)">▶</div></div>
+        <div class="topbar"><span class="live">Ejercicio demostrativo</span><span class="meta">TRAZA · 25 MIN</span></div>
+        <div class="split" style="margin-top: 26px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Traza del ciclo</h2>
+            <p class="body anim-up d2">Seguimos, registro por registro, la ejecución de una instrucción sencilla: <b style="color:var(--fg)">sumar dos valores</b> y guardar el resultado.</p>
+            <div class="flist" style="margin-top: 6px">
+              <div class="fitem anim-up d4"><span class="ftick">▹</span><span>Cada línea corresponde a un paso del ciclo <b>FDE</b>.</span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">traza — ciclo de instrucción</span></div>
+            <div class="term-body sm"><span id="tf15" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="tf15" hidden><span class="tc"># Instrucción: ACC = A + B</span>
+<span class="tp">FETCH  </span> PC=5 <span class="tc">→</span> MAR=5
+<span class="tp">       </span> MDR=<span class="ts">"LOAD A"</span> <span class="tc">→</span> CIR, PC=6
+<span class="tp">DECODE </span> UC: operación = <span class="ts">LOAD</span>
+<span class="tp">EXECUTE</span> ACC <span class="tc">=</span> <span class="tn">7</span>   <span class="tc">(valor de A)</span>
+<span class="tp">FETCH  </span> PC=6 <span class="tc">→</span> ... CIR=<span class="ts">"ADD B"</span>
+<span class="tp">DECODE </span> UC: operación = <span class="ts">ADD</span>
+<span class="tp">EXECUTE</span> ALU: <span class="tn">7</span> + <span class="tn">3</span> <span class="tc">=</span> <span class="tn">10</span> <span class="tc">→</span> ACC
+<span class="tp">✓      </span> Resultado en ACC = <span class="tn">10</span></div>
+        </div>
+      </section>
+
+      <!-- ═══ 16 · ACTIVIDAD DE ANÁLISIS ═══ -->
+      <section data-label="16" data-screen-label="Actividad de análisis">
+        <div class="layer">
+          <div class="geo" style="width: 560px; height: 560px; top: -120px; left: -120px; border-color: rgba(0,232,208,0.05)"></div>
+          <div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.04)">25′</div>
+        </div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber hacer — Actividad obligatoria</span></span><span class="meta">ANÁLISIS · 25 MIN</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Actividad de análisis</h2>
+            <p class="body anim-up d2">El estudiante <b style="color:var(--fg)">traza el ciclo fetch-decode-execute</b> para una secuencia de instrucciones dada, identificando el estado de cada registro en cada fase.</p>
+            <div class="anim-up d3" style="display: flex; gap: 16px; margin-top: 8px">
+              <span class="chip">⏱ 25 min</span><span class="chip">Individual</span>
+            </div>
+          </div>
+          <div class="flist">
+            <div class="fitem anim-up d2"><span class="ftick">1</span><span>Identificar el <b>rol de cada registro</b> (PC, MAR, MDR, CIR, ACC).</span></div>
+            <div class="fitem anim-up d3"><span class="ftick">2</span><span>Escribir el estado de los registros <b>fase por fase</b>.</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">3</span><span>Señalar en qué momento interviene la <b>ALU</b> y la <b>UC</b>.</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">4</span><span>Explicar por qué el <b>PC se incrementa</b> en cada ciclo.</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 17 · CIERRE + TAREA ═══ -->
+      <section data-label="17" data-screen-label="Cierre y tarea">
+        <div class="layer"><div class="wm serif" style="bottom:-70px; right:-30px; font-size:300px; color:rgba(0,232,208,0.04)">fin</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Cierre</span></span><span class="meta">10 MIN</span></div>
+        <div class="cbody" style="max-width: 1600px; gap: var(--glg)">
+          <h2 class="ctitle anim-up">Cierre y asignación</h2>
+          <div class="cards3">
+            <div class="qcard anim-up d2"><div class="qcard-t">Síntesis</div><div class="qcard-b">Se recapitulan Von Neumann y el ciclo <b>FDE</b>.</div></div>
+            <div class="qcard anim-up d3"><div class="qcard-t">Dudas</div><div class="qcard-b">Se resuelven las preguntas finales de la sesión.</div></div>
+            <div class="qcard anim-up d4"><div class="qcard-t">Tarea 1 · 7 días</div><div class="qcard-b">Investigación y esquema sobre la evolución y arquitectura de la computadora.</div></div>
+          </div>
+          <p class="body anim-up d5" style="margin-top: 10px"><b style="color:var(--fg)">Para la próxima sesión:</b> comprender el flujo de datos prepara el terreno para los sistemas de numeración y la codificación de la información.</p>
+        </div>
+      </section>
+    </deck-stage>
+
+    <!-- Progress bar -->
+    <div id="deck-progress"><div id="deck-progress-fill"></div></div>
+
+    <!-- Terminal typing engine (vendored) -->
+    <script src="vendor/typed.umd.js"></script>
+    <script>
+      (function () {
+        var stage = document.querySelector("deck-stage");
+        var fill = document.getElementById("deck-progress-fill");
+        if (!stage) return;
+
+        // Map every hidden source (.tsrc) to its target span id.
+        var sources = {};
+        document.querySelectorAll(".tsrc").forEach(function (el) {
+          sources[el.getAttribute("data-for")] = el.innerHTML;
+        });
+
+        var typedOnce = {};   // id -> true once fully typed
+        var instances = {};   // id -> Typed instance (to destroy on re-entry)
+
+        function runTerminal(target) {
+          var id = target.id;
+          var src = sources[id];
+          if (src == null) return;
+
+          // Already typed before: just restore full text instantly, no re-anim.
+          if (typedOnce[id]) {
+            if (instances[id]) { instances[id].destroy(); instances[id] = null; }
+            target.innerHTML = src;
+            return;
+          }
+
+          if (instances[id]) { instances[id].destroy(); }
+          target.innerHTML = "";
+          instances[id] = new Typed("#" + id, {
+            strings: [src],
+            typeSpeed: 14,
+            startDelay: 260,
+            showCursor: true,
+            cursorChar: "▋",
+            contentType: "html",
+            onComplete: function () {
+              typedOnce[id] = true;
+            },
+          });
+        }
+
+        function activate(section) {
+          if (!section) return;
+          section.querySelectorAll("[data-typed-target]").forEach(runTerminal);
+        }
+
+        stage.addEventListener("slidechange", function (e) {
+          var d = e.detail;
+          if (fill && d.total) {
+            fill.style.width = (((d.index + 1) / d.total) * 100).toFixed(2) + "%";
+          }
+          activate(d.slide);
+        });
+      })();
+    </script>
+  </body>
+</html>

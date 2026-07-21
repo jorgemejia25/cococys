@@ -1,0 +1,1075 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IPC2 — Semana 2 · Fundamentos de C#</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      deck-stage:not(:defined) {
+        visibility: hidden;
+      }
+    </style>
+    <script src="deck-stage.js"></script>
+
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #f0eeeb;
+        --fg-dim: rgba(240, 238, 235, 0.52);
+        --fg-muted: rgba(240, 238, 235, 0.22);
+        --fg-faint: rgba(240, 238, 235, 0.12);
+        --accent: #00e8d0;
+        --line: rgba(255, 255, 255, 0.09);
+        --grid: rgba(255, 255, 255, 0.022);
+        --wm: rgba(240, 238, 235, 0.035);
+
+        --sans: "Space Grotesk", "Helvetica Neue", sans-serif;
+        --serif: "Cormorant Garamond", ui-serif, Georgia, serif;
+        --mono: "JetBrains Mono", "Courier New", monospace;
+
+        /* type scale */
+        --th: 116px; /* hero */
+        --td: 88px; /* display */
+        --tt: 66px; /* title */
+        --tct: 58px; /* content title */
+        --ts: 46px; /* subtitle */
+        --tb: 34px; /* body */
+        --tsm: 26px; /* small */
+        --tmeta: 24px; /* meta */
+
+        /* spacing */
+        --px: 120px;
+        --pt: 90px;
+        --pb: 78px;
+        --gxl: 56px;
+        --glg: 40px;
+        --gmd: 28px;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: #000;
+      }
+
+      /* ─── Progress bar (portfolio-style) ──────────────────────── */
+      #deck-progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: rgba(255, 255, 255, 0.05);
+        z-index: 99999;
+      }
+      #deck-progress-fill {
+        height: 100%;
+        width: 9.09%;
+        background: var(--accent);
+        box-shadow: 0 0 14px rgba(0, 232, 208, 0.55);
+        transition: width 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      /* ─── All slides ─────────────────────────────────────────── */
+      deck-stage > section {
+        background: var(--bg);
+        color: var(--fg);
+        display: flex;
+        flex-direction: column;
+        padding: var(--pt) var(--px) var(--pb);
+        overflow: hidden;
+      }
+      /* elevate real content above the decoration layer */
+      deck-stage > section > *:not(.layer) {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* ─── Decoration layer: grid + watermark + geo ───────────── */
+      .layer {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+        pointer-events: none;
+        background-image:
+          linear-gradient(var(--grid) 1px, transparent 1px),
+          linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+        background-size: 88px 88px;
+        background-position: center center;
+      }
+
+      .geo {
+        position: absolute;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+      }
+
+      /* giant ghost watermark */
+      .wm {
+        position: absolute;
+        font-family: var(--sans);
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        color: var(--wm);
+        line-height: 0.78;
+        white-space: nowrap;
+        user-select: none;
+      }
+      .wm.serif {
+        font-family: var(--serif);
+        font-style: italic;
+        font-weight: 600;
+        letter-spacing: 0;
+      }
+
+      /* floating accent dot */
+      .fdot {
+        display: none;
+      }
+      .fdot.white {
+        display: none;
+      }
+
+      /* ─── Reusable type / layout ─────────────────────────────── */
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .meta {
+        font-family: var(--mono);
+        font-size: var(--tmeta);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--fg-muted);
+        white-space: nowrap;
+      }
+      .meta.faint {
+        color: var(--fg-faint);
+      }
+
+      .stag {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-family: var(--mono);
+        font-size: var(--tmeta);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--fg-muted);
+      }
+      .stag .tl {
+        display: inline-block;
+        width: 32px;
+        height: 1px;
+        background: currentColor;
+        flex-shrink: 0;
+      }
+      .stag.ac {
+        color: var(--accent);
+      }
+
+      .cbody {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: var(--glg);
+        max-width: 1180px;
+      }
+      .ctitle {
+        font-family: var(--sans);
+        font-weight: 700;
+        font-size: var(--tct);
+        line-height: 1.08;
+        letter-spacing: -0.025em;
+        color: var(--fg);
+      }
+      .body {
+        font-family: var(--sans);
+        font-size: var(--tb);
+        line-height: 1.6;
+        color: var(--fg-dim);
+      }
+      .note {
+        font-family: var(--mono);
+        font-size: var(--tmeta);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--fg-muted);
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+      }
+      .chip {
+        display: inline-block;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        padding: 11px 26px;
+        font-family: var(--mono);
+        font-size: 24px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--fg-dim);
+        transition:
+          border-color 0.3s,
+          color 0.3s;
+      }
+
+      .hr {
+        width: 100%;
+        height: 1px;
+        background: var(--line);
+        flex-shrink: 0;
+      }
+
+      /* stat box */
+      .sbox {
+        border: 1px solid var(--line);
+        padding: 30px 38px;
+        min-width: 200px;
+        flex: 1;
+      }
+      .sbox-n {
+        font-family: var(--sans);
+        font-size: 76px;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        color: var(--fg);
+        line-height: 1;
+      }
+      .sbox-l {
+        font-family: var(--mono);
+        font-size: 24px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--fg-muted);
+        margin-top: 12px;
+      }
+
+      /* ─── Animations ─────────────────────────────────────────── */
+      @media (prefers-reduced-motion: no-preference) {
+        [data-deck-active] .anim-up {
+          animation: slideUp 0.62s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        [data-deck-active] .anim-up.d2 {
+          animation-delay: 0.09s;
+        }
+        [data-deck-active] .anim-up.d3 {
+          animation-delay: 0.18s;
+        }
+        [data-deck-active] .anim-up.d4 {
+          animation-delay: 0.27s;
+        }
+        [data-deck-active] .anim-up.d5 {
+          animation-delay: 0.36s;
+        }
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(26px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        [data-deck-active] .layer {
+          animation: gridIn 1.1s ease both;
+        }
+        @keyframes gridIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        [data-deck-active] .wm {
+          animation: wmIn 1.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        @keyframes wmIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        [data-deck-active] .grow {
+          animation: grow 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+          transform-origin: left center;
+        }
+        @keyframes grow {
+          from {
+            transform: scaleX(0);
+            opacity: 0;
+          }
+          to {
+            transform: scaleX(1);
+            opacity: 1;
+          }
+        }
+      }
+
+      /* ═══ Terminal / code window ══════════════════════════════ */
+      .term {
+        width: 100%;
+        border: 1px solid var(--line);
+        background: #0d0d0d;
+        box-shadow: 0 40px 90px -50px rgba(0, 0, 0, 0.9);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .term-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 18px 26px;
+        background: #111;
+        border-bottom: 1px solid var(--line);
+      }
+      .term-dot {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .term-dot.r { background: #ff5f56; }
+      .term-dot.y { background: #ffbd2e; }
+      .term-dot.g { background: #27c93f; }
+      .term-name {
+        margin-left: 14px;
+        font-family: var(--mono);
+        font-size: 22px;
+        letter-spacing: 0.04em;
+        color: var(--fg-muted);
+      }
+      .term-body {
+        padding: 34px 40px;
+        font-family: var(--mono);
+        font-size: 28px;
+        line-height: 1.62;
+        color: var(--fg);
+        min-height: 120px;
+        white-space: pre;
+        overflow: hidden;
+      }
+      .term-body.sm { font-size: 24px; line-height: 1.6; }
+      /* typed.js output + cursor */
+      .term-body .typed-cursor {
+        color: var(--accent);
+        opacity: 1;
+        font-weight: 400;
+      }
+      /* syntax accents inside typed strings */
+      .tk { color: #c792ea; }   /* keyword */
+      .ts { color: var(--accent); } /* string */
+      .tn { color: #ffcb6b; }   /* number */
+      .tc { color: var(--fg-muted); font-style: italic; } /* comment */
+      .tf { color: #82aaff; }   /* function */
+      .tp { color: var(--accent); } /* prompt $ */
+
+      /* two-column code layout */
+      .split {
+        display: grid;
+        grid-template-columns: 1fr 1.05fr;
+        gap: var(--gxl);
+        align-items: center;
+        flex: 1;
+      }
+
+      /* live badge */
+      .live {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-family: var(--mono);
+        font-size: 22px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--accent);
+        border: 1px solid rgba(0, 232, 208, 0.35);
+        padding: 9px 22px;
+      }
+      .live::before {
+        content: "";
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 0 0 rgba(0, 232, 208, 0.5);
+        animation: livePulse 1.8s infinite;
+      }
+      @keyframes livePulse {
+        0% { box-shadow: 0 0 0 0 rgba(0, 232, 208, 0.5); }
+        70% { box-shadow: 0 0 0 14px rgba(0, 232, 208, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(0, 232, 208, 0); }
+      }
+
+      /* numbered step list */
+      .steps { display: flex; flex-direction: column; gap: 22px; }
+      .stepr {
+        display: flex;
+        align-items: flex-start;
+        gap: 22px;
+        font-family: var(--sans);
+        font-size: var(--tb);
+        line-height: 1.4;
+        color: var(--fg-dim);
+      }
+      .stepn {
+        flex-shrink: 0;
+        width: 44px;
+        height: 44px;
+        border: 1px solid rgba(0, 232, 208, 0.4);
+        color: var(--accent);
+        font-family: var(--mono);
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* feature / bullet list with tick */
+      .flist { display: flex; flex-direction: column; gap: 24px; }
+      .fitem {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+        font-family: var(--sans);
+        font-size: var(--tb);
+        line-height: 1.4;
+        color: var(--fg-dim);
+      }
+      .fitem b { color: var(--fg); font-weight: 600; }
+      .ftick {
+        flex-shrink: 0;
+        color: var(--accent);
+        font-family: var(--mono);
+        font-size: 30px;
+        line-height: 1.2;
+      }
+
+      /* card grid */
+      .cards3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--gmd);
+      }
+      .qcard { border: 1px solid var(--line); padding: 34px 36px; }
+      .qcard-t {
+        font-family: var(--mono);
+        font-size: 26px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 18px;
+      }
+      .qcard-b {
+        font-family: var(--sans);
+        font-size: 27px;
+        line-height: 1.5;
+        color: var(--fg-dim);
+      }
+      .qcard-b b { color: var(--fg); font-weight: 600; }
+      .qcard-l {
+        display: inline-block;
+        margin-top: 16px;
+        font-family: var(--mono);
+        font-size: 22px;
+        letter-spacing: 0.02em;
+        color: var(--accent);
+        border-bottom: 1px solid rgba(0, 232, 208, 0.4);
+        text-decoration: none;
+      }
+
+      /* agenda rows */
+      .arow {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        padding: 26px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .arow-n {
+        font-family: var(--mono);
+        font-size: 30px;
+        color: var(--accent);
+        width: 60px;
+        flex-shrink: 0;
+      }
+      .arow-t {
+        font-family: var(--sans);
+        font-size: 34px;
+        font-weight: 600;
+        color: var(--fg);
+        flex: 1;
+      }
+      .arow-d {
+        font-family: var(--sans);
+        font-size: 26px;
+        color: var(--fg-dim);
+        flex: 2;
+      }
+      .arow-time {
+        font-family: var(--mono);
+        font-size: 26px;
+        color: var(--fg-muted);
+        letter-spacing: 0.08em;
+      }
+    </style>
+  </head>
+    <deck-stage width="1920" height="1080">
+      <!-- ═══ 01 · PORTADA ═══ -->
+      <section data-label="01" data-screen-label="Portada">
+        <div class="layer">
+          <div class="geo" style="width: 520px; height: 620px; top: 70px; left: 560px"></div>
+          <div class="geo" style="width: 320px; height: 420px; top: 150px; left: 820px; border-color: rgba(0,232,208,0.05)"></div>
+          <div class="wm" style="bottom: -100px; right: -30px; font-size: 320px; color: rgba(240,238,235,0.028)">C#</div>
+        </div>
+        <div class="topbar">
+          <div style="display: flex; align-items: center; gap: 14px">
+            <span style="width: 9px; height: 9px; border-radius: 50%; background: var(--accent); display: inline-block"></span>
+            <span class="meta" style="letter-spacing: 0.12em">ECYS · 771 — IPC2</span>
+          </div>
+          <span class="meta">2S · 2026</span>
+        </div>
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 6px">
+          <div class="stag ac anim-up" style="margin-bottom: 34px">
+            <span class="tl grow"></span>
+            <span>Semana 02 — Sesión de laboratorio</span>
+          </div>
+          <h1 class="anim-up d2" style="font-family: var(--sans); font-size: var(--th); font-weight: 700; line-height: 0.9; letter-spacing: -0.03em; color: var(--fg)">
+            FUNDAMENTOS DE
+          </h1>
+          <h1 class="anim-up d3" style="font-family: var(--serif); font-size: var(--th); font-weight: 400; font-style: italic; line-height: 1; letter-spacing: -0.01em; color: rgba(240,238,235,0.62)">
+            C# y primeros pasos con Git.
+          </h1>
+          <div class="anim-up d4" style="display: flex; gap: 18px; margin-top: 44px">
+            <span class="live">Dos ejercicios demostrativos</span>
+            <span class="chip">⏱ 115 min</span>
+          </div>
+        </div>
+        <div class="hr" style="margin-bottom: 28px"></div>
+        <div class="topbar">
+          <span class="meta">Jorge Mejía</span>
+          <span class="meta faint">Guatemala, GT</span>
+        </div>
+      </section>
+
+      <!-- ═══ 02 · AGENDA ═══ -->
+      <section data-label="02" data-screen-label="Agenda">
+        <div class="layer">
+          <div class="wm serif" style="bottom: -70px; right: -30px; font-size: 300px; color: rgba(0,232,208,0.04)">02</div>
+        </div>
+        <div class="topbar">
+          <span class="stag ac"><span class="tl"></span><span>Ruta de la sesión</span></span>
+          <span class="meta">115 MIN</span>
+        </div>
+        <div class="cbody" style="max-width: 1500px">
+          <h2 class="ctitle anim-up">Lo que haremos hoy</h2>
+          <div style="display: flex; flex-direction: column">
+            <div class="arow anim-up d2"><span class="arow-n">01</span><span class="arow-t">Presentación y actitud</span><span class="arow-d">Curso, dinámica y responsabilidad</span><span class="arow-time">5 min</span></div>
+            <div class="arow anim-up d3"><span class="arow-n">02</span><span class="arow-t">Fundamentos de C#</span><span class="arow-d">Del SDK a strings, con demo en vivo</span><span class="arow-time">55 min</span></div>
+            <div class="arow anim-up d4"><span class="arow-n">03</span><span class="arow-t">Práctica guiada</span><span class="arow-d">Sistema de tickets de soporte</span><span class="arow-time">40 min</span></div>
+            <div class="arow anim-up d5"><span class="arow-n">04</span><span class="arow-t">Cierre y tarea</span><span class="arow-d">Dudas, avance y flujo con Git</span><span class="arow-time">15 min</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 03 · RESPONSABILIDAD ═══ -->
+      <section data-label="03" data-screen-label="Responsabilidad">
+        <div class="layer">
+          <div class="geo" style="width: 620px; height: 620px; top: -150px; right: -130px; border-color: rgba(0,232,208,0.05)"></div>
+          <div class="wm serif" style="bottom: -60px; left: -30px; font-size: 260px; color: rgba(0,232,208,0.04)">Ser</div>
+        </div>
+        <div class="topbar">
+          <span class="stag ac"><span class="tl"></span><span>Área actitudinal — Saber ser</span></span>
+          <span class="meta">5 MIN</span>
+        </div>
+        <div class="split" style="margin-top: 40px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Responsabilidad</h2>
+            <p class="body anim-up d2">Cumplir puntualmente con las actividades asignadas y utilizar adecuadamente las herramientas —<b style="color:var(--fg)">C#</b> y <b style="color:var(--fg)">Git</b></p>
+          </div>
+          <div class="flist">
+            <div class="fitem anim-up d3"><span class="ftick">▹</span><span><b>Disciplina con Git.</b> Versiono mi código con commits ordenados y frecuentes.</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">▹</span><span><b>Rigor con C#.</b> Sigo las instrucciones al aplicar los fundamentos del lenguaje.</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 04 · QUÉ ES C# ═══ -->
+      <section data-label="04" data-screen-label="¿Qué es C#?">
+        <div class="layer">
+          <div class="wm" style="bottom: -90px; right: -20px; font-size: 300px; color: rgba(240,238,235,0.025)">.NET</div>
+        </div>
+        <div class="topbar">
+          <span class="stag ac"><span class="tl"></span><span>Saber — Introducción</span></span>
+          <span class="meta">C# / .NET</span>
+        </div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">¿Qué es C# y .NET?</h2>
+            <div class="flist">
+              <div class="fitem anim-up d2"><span class="ftick">▹</span><span><b>C#</b> es un lenguaje moderno, tipado y orientado a objetos, creado por Microsoft.</span></div>
+              <div class="fitem anim-up d3"><span class="ftick">▹</span><span><b>.NET</b> es la plataforma que compila y ejecuta tu código en cualquier sistema.</span></div>
+              <div class="fitem anim-up d4"><span class="ftick">▹</span><span>Escribes archivos <b>.cs</b>, compilas y obtienes una app de consola, web o escritorio.</span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">Program.cs</span></div>
+            <div class="term-body"><span id="t04" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t04" hidden><span class="tk">using</span> System;
+
+<span class="tk">class</span> <span class="tf">Program</span>
+{
+    <span class="tk">static</span> <span class="tk">void</span> <span class="tf">Main</span>()
+    {
+        Console.<span class="tf">WriteLine</span>(<span class="ts">"¡Hola, IPC2!"</span>);
+    }
+}</div>
+        </div>
+      </section>
+
+      <!-- ═══ 05 · INSTALACIÓN ═══ -->
+      <section data-label="05" data-screen-label="Instalación">
+        <div class="layer"></div>
+        <div class="topbar">
+          <span class="stag ac"><span class="tl"></span><span>Saber — Preparar el entorno</span></span>
+          <span class="meta">SETUP</span>
+        </div>
+        <div class="cbody" style="max-width: 1600px; gap: var(--glg)">
+          <h2 class="ctitle anim-up">Instalación en 3 piezas</h2>
+          <div class="cards3">
+            <div class="qcard anim-up d2"><div class="qcard-t">1 · SDK de .NET</div><div class="qcard-b">Descarga el <b>.NET SDK</b> (versión LTS). Trae el compilador y el comando <b>dotnet</b>.<br><a class="qcard-l" href="https://dotnet.microsoft.com/es-es/download" target="_blank" rel="noopener">dotnet.microsoft.com/download ↗</a></div></div>
+            <div class="qcard anim-up d3"><div class="qcard-t">2 · Editor</div><div class="qcard-b"><b>VS Code</b> + extensión C# Dev Kit, o <b>Visual Studio</b> Community.<br><a class="qcard-l" href="https://code.visualstudio.com/download" target="_blank" rel="noopener">code.visualstudio.com/download ↗</a><br><a class="qcard-l" href="https://visualstudio.microsoft.com/es/downloads/" target="_blank" rel="noopener">visualstudio.microsoft.com/downloads ↗</a></div></div>
+            <div class="qcard anim-up d4"><div class="qcard-t">3 · Git</div><div class="qcard-b">Control de versiones. Verifica con <b>git --version</b>.<br><a class="qcard-l" href="https://git-scm.com/downloads/win" target="_blank" rel="noopener">git-scm.com/downloads/win ↗</a></div></div>
+          </div>
+          <div class="term anim-up d5">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">terminal — bash</span></div>
+            <div class="term-body sm"><span id="t05" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t05" hidden><span class="tc"># crear y correr tu primer proyecto</span>
+<span class="tp">$</span> <span class="tf">dotnet</span> new console -n MiApp
+<span class="tp">$</span> <span class="tk">cd</span> MiApp
+<span class="tp">$</span> <span class="tf">dotnet</span> run      <span class="tc">→ ¡Hola, IPC2!</span></div>
+        </div>
+      </section>
+
+      <!-- ═══ 06 · VARIABLES ═══ -->
+      <section data-label="06" data-screen-label="Variables">
+        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:280px; color:rgba(240,238,235,0.022)">int</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — Fundamentos</span></span><span class="meta">01 / 05</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Variables y tipos</h2>
+            <p class="body anim-up d2">Una variable almacena un valor con un <b style="color:var(--fg)">tipo</b>. C# es un lenguaje tipado: cada dato posee una definición de tipo clara.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">#</span><span><b>int</b>, <b>double</b> — números</span></div>
+              <div class="fitem anim-up d4"><span class="ftick">"</span><span><b>string</b> — texto · <b>bool</b> — verdadero / falso</span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">variables.cs</span></div>
+            <div class="term-body"><span id="t06" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t06" hidden><span class="tk">int</span> edad = <span class="tn">20</span>;
+<span class="tk">double</span> nota = <span class="tn">85.5</span>;
+<span class="tk">string</span> nombre = <span class="ts">"Ana"</span>;
+<span class="tk">bool</span> activo = <span class="tk">true</span>;
+
+Console.<span class="tf">WriteLine</span>(<span class="ts">$"{nombre} tiene {edad}"</span>);
+<span class="tc">// interpolación con $"..."</span></div>
+        </div>
+      </section>
+
+      <!-- ═══ 07 · CONDICIONALES ═══ -->
+      <section data-label="07" data-screen-label="Condicionales">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">if</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — Fundamentos</span></span><span class="meta">02 / 05</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Condicionales</h2>
+            <p class="body anim-up d2">El programa selecciona la acción a ejecutar según una condición booleana.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">?</span><span><b>if / else if / else</b></span></div>
+              <div class="fitem anim-up d4"><span class="ftick">≡</span><span>Comparadores <b>== != &gt; &lt;</b> · lógicos <b>&amp;&amp;</b> y <b>||</b></span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">condicional.cs</span></div>
+            <div class="term-body"><span id="t07" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t07" hidden><span class="tk">if</span> (nota &gt;= <span class="tn">61</span>)
+    Console.<span class="tf">WriteLine</span>(<span class="ts">"Aprobado"</span>);
+<span class="tk">else if</span> (nota &gt;= <span class="tn">50</span>)
+    Console.<span class="tf">WriteLine</span>(<span class="ts">"Recuperación"</span>);
+<span class="tk">else</span>
+    Console.<span class="tf">WriteLine</span>(<span class="ts">"Reprobado"</span>);</div>
+        </div>
+      </section>
+
+      <!-- ═══ 08 · FUNCIONES ═══ -->
+      <section data-label="08" data-screen-label="Funciones">
+        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:260px; color:rgba(240,238,235,0.022)">fn</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — Fundamentos</span></span><span class="meta">03 / 05</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Funciones</h2>
+            <p class="body anim-up d2">Un bloque con nombre que <b style="color:var(--fg)">recibe parámetros</b>, realiza un proceso específico y puede <b style="color:var(--fg)">retornar</b> un resultado. Facilita la reutilización de código.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">→</span><span><b>Parámetros:</b> lo que entra</span></div>
+              <div class="fitem anim-up d4"><span class="ftick">←</span><span><b>return:</b> lo que sale</span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">funciones.cs</span></div>
+            <div class="term-body"><span id="t08" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t08" hidden><span class="tk">static</span> <span class="tk">string</span> <span class="tf">Clasificar</span>(<span class="tk">int</span> prioridad)
+{
+    <span class="tk">if</span> (prioridad &gt;= <span class="tn">3</span>) <span class="tk">return</span> <span class="ts">"Alta"</span>;
+    <span class="tk">return</span> <span class="ts">"Normal"</span>;
+}
+
+<span class="tk">var</span> nivel = <span class="tf">Clasificar</span>(<span class="tn">3</span>); <span class="tc">// "Alta"</span></div>
+        </div>
+      </section>
+
+      <!-- ═══ 09 · ITERACIÓN ═══ -->
+      <section data-label="09" data-screen-label="Iteración">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">for</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — Fundamentos</span></span><span class="meta">04 / 05</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Iteración</h2>
+            <p class="body anim-up d2">Ejecutar instrucciones repetidamente mientras se cumpla una condición. Componente fundamental de la mayoría de programas.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">↻</span><span><b>while</b> — mientras sea verdad</span></div>
+              <div class="fitem anim-up d4"><span class="ftick">#</span><span><b>for</b> — un número conocido de veces</span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">iteracion.cs</span></div>
+            <div class="term-body"><span id="t09" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t09" hidden><span class="tk">for</span> (<span class="tk">int</span> i = <span class="tn">1</span>; i &lt;= <span class="tn">3</span>; i++)
+    Console.<span class="tf">WriteLine</span>(<span class="ts">$"Ticket #{i}"</span>);
+
+<span class="tk">while</span> (opcion != <span class="ts">"salir"</span>)
+{
+    <span class="tc">// menú del programa...</span>
+}</div>
+        </div>
+      </section>
+
+      <!-- ═══ 10 · STRINGS ═══ -->
+      <section data-label="10" data-screen-label="Strings">
+        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:240px; color:rgba(240,238,235,0.022)">"..."</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — Fundamentos</span></span><span class="meta">05 / 05</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Strings</h2>
+            <p class="body anim-up d2">El texto constituye un tipo de dato fundamental. C# proporciona métodos para <b style="color:var(--fg)">procesar, medir y transformar</b> cadenas de caracteres.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">$</span><span>Interpolación: <b>$"Hola {nombre}"</b></span></div>
+              <div class="fitem anim-up d4"><span class="ftick">⇔</span><span><b>.ToUpper()</b> · <b>.Length</b> · <b>.Trim()</b></span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">strings.cs</span></div>
+            <div class="term-body sm"><span id="t10" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t10" hidden><span class="tk">string</span> t = <span class="ts">"  Soporte  "</span>;
+Console.<span class="tf">WriteLine</span>(t.<span class="tf">Trim</span>());        <span class="tc">// "Soporte"</span>
+Console.<span class="tf">WriteLine</span>(t.<span class="tf">ToUpper</span>());     <span class="tc">// "  SOPORTE  "</span>
+Console.<span class="tf">WriteLine</span>(t.<span class="tf">Trim</span>().Length);  <span class="tc">// 7</span></div>
+        </div>
+      </section>
+
+      <!-- ═══ 11 · GIT ═══ -->
+      <section data-label="11" data-screen-label="Git">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:280px; color:rgba(0,232,208,0.035)">git</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — Herramienta</span></span><span class="meta">CONTROL DE VERSIONES</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Git en 4 comandos</h2>
+            <p class="body anim-up d2">Registra el historial completo del código fuente. Cada <b style="color:var(--fg)">commit</b> representa un estado documentado al cual es posible retornar.</p>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">terminal — bash</span></div>
+            <div class="term-body sm"><span id="t11" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t11" hidden><span class="tp">$</span> <span class="tf">git</span> init                 <span class="tc"># iniciar repo</span>
+<span class="tp">$</span> <span class="tf">git</span> add .                <span class="tc"># preparar cambios</span>
+<span class="tp">$</span> <span class="tf">git</span> commit -m <span class="ts">"Menú de tickets"</span>
+<span class="tp">$</span> <span class="tf">git</span> log --oneline        <span class="tc"># ver historia</span></div>
+        </div>
+      </section>
+
+      <!-- ═══ 12 · DEMO INTRO ═══ -->
+      <section data-label="12" data-screen-label="Demo en vivo">
+        <div class="layer">
+          <div class="geo" style="width: 640px; height: 640px; top: -150px; right: -140px; border-color: rgba(0,232,208,0.06)"></div>
+          <div class="wm" style="bottom: -100px; left: -30px; font-size: 300px; color: rgba(0,232,208,0.04)">LIVE</div>
+        </div>
+        <div class="topbar">
+          <span class="live anim-up">Programación en vivo</span>
+          <span class="meta">~20 MIN</span>
+        </div>
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 6px">
+          <h1 class="anim-up d2" style="font-family: var(--sans); font-size: var(--td); font-weight: 700; line-height: 0.95; letter-spacing: -0.03em; color: var(--fg)">
+            Ejercicio demostrativo
+          </h1>
+          <h1 class="anim-up d3" style="font-family: var(--serif); font-size: var(--td); font-weight: 400; font-style: italic; color: var(--accent)">
+            se construye en conjunto.
+          </h1>
+          <p class="body anim-up d4" style="margin-top: 34px; max-width: 1100px">Se construye la base del <b style="color:var(--fg)">sistema de tickets de soporte</b> paso a paso. El estudiante sigue en su editor — posteriormente el estudiante lo continúa.</p>
+        </div>
+        <div class="hr" style="margin-bottom: 28px"></div>
+        <div class="topbar"><span class="meta">Abre su terminal</span><span class="meta faint">dotnet new console</span></div>
+      </section>
+
+      <!-- ═══ 13 · DEMO PASO 1 ═══ -->
+      <section data-label="13" data-screen-label="Demo · Modelo Ticket">
+        <div class="layer"></div>
+        <div class="topbar"><span class="live">En vivo</span><span class="meta">PASO 1 / 4</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">El modelo: un Ticket</h2>
+            <p class="body anim-up d2">Se define inicialmente qué datos tiene un ticket: una <b style="color:var(--fg)">class</b> con sus campos.</p>
+            <div class="steps">
+              <div class="stepr anim-up d3"><span class="stepn">a</span><span>Se crea el proyecto con <b style="color:var(--fg)">dotnet new console</b></span></div>
+              <div class="stepr anim-up d4"><span class="stepn">b</span><span>Se define la clase <b style="color:var(--fg)">Ticket</b></span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">Ticket.cs</span></div>
+            <div class="term-body sm"><span id="t13" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t13" hidden><span class="tk">class</span> <span class="tf">Ticket</span>
+{
+    <span class="tk">public</span> <span class="tk">int</span> Id;
+    <span class="tk">public</span> <span class="tk">string</span> Titulo;
+    <span class="tk">public</span> <span class="tk">int</span> Prioridad;   <span class="tc">// 1 baja … 3 alta</span>
+    <span class="tk">public</span> <span class="tk">string</span> Estado;     <span class="tc">// "Abierto"</span>
+}</div>
+        </div>
+      </section>
+
+      <!-- ═══ 14 · DEMO PASO 2 ═══ -->
+      <section data-label="14" data-screen-label="Demo · Registrar">
+        <div class="layer"></div>
+        <div class="topbar"><span class="live">En vivo</span><span class="meta">PASO 2 / 4</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Registrar un ticket</h2>
+            <p class="body anim-up d2">Se leen los datos del usuario con <b style="color:var(--fg)">Console.ReadLine()</b> y los guardamos en una <b style="color:var(--fg)">List</b>.</p>
+            <div class="steps">
+              <div class="stepr anim-up d3"><span class="stepn">a</span><span>Se solicitan al usuario el título y prioridad</span></div>
+              <div class="stepr anim-up d4"><span class="stepn">b</span><span>Se convierte el valor de texto a número con <b style="color:var(--fg)">int.Parse</b></span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">Program.cs</span></div>
+            <div class="term-body sm"><span id="t14" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t14" hidden><span class="tk">var</span> tickets = <span class="tk">new</span> <span class="tf">List</span>&lt;<span class="tf">Ticket</span>&gt;();
+
+Console.<span class="tf">Write</span>(<span class="ts">"Título: "</span>);
+<span class="tk">string</span> titulo = Console.<span class="tf">ReadLine</span>();
+
+Console.<span class="tf">Write</span>(<span class="ts">"Prioridad (1-3): "</span>);
+<span class="tk">int</span> p = <span class="tk">int</span>.<span class="tf">Parse</span>(Console.<span class="tf">ReadLine</span>());
+
+tickets.<span class="tf">Add</span>(<span class="tk">new</span> <span class="tf">Ticket</span> {
+    Id = tickets.Count + <span class="tn">1</span>, Titulo = titulo,
+    Prioridad = p, Estado = <span class="ts">"Abierto"</span>
+});</div>
+        </div>
+      </section>
+
+      <!-- ═══ 15 · DEMO PASO 3 ═══ -->
+      <section data-label="15" data-screen-label="Demo · Listar">
+        <div class="layer"></div>
+        <div class="topbar"><span class="live">En vivo</span><span class="meta">PASO 3 / 4</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Listar con una función</h2>
+            <p class="body anim-up d2">Se itera la lista de tickets con <b style="color:var(--fg)">foreach</b> y se utiliza una función para representar la prioridad a texto.</p>
+            <div class="steps">
+              <div class="stepr anim-up d3"><span class="stepn">a</span><span>Se implementa la función <b style="color:var(--fg)">Etiqueta(prioridad)</b></span></div>
+              <div class="stepr anim-up d4"><span class="stepn">b</span><span>Se itera y se aplica formato con strings</span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">Program.cs</span></div>
+            <div class="term-body sm"><span id="t15" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t15" hidden><span class="tk">static</span> <span class="tk">string</span> <span class="tf">Etiqueta</span>(<span class="tk">int</span> p)
+{
+    <span class="tk">if</span> (p &gt;= <span class="tn">3</span>) <span class="tk">return</span> <span class="ts">"[!] Alta"</span>;
+    <span class="tk">if</span> (p == <span class="tn">2</span>) <span class="tk">return</span> <span class="ts">"[~] Media"</span>;
+    <span class="tk">return</span> <span class="ts">"[ ] Baja"</span>;
+}
+
+<span class="tk">foreach</span> (<span class="tk">var</span> t <span class="tk">in</span> tickets)
+    Console.<span class="tf">WriteLine</span>(
+      <span class="ts">$"#{t.Id} {t.Titulo} — {Etiqueta(t.Prioridad)}"</span>);</div>
+        </div>
+      </section>
+
+      <!-- ═══ 16 · DEMO PASO 4 ═══ -->
+      <section data-label="16" data-screen-label="Demo · Menú">
+        <div class="layer"></div>
+        <div class="topbar"><span class="live">En vivo</span><span class="meta">PASO 4 / 4</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">El menú: unir todo</h2>
+            <p class="body anim-up d2">Un bucle <b style="color:var(--fg)">while</b> mantiene el programa en ejecución hasta que el usuario sale. Aquí se juntan todos los fundamentos.</p>
+            <div class="steps">
+              <div class="stepr anim-up d3"><span class="stepn">✓</span><span>Variables, condicionales, funciones, iteración y strings — en un solo programa.</span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">Program.cs</span></div>
+            <div class="term-body sm"><span id="t16" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t16" hidden><span class="tk">string</span> op = <span class="ts">""</span>;
+<span class="tk">while</span> (op != <span class="ts">"3"</span>)
+{
+    Console.<span class="tf">WriteLine</span>(<span class="ts">"1) Registrar  2) Listar  3) Salir"</span>);
+    op = Console.<span class="tf">ReadLine</span>();
+
+    <span class="tk">if</span> (op == <span class="ts">"1"</span>) <span class="tf">Registrar</span>();
+    <span class="tk">else if</span> (op == <span class="ts">"2"</span>) <span class="tf">Listar</span>();
+}
+Console.<span class="tf">WriteLine</span>(<span class="ts">"¡Hasta luego!"</span>);</div>
+        </div>
+      </section>
+
+      <!-- ═══ 17 · ACTIVIDAD ═══ -->
+      <section data-label="17" data-screen-label="Actividad práctica">
+        <div class="layer">
+          <div class="geo" style="width: 560px; height: 560px; top: -120px; left: -120px; border-color: rgba(0,232,208,0.05)"></div>
+          <div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.04)">40′</div>
+        </div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber hacer — Actividad obligatoria</span></span><span class="meta">40 MIN · INDIVIDUAL</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">El estudiante debe desarrollar: sistema de tickets</h2>
+            <p class="body anim-up d2">El estudiante debe desarrollar su <b style="color:var(--fg)">primera aplicación de consola</b> en C#: un sistema de recepción de tickets de soporte que integre todo lo visto hoy.</p>
+            <div class="anim-up d3" style="display: flex; gap: 16px; margin-top: 8px">
+              <span class="chip">⏱ 40 min</span><span class="chip">Individual</span>
+            </div>
+          </div>
+          <div class="flist">
+            <div class="fitem anim-up d2"><span class="ftick">1</span><span>Menú con <b>registrar</b>, <b>listar</b> y <b>salir</b></span></div>
+            <div class="fitem anim-up d3"><span class="ftick">2</span><span>Al menos <b>una función propia</b> (ej. clasificar prioridad)</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">3</span><span><b>Validar</b> la prioridad con condicionales</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">4</span><span>Dar formato al listado usando <b>strings</b></span></div>
+            <div class="fitem anim-up d5"><span class="ftick">5</span><span>Un <b>commit</b> por cada función que termines</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 18 · CIERRE ═══ -->
+      <section data-label="18" data-screen-label="Cierre">
+        <div class="layer"><div class="wm serif" style="bottom:-70px; right:-30px; font-size:300px; color:rgba(0,232,208,0.04)">fin</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Cierre</span></span><span class="meta">15 MIN</span></div>
+        <div class="cbody" style="max-width: 1600px; gap: var(--glg)">
+          <h2 class="ctitle anim-up">Antes de irnos</h2>
+          <div class="cards3">
+            <div class="qcard anim-up d2"><div class="qcard-t">Dudas</div><div class="qcard-b">Se resuelven las dudas finales sobre C# o el entorno.</div></div>
+            <div class="qcard anim-up d3"><div class="qcard-t">Avance</div><div class="qcard-b">El estudiante debe mostrar brevemente su programa <b>corriendo</b>.</div></div>
+            <div class="qcard anim-up d4"><div class="qcard-t">Tarea</div><div class="qcard-b">El estudiante continúa en casa: más pilares de <b>POO</b> y flujo con <b>Git</b>.</div></div>
+          </div>
+          <p class="body anim-up d5" style="margin-top: 10px"><b style="color:var(--fg)">Se recomienda:</b> commits pequeños y frecuentes. La responsabilidad profesional se refleja en el historial de versiones de Git.</p>
+        </div>
+      </section>
+    </deck-stage>
+
+    <!-- Progress bar -->
+    <div id="deck-progress"><div id="deck-progress-fill"></div></div>
+
+    <!-- Terminal typing engine (vendored) -->
+    <script src="vendor/typed.umd.js"></script>
+    <script>
+      (function () {
+        var stage = document.querySelector("deck-stage");
+        var fill = document.getElementById("deck-progress-fill");
+        if (!stage) return;
+
+        // Map every hidden source (.tsrc) to its target span id.
+        var sources = {};
+        document.querySelectorAll(".tsrc").forEach(function (el) {
+          sources[el.getAttribute("data-for")] = el.innerHTML;
+        });
+
+        var typedOnce = {};   // id -> true once fully typed
+        var instances = {};   // id -> Typed instance (to destroy on re-entry)
+
+        function runTerminal(target) {
+          var id = target.id;
+          var src = sources[id];
+          if (src == null) return;
+
+          // Already typed before: just restore full text instantly, no re-anim.
+          if (typedOnce[id]) {
+            if (instances[id]) { instances[id].destroy(); instances[id] = null; }
+            target.innerHTML = src;
+            return;
+          }
+
+          if (instances[id]) { instances[id].destroy(); }
+          target.innerHTML = "";
+          instances[id] = new Typed("#" + id, {
+            strings: [src],
+            typeSpeed: 14,
+            startDelay: 260,
+            showCursor: true,
+            cursorChar: "▋",
+            contentType: "html",
+            onComplete: function () {
+              typedOnce[id] = true;
+            },
+          });
+        }
+
+        function activate(section) {
+          if (!section) return;
+          section.querySelectorAll("[data-typed-target]").forEach(runTerminal);
+        }
+
+        stage.addEventListener("slidechange", function (e) {
+          var d = e.detail;
+          if (fill && d.total) {
+            fill.style.width = (((d.index + 1) / d.total) * 100).toFixed(2) + "%";
+          }
+          activate(d.slide);
+        });
+      })();
+    </script>
+  </body>
+</html>
