@@ -469,6 +469,32 @@
         line-height: 1.2;
       }
 
+      /* DTT pending roster */
+      .dtt-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px 48px;
+      }
+      .dtt-row {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 20px;
+        align-items: baseline;
+        font-family: var(--sans);
+        font-size: var(--tsm);
+        line-height: 1.35;
+        color: var(--fg-dim);
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 12px;
+      }
+      .dtt-carnet {
+        font-family: var(--mono);
+        font-size: 22px;
+        letter-spacing: 0.04em;
+        color: var(--accent);
+      }
+      .dtt-name { color: var(--fg); }
+
       /* card grid */
       .cards3 {
         display: grid;
@@ -644,7 +670,7 @@
         <div class="cbody" style="max-width: 1500px">
           <h2 class="ctitle anim-up">Estructura de la sesión</h2>
           <div style="display: flex; flex-direction: column">
-            <div class="arow anim-up d2"><span class="arow-n">01</span><span class="arow-t">Recordatorios</span><span class="arow-d">Foto de apertura, grupos, laboratorio y foro</span><span class="arow-time">3 min</span></div>
+            <div class="arow anim-up d2"><span class="arow-n">01</span><span class="arow-t">Recordatorios</span><span class="arow-d">Foto, formulario DTT, grupos, laboratorio y foro</span><span class="arow-time">5 min</span></div>
             <div class="arow anim-up d3"><span class="arow-n">02</span><span class="arow-t">Curiosidad y beneficios</span><span class="arow-d">Actitud y propósito del curso</span><span class="arow-time">8 min</span></div>
             <div class="arow anim-up d4"><span class="arow-n">03</span><span class="arow-t">Fundamentos y arquitectura</span><span class="arow-d">Definicion, algoritmos, evolucion, Von Neumann, CPU, FDE</span><span class="arow-time">42 min</span></div>
             <div class="arow anim-up d5"><span class="arow-n">04</span><span class="arow-t">Traza, diseno y actividad</span><span class="arow-d">Demo, buenas practicas y analisis</span><span class="arow-time">20 min</span></div>
@@ -667,11 +693,35 @@
             <div class="fitem anim-up d3"><span class="ftick">02</span><span><b>Trabajo en grupos.</b> Las tareas se entregan en equipo; organicen su grupo esta semana.</span></div>
             <div class="fitem anim-up d4"><span class="ftick">03</span><span><b>Laboratorio:</b> sábados, salón <b>214</b>.</span></div>
             <div class="fitem anim-up d5"><span class="ftick">04</span><span><b>Foro del curso:</b> hoy se leerán las <b>14 preguntas</b> publicadas con su respuesta.</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">05</span><span><b>Formulario DTT:</b> estudiantes pendientes — ver diapositiva siguiente.</span></div>
           </div>
         </div>
       </section>
 
-<section data-label="04" data-screen-label="Curiosidad intelectual">
+<section data-label="04" data-screen-label="Formulario DTT pendiente">
+        <div class="layer"><div class="wm" style="bottom:-80px; right:-20px; font-size:220px; color:rgba(0,232,208,0.03)">dtt</div></div>
+        <div class="topbar">
+          <span class="stag ac"><span class="tl"></span><span>Diagnóstico y tutoría</span></span>
+          <span class="meta">2 MIN</span>
+        </div>
+        <div class="cbody" style="max-width: 1680px; gap: var(--gmd)">
+          <h2 class="ctitle anim-up">Formulario DTT — pendientes de llenar</h2>
+          <p class="body anim-up d2" style="max-width: 90ch">Los siguientes estudiantes aún no han completado el <b style="color:var(--fg)">formulario de DTT</b>. Deben llenarlo antes de la próxima sesión.</p>
+          <div class="dtt-grid anim-up d3">
+            <div class="dtt-row"><span class="dtt-carnet">202501645</span><span class="dtt-name">Delmy Guisela López Buch</span></div>
+            <div class="dtt-row"><span class="dtt-carnet">202503313</span><span class="dtt-name">Luis Gerardo López Pérez</span></div>
+            <div class="dtt-row"><span class="dtt-carnet">202505097</span><span class="dtt-name">Dereck Antonio Márquez Elías</span></div>
+            <div class="dtt-row"><span class="dtt-carnet">202603599</span><span class="dtt-name">Randy Steven Toj Turcios</span></div>
+            <div class="dtt-row"><span class="dtt-carnet">202604695</span><span class="dtt-name">Fernando Emanuel Rodríguez Muralles</span></div>
+            <div class="dtt-row"><span class="dtt-carnet">202604923</span><span class="dtt-name">Cristian Eduardo López Torres</span></div>
+            <div class="dtt-row"><span class="dtt-carnet">202604979</span><span class="dtt-name">Diego Martín Alessandro González Campos</span></div>
+            <div class="dtt-row"><span class="dtt-carnet">e1246128</span><span class="dtt-name">Wildrin Marilys Morán Cordova</span></div>
+          </div>
+          <p class="note anim-up d4">Si su nombre aparece en la lista, acérquese al tutor al final de la sesión o confírmenlo por WhatsApp.</p>
+        </div>
+      </section>
+
+<section data-label="05" data-screen-label="Curiosidad intelectual">
         <div class="layer">
           <div class="geo" style="width: 620px; height: 620px; top: -150px; right: -130px; border-color: rgba(0,232,208,0.05)"></div>
           <div class="wm serif" style="bottom: -60px; left: -30px; font-size: 240px; color: rgba(0,232,208,0.04)">¿?</div>
@@ -693,7 +743,7 @@
         </div>
       </section>
 
-<section data-label="05" data-screen-label="Beneficios del curso">
+<section data-label="06" data-screen-label="Beneficios del curso">
         <div class="layer"><div class="wm" style="bottom:-80px; right:-20px; font-size:240px; color:rgba(240,238,235,0.022)">+</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Foro — Pregunta 8</span></span><span class="meta">BENEFICIOS</span></div>
         <div class="cbody" style="max-width: 1600px; gap: var(--glg)">
@@ -706,7 +756,7 @@
         </div>
       </section>
 
-<section data-label="06" data-screen-label="Definición">
+<section data-label="07" data-screen-label="Definición">
         <div class="layer"><div class="wm" style="bottom:-90px; right:-20px; font-size:260px; color:rgba(240,238,235,0.025)">01</div></div>
         <div class="topbar">
           <span class="stag ac"><span class="tl"></span><span>Unidad 1 — La computadora</span></span>
@@ -726,7 +776,7 @@
         </div>
       </section>
 
-<section data-label="07" data-screen-label="Algoritmos y diagramas">
+<section data-label="08" data-screen-label="Algoritmos y diagramas">
         <div class="layer"><div class="wm serif" style="bottom:-60px; left:-20px; font-size:240px; color:rgba(0,232,208,0.04)">alg</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Foro — Pregunta 9</span></span><span class="meta">ALGORITMOS</span></div>
         <div class="split" style="margin-top: 30px">
@@ -743,7 +793,7 @@
         </div>
       </section>
 
-<section data-label="08" data-screen-label="Evolución de la computadora">
+<section data-label="09" data-screen-label="Evolución de la computadora">
         <div class="layer"><div class="wm serif" style="bottom:-70px; right:-30px; font-size:280px; color:rgba(0,232,208,0.035)">→</div></div>
         <div class="topbar">
           <span class="stag ac"><span class="tl"></span><span>Unidad 1 — La computadora</span></span>
@@ -762,7 +812,7 @@
         </div>
       </section>
 
-<section data-label="09" data-screen-label="Arquitectura Von Neumann">
+<section data-label="10" data-screen-label="Arquitectura Von Neumann">
         <div class="layer"></div>
         <div class="topbar">
           <span class="stag ac"><span class="tl"></span><span>Unidad 2 — Arquitectura y organización</span></span>
@@ -837,7 +887,7 @@
         </div>
       </section>
 
-<section data-label="10" data-screen-label="Programa almacenado">
+<section data-label="11" data-screen-label="Programa almacenado">
         <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:240px; color:rgba(240,238,235,0.022)">01011</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Unidad 2 — Arquitectura y organización</span></span><span class="meta">PRINCIPIO CLAVE</span></div>
         <div class="split" style="margin-top: 30px">
@@ -853,7 +903,7 @@
         </div>
       </section>
 
-<section data-label="11" data-screen-label="La CPU por dentro">
+<section data-label="12" data-screen-label="La CPU por dentro">
         <div class="layer"></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Hardware de procesamiento</span></span><span class="meta">CPU · INTERIOR</span></div>
         <h2 class="ctitle anim-up" style="margin-top: 10px">La CPU por dentro</h2>
@@ -899,7 +949,7 @@
         </div>
       </section>
 
-<section data-label="12" data-screen-label="La ALU">
+<section data-label="13" data-screen-label="La ALU">
         <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:260px; color:rgba(240,238,235,0.022)">±</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Componentes — ALU</span></span><span class="meta">UNIDAD ARITMÉTICO-LÓGICA</span></div>
         <div class="cbody" style="max-width: 1600px; gap: var(--glg)">
@@ -913,7 +963,7 @@
         </div>
       </section>
 
-<section data-label="13" data-screen-label="La Unidad de Control">
+<section data-label="14" data-screen-label="La Unidad de Control">
         <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">UC</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Componentes — Unidad de Control</span></span><span class="meta">EL DIRECTOR</span></div>
         <div class="split" style="margin-top: 30px">
@@ -930,7 +980,7 @@
         </div>
       </section>
 
-<section data-label="14" data-screen-label="Ciclo Fetch-Decode-Execute">
+<section data-label="15" data-screen-label="Ciclo Fetch-Decode-Execute">
         <div class="layer"></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Hardware de procesamiento</span></span><span class="meta">EL CICLO DE INSTRUCCIÓN</span></div>
         <h2 class="ctitle anim-up" style="margin-top: 8px">Ciclo Fetch — Decode — Execute</h2>
@@ -975,7 +1025,7 @@
         </div>
       </section>
 
-<section data-label="15" data-screen-label="Fetch">
+<section data-label="16" data-screen-label="Fetch">
         <div class="layer"><div class="wm" style="bottom:-80px; right:-20px; font-size:260px; color:rgba(240,238,235,0.022)">01</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Ciclo de instrucción</span></span><span class="meta">FASE 01 / 03</span></div>
         <div class="split" style="margin-top: 30px">
@@ -991,7 +1041,7 @@
         </div>
       </section>
 
-<section data-label="16" data-screen-label="Decode">
+<section data-label="17" data-screen-label="Decode">
         <div class="layer"><div class="wm" style="bottom:-80px; right:-20px; font-size:260px; color:rgba(240,238,235,0.022)">02</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Ciclo de instrucción</span></span><span class="meta">FASE 02 / 03</span></div>
         <div class="split" style="margin-top: 30px">
@@ -1007,7 +1057,7 @@
         </div>
       </section>
 
-<section data-label="17" data-screen-label="Execute">
+<section data-label="18" data-screen-label="Execute">
         <div class="layer"><div class="wm" style="bottom:-80px; right:-20px; font-size:260px; color:rgba(240,238,235,0.022)">03</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Ciclo de instrucción</span></span><span class="meta">FASE 03 / 03</span></div>
         <div class="split" style="margin-top: 30px">
@@ -1023,7 +1073,7 @@
         </div>
       </section>
 
-<section data-label="18" data-screen-label="Traza del ciclo">
+<section data-label="19" data-screen-label="Traza del ciclo">
         <div class="layer"><div class="wm" style="bottom:-90px; left:-20px; font-size:220px; color:rgba(0,232,208,0.03)">▶</div></div>
         <div class="topbar"><span class="live">Ejercicio demostrativo</span><span class="meta">TRAZA · 12 MIN</span></div>
         <div class="split" style="margin-top: 26px">
@@ -1050,7 +1100,7 @@
         </div>
       </section>
 
-<section data-label="19" data-screen-label="Diseño de algoritmos">
+<section data-label="20" data-screen-label="Diseño de algoritmos">
         <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:220px; color:rgba(0,232,208,0.03)">dis</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Foro — Preguntas 7 y 14</span></span><span class="meta">4 MIN</span></div>
         <div class="cbody" style="max-width: 1600px; gap: var(--glg)">
@@ -1063,7 +1113,7 @@
         </div>
       </section>
 
-<section data-label="20" data-screen-label="Actividad de análisis">
+<section data-label="21" data-screen-label="Actividad de análisis">
         <div class="layer">
           <div class="geo" style="width: 560px; height: 560px; top: -120px; left: -120px; border-color: rgba(0,232,208,0.05)"></div>
           <div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.04)">25′</div>
@@ -1086,7 +1136,7 @@
         </div>
       </section>
 
-<section data-label="21" data-screen-label="Foro I — Calidad y herramientas">
+<section data-label="22" data-screen-label="Foro I — Calidad y herramientas">
         <div class="layer"><div class="wm serif" style="bottom:-70px; right:-30px; font-size:260px; color:rgba(0,232,208,0.04)">01</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Foro del curso</span></span><span class="meta">PREGUNTAS 1–5</span></div>
         <div class="cbody" style="max-width: 1680px; gap: var(--gmd)">
@@ -1101,7 +1151,7 @@
         </div>
       </section>
 
-<section data-label="22" data-screen-label="Foro II — Laboratorio y hardware">
+<section data-label="23" data-screen-label="Foro II — Laboratorio y hardware">
         <div class="layer"><div class="wm serif" style="bottom:-70px; right:-30px; font-size:260px; color:rgba(0,232,208,0.04)">02</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Foro del curso</span></span><span class="meta">PREGUNTAS 6–11</span></div>
         <div class="cbody" style="max-width: 1680px; gap: var(--gmd)">
@@ -1117,7 +1167,7 @@
         </div>
       </section>
 
-<section data-label="23" data-screen-label="Foro III — Desarrollo y arquitectura">
+<section data-label="24" data-screen-label="Foro III — Desarrollo y arquitectura">
         <div class="layer"><div class="wm serif" style="bottom:-70px; right:-30px; font-size:260px; color:rgba(0,232,208,0.04)">03</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Foro del curso</span></span><span class="meta">PREGUNTAS 12–14</span></div>
         <div class="cbody" style="max-width: 1680px; gap: var(--gmd)">
@@ -1130,7 +1180,7 @@
         </div>
       </section>
 
-<section data-label="24" data-screen-label="Trabajo en grupos">
+<section data-label="25" data-screen-label="Trabajo en grupos">
         <div class="layer"><div class="geo" style="width: 500px; height: 500px; top: -100px; right: -80px; border-color: rgba(0,232,208,0.05)"></div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Organización del curso</span></span><span class="meta">3 MIN</span></div>
         <div class="cbody" style="max-width: 1500px; gap: var(--glg)">
@@ -1144,7 +1194,7 @@
         </div>
       </section>
 
-<section data-label="25" data-screen-label="Cierre, tarea y foto">
+<section data-label="26" data-screen-label="Cierre, tarea y foto">
         <div class="layer"><div class="wm serif" style="bottom:-70px; right:-30px; font-size:300px; color:rgba(0,232,208,0.04)">fin</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Cierre</span></span><span class="meta">5 MIN</span></div>
         <div class="cbody" style="max-width: 1600px; gap: var(--glg)">
@@ -1166,8 +1216,9 @@
     <script type="application/json" id="speaker-notes">
     [
       "[3 MIN · PORTADA]\n\nRECORDATORIO JORGE — Antes de iniciar la charla: tomarse una foto con los estudiantes (grupal, con buena luz, que se vea el salón).\n\nBuenos días o buenas tardes. Bienvenidos a la Semana 02 de Introducción a los Flujos y Algoritmos, ECYS 768. Hoy la sesión se llama «La computadora y su arquitectura interna».\n\nObjetivo de los 90 minutos: salir con una imagen mental clara de cómo el hardware ejecuta un programa. No solo memorizar nombres, sino entender el flujo entrada, proceso, salida y el ciclo Fetch-Decode-Execute.\n\nPresentación breve: soy Jorge Mejía, su tutor. Canal oficial: foro del curso y el grupo de WhatsApp. Preguntas técnicas: primero foro; si es urgente, WhatsApp.\n\nTransición: pasamos a la agenda.",
-      "[2 MIN · AGENDA]\n\nSesión de 90 minutos en seis bloques:\n\n01 — Recordatorios logísticos (3 min): foto de apertura, grupos, laboratorio y foro.\n02 — Curiosidad y beneficios del curso (8 min).\n03 — Fundamentos y arquitectura (42 min): definición, algoritmos, evolución, Von Neumann, CPU y ciclo FDE.\n04 — Traza, diseño de algoritmos y actividad (20 min).\n05 — Foro del curso: 14 preguntas con respuesta (12 min).\n06 — Grupos, tarea, foto de cierre y despedida (5 min).\n\nRegla de oro: interrumpan con preguntas. Si algo no queda claro en Von Neumann o en el ciclo FDE, paramos y lo resolvemos.\n\nPasamos a los recordatorios de sesión.",
-      "[3 MIN · RECORDATORIOS DE SESIÓN]\n\nLea los cuatro puntos de la diapositiva en voz alta.\n\nFOTO DE APERTURA — Jorge, tómese la foto grupal ahora si aún no lo hizo. Pidan que todos se vean; sirve para evidencia de asistencia y memoria del curso.\n\nTRABAJO EN GRUPOS — Las tareas del curso se entregan en equipo. Si no tienen grupo, fórmenlo hoy: mínimo 3, máximo 5 integrantes salvo indicación contraria. Un integrante sube; todos responden por el contenido.\n\nLABORATORIO — Sábados, salón 214. Confirmen que lo anotaron en agenda o celular.\n\nFORO — Revisen el foro antes de cada sesión. Hoy responderemos en voz alta las 14 preguntas publicadas.\n\nTransición: curiosidad intelectual.",
+      "[2 MIN · AGENDA]\n\nSesión de 90 minutos en seis bloques:\n\n01 — Recordatorios logísticos (5 min): foto de apertura, formulario DTT, grupos, laboratorio y foro.\n02 — Curiosidad y beneficios del curso (8 min).\n03 — Fundamentos y arquitectura (42 min): definición, algoritmos, evolución, Von Neumann, CPU y ciclo FDE.\n04 — Traza, diseño de algoritmos y actividad (20 min).\n05 — Foro del curso: 14 preguntas con respuesta (12 min).\n06 — Grupos, tarea, foto de cierre y despedida (5 min).\n\nRegla de oro: interrumpan con preguntas. Si algo no queda claro en Von Neumann o en el ciclo FDE, paramos y lo resolvemos.\n\nPasamos a los recordatorios de sesión.",
+      "[3 MIN · RECORDATORIOS DE SESIÓN]\n\nLea los cinco puntos de la diapositiva en voz alta.\n\nFOTO DE APERTURA — Jorge, tómese la foto grupal ahora si aún no lo hizo. Pidan que todos se vean; sirve para evidencia de asistencia y memoria del curso.\n\nTRABAJO EN GRUPOS — Las tareas del curso se entregan en equipo. Si no tienen grupo, fórmenlo hoy: mínimo 3, máximo 5 integrantes salvo indicación contraria. Un integrante sube; todos responden por el contenido.\n\nLABORATORIO — Sábados, salón 214. Confirmen que lo anotaron en agenda o celular.\n\nFORO — Revisen el foro antes de cada sesión. Hoy responderemos en voz alta las 14 preguntas publicadas.\n\nFORMULARIO DTT — Anuncie que hay estudiantes pendientes; pase a la siguiente diapositiva y lea la lista.\n\nTransición: formulario DTT pendiente.",
+      "[2 MIN · FORMULARIO DTT PENDIENTE]\n\nLea el encabezado: estos estudiantes aún no han completado el formulario de DTT y deben hacerlo antes de la próxima sesión.\n\nLea carnet y nombre de cada uno, con pausa breve:\n\n1. 202501645 — Delmy Guisela López Buch\n2. 202503313 — Luis Gerardo López Pérez\n3. 202505097 — Dereck Antonio Márquez Elías\n4. 202603599 — Randy Steven Toj Turcios\n5. 202604695 — Fernando Emanuel Rodríguez Muralles\n6. 202604923 — Cristian Eduardo López Torres\n7. 202604979 — Diego Martín Alessandro González Campos\n8. e1246128 — Wildrin Marilys Moran Cordova\n\nSi alguno está en sala, que confirme en el momento. Si no está, anoten para contacto por WhatsApp o al cierre de la sesión.\n\nCierre: el formulario es obligatorio para el seguimiento de diagnóstico y tutoría del curso.\n\nTransición: curiosidad intelectual.",
       "[4 MIN · CURIOSIDAD INTELECTUAL]\n\nPregunta abierta: ¿Qué cree que ocurre dentro de la computadora cuando ejecutan un programa o abren el navegador? Tome dos o tres respuestas sin juzgar.\n\nCuriosidad intelectual es la disposición a ir más allá de lo evidente: no quedarse en «le doy clic y funciona», sino preguntar cómo y por qué.\n\nComprender la arquitectura exige investigar, no solo memorizar. Inviten a leer sobre la historia de la computadora y a traer preguntas al foro.\n\nEste curso conecta hardware con el pensamiento algorítmico que usarán toda la carrera.\n\nTransición: beneficios del curso.",
       "[4 MIN · BENEFICIOS DEL CURSO]\n\nForo, pregunta 8 — Beneficios:\n\nPensamiento lógico y analítico: descomponer problemas, detectar patrones, validar soluciones.\n\nBases de programación: estructuras de control, tipos de datos y documentación que verán en cursos posteriores.\n\nPreparación profesional: leer requisitos, diseñar soluciones, comunicar con diagramas y pseudocódigo.\n\nMensaje: no es solo dibujar flujogramas; es aprender a pensar en pasos que una máquina puede ejecutar millones de veces por segundo.\n\nPregunta oral: ¿en qué otro curso de su carrera les servirá esto? Tomen una respuesta.\n\nTransición: definición de computadora.",
       "[5 MIN · DEFINICIÓN]\n\nDefinición operativa: máquina electrónica que recibe datos, los procesa según un programa almacenado y entrega resultados, conservando información.\n\nEjemplo — promedio de notas:\nEntrada: las notas.\nProceso: sumar y dividir.\nSalida: el promedio en pantalla.\nAlmacenamiento: notas y programa en memoria o disco.\n\nForo, pregunta 10 — Computadora vs otros dispositivos:\nLa computadora es de propósito general: ejecuta distintos programas.\nLa calculadora tradicional o dispositivo limitado tiene funciones fijas.\n\nPregunta: ¿dónde está el programa en el ejemplo? En memoria, listo para ser leído por la CPU.\n\nTransición: algoritmos y diagramas de flujo.",
