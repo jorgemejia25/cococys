@@ -11,6 +11,8 @@ export interface SlideInfo {
   label: string;
   /** Original authored data-screen-label before deck-stage overwrites it */
   title: string;
+  /** Presenter script for this slide, from `#speaker-notes` JSON in the deck HTML */
+  script: string;
 }
 
 /**
@@ -25,11 +27,37 @@ export async function fetchSlideMetadata(file: string): Promise<SlideInfo[]> {
   const stage = doc.querySelector("deck-stage");
   if (!stage) return [];
 
-  return Array.from(stage.querySelectorAll(":scope > section")).map((section, index) => ({
+  const sections = Array.from(stage.querySelectorAll(":scope > section"));
+  const scripts = parseSpeakerNotes(doc, sections.length);
+
+  return sections.map((section, index) => ({
     index,
     label: String(index + 1).padStart(2, "0"),
     title: section.getAttribute("data-screen-label") ?? `Diapositiva ${index + 1}`,
+    script: scripts[index] ?? "",
   }));
+}
+
+/**
+ * Reads per-slide presenter scripts from
+ * `<script type="application/json" id="speaker-notes">` in the deck HTML.
+ * Returns an empty string for slides without an entry.
+ */
+function parseSpeakerNotes(doc: Document, slideCount: number): string[] {
+  const tag = doc.getElementById("speaker-notes");
+  if (!tag) return Array.from({ length: slideCount }, () => "");
+
+  try {
+    const parsed: unknown = JSON.parse(tag.textContent ?? "[]");
+    if (!Array.isArray(parsed)) return Array.from({ length: slideCount }, () => "");
+
+    return Array.from({ length: slideCount }, (_, index) => {
+      const entry = parsed[index];
+      return typeof entry === "string" ? entry.trim() : "";
+    });
+  } catch {
+    return Array.from({ length: slideCount }, () => "");
+  }
 }
 
 /**

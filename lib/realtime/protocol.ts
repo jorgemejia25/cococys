@@ -48,12 +48,16 @@ export interface DeckState {
   total: number;
   /** Authored title of the current slide. */
   title: string;
+  /** Presenter script for the current slide. */
+  script: string;
   /** Human-readable deck label, e.g. "Semana 1 — Diagnóstico". */
   deckLabel: string;
   /** Course tag, e.g. "PROG 2". */
   courseTag: string;
   /** Authored titles for every slide, used to render the remote's jump grid. */
   slideTitles: string[];
+  /** Presenter scripts for every slide, indexed 0-based to match `index`. */
+  slideScripts: string[];
 }
 
 /** Builds the canonical channel name for a session code. */

@@ -1,11 +1,6 @@
 import type { Metadata } from "next";
 import { RemoteControl } from "@/components/remote-control";
 
-export const metadata: Metadata = {
-  title: "Control Remoto — Cococys",
-  description: "Controla la presentación desde tu teléfono.",
-};
-
 interface RemotePageProps {
   searchParams: Promise<{ room?: string }>;
 }

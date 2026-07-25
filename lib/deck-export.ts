@@ -17,6 +17,8 @@ const SLIDE_CAPTURE_TIMEOUT_MS = 45_000;
 
 interface DeckStageElement extends HTMLElement {
   goTo?: (index: number) => void;
+  index?: number;
+  length?: number;
 }
 
 interface ExportContext {
@@ -89,12 +91,18 @@ function getDesignSize(stage: HTMLElement): { width: number; height: number } {
   return { width, height };
 }
 
-async function waitForRender(doc: Document): Promise<void> {
+async function waitForRender(doc: Document, forceElement?: HTMLElement): Promise<void> {
   if (doc.fonts) {
     await Promise.race([doc.fonts.ready, new Promise<void>((r) => setTimeout(r, 2000))]);
   }
   await new Promise<void>((r) => requestAnimationFrame(() => r()));
-  await new Promise<void>((r) => setTimeout(r, 32));
+  await new Promise<void>((r) => requestAnimationFrame(() => r()));
+  if (forceElement) {
+    // Force layout so the browser applies frozen animation end-states
+    // before html2canvas reads computed styles.
+    void forceElement.offsetHeight;
+  }
+  await new Promise<void>((r) => setTimeout(r, 120));
 }
 
 /**
@@ -179,9 +187,11 @@ function createCaptureLab(
   const container = doc.createElement("div");
   container.id = LAB_ID;
   container.setAttribute("aria-hidden", "true");
+  // Keep off-screen but DO NOT use visibility:hidden — html2canvas may
+  // skip the whole subtree even if children have visibility:visible.
   container.style.cssText =
-    "position:fixed;left:-30000px;top:0;overflow:hidden;" +
-    "pointer-events:none;visibility:hidden;z-index:-1;";
+    "position:fixed;left:-9999px;top:-9999px;overflow:hidden;" +
+    "pointer-events:none;";
 
   const style = doc.createElement("style");
   style.textContent = buildCaptureStyles(doc, stage);
@@ -197,37 +207,25 @@ function createCaptureLab(
   return { mount, cleanup: () => { container.remove(); doc.getElementById(FREEZE_STYLE_ID)?.remove(); } };
 }
 
-function cloneSlideForCapture(section: HTMLElement, width: number, height: number): HTMLElement {
-  const clone = section.cloneNode(true) as HTMLElement;
-  clone.removeAttribute("id");
-  clone.removeAttribute("data-deck-active");
-  clone.querySelectorAll("[id]").forEach((el) => el.removeAttribute("id"));
-
-  clone.querySelectorAll("iframe, audio, object, embed").forEach((el) => {
-    el.removeAttribute("src");
-    el.removeAttribute("srcdoc");
-    el.removeAttribute("data");
-    el.innerHTML = "";
+/**
+ * Copies the full typed text from hidden `.tsrc` sources into their matching
+ * `[data-typed-target]` spans so terminals render complete text in exports.
+ */
+function hydrateTypedTargets(clone: HTMLElement, original: HTMLElement): void {
+  const sources = new Map<string, string>();
+  original.querySelectorAll(".tsrc[data-for]").forEach((el) => {
+    const id = el.getAttribute("data-for");
+    if (id) sources.set(id, (el as HTMLElement).innerHTML);
   });
+  if (sources.size === 0) return;
 
-  clone.querySelectorAll("video").forEach((el) => {
-    if (!el.poster) { el.removeAttribute("src"); el.innerHTML = ""; return; }
-    const img = section.ownerDocument.createElement("img");
-    img.src = el.poster;
-    img.alt = "";
-    img.style.cssText = `${el.style.cssText};object-fit:cover;width:100%;height:100%;`;
-    img.className = el.className;
-    el.replaceWith(img);
+  clone.querySelectorAll("[data-typed-target]").forEach((el) => {
+    const id = el.id;
+    if (!id || !sources.has(id)) return;
+    const target = el as HTMLElement;
+    target.innerHTML = sources.get(id)!;
+    target.removeAttribute("data-typed-target");
   });
-
-  sanitizeCloneForCapture(clone);
-
-  clone.setAttribute("data-deck-active", "");
-  clone.style.cssText =
-    `position:relative;width:${width}px;height:${height}px;` +
-    "box-sizing:border-box;overflow:hidden;visibility:visible;opacity:1;";
-
-  return clone;
 }
 
 async function beginExport(doc: Document): Promise<ExportContext> {
@@ -249,16 +247,66 @@ function endExport(ctx: ExportContext): void {
 
 async function captureSlideImages(ctx: ExportContext): Promise<string[]> {
   const { default: html2canvas } = await import("html2canvas");
-  const sections = getExportableSlides(ctx.stage);
+  const stage = ctx.stage as DeckStageElement;
+  const sections = getExportableSlides(stage);
+  const currentIndex = stage.index ?? 0;
   const lab = createCaptureLab(ctx.doc, ctx.stage, ctx.width, ctx.height);
   const useForeignObject = isSafari();
   const images: string[] = [];
 
   try {
     for (let i = 0; i < sections.length; i += 1) {
-      const clone = cloneSlideForCapture(sections[i], ctx.width, ctx.height);
+      // Navigate to the slide so Typed.js fires and CSS entrance animations run
+      // in the real DOM. This guarantees terminals are filled and keyframes are
+      // applied before we clone the active section.
+      stage.goTo?.(i);
+      // Wait long enough for entrance animations (0.62 s max) plus Typed.js
+      // to complete a typical terminal. 1.2 s is a safe conservative value.
+      await new Promise<void>((r) => setTimeout(r, 1200));
+
+      // Grab the currently-active section from the real DOM (it now has
+      // whatever Typed.js has typed so far, and frozen CSS end-states).
+      const activeSection = stage.querySelector(
+        ":scope > section[data-deck-active]"
+      ) as HTMLElement | null;
+      if (!activeSection) continue;
+
+      // Clone the active section and hydrate terminals with full text.
+      const clone = activeSection.cloneNode(true) as HTMLElement;
+      hydrateTypedTargets(clone, activeSection);
+      clone.querySelectorAll(".tsrc").forEach((el) => el.remove());
+
+      // Sanitise IDs and executable content.
+      clone.removeAttribute("id");
+      clone.removeAttribute("data-deck-active");
+      clone.querySelectorAll("[id]").forEach((el) => el.removeAttribute("id"));
+
+      clone.querySelectorAll("iframe, audio, object, embed").forEach((el) => {
+        el.removeAttribute("src");
+        el.removeAttribute("srcdoc");
+        el.removeAttribute("data");
+        el.innerHTML = "";
+      });
+
+      clone.querySelectorAll("video").forEach((el) => {
+        if (!el.poster) { el.removeAttribute("src"); el.innerHTML = ""; return; }
+        const img = ctx.doc.createElement("img");
+        img.src = el.poster;
+        img.alt = "";
+        img.style.cssText = `${el.style.cssText};object-fit:cover;width:100%;height:100%;`;
+        img.className = el.className;
+        el.replaceWith(img);
+      });
+
+      sanitizeCloneForCapture(clone);
+
+      clone.setAttribute("data-deck-active", "");
+      clone.style.cssText =
+        `position:relative;width:${ctx.width}px;height:${ctx.height}px;` +
+        "box-sizing:border-box;overflow:hidden;visibility:visible;opacity:1;";
+
       lab.mount.replaceChildren(clone);
-      await waitForRender(ctx.doc);
+      await waitForRender(ctx.doc, clone);
 
       let canvas;
       try {
@@ -273,15 +321,15 @@ async function captureSlideImages(ctx: ExportContext): Promise<string[]> {
             scrollX: 0,
             scrollY: 0,
             foreignObjectRendering: useForeignObject,
-            onclone: (_clonedDoc, element) => sanitizeCloneForCapture(element as HTMLElement),
+            onclone: (_clonedDoc, element) => {
+              sanitizeCloneForCapture(element as HTMLElement);
+              void (element as HTMLElement).offsetHeight;
+            },
           }),
           SLIDE_CAPTURE_TIMEOUT_MS,
           `diapositiva ${i + 1} / ${sections.length}`
         );
       } catch (err) {
-        // Safari + extensions (AdGuard, 1Password, etc.) inject scripts via
-        // document.write into html2canvas's internal iframes, producing a
-        // SyntaxError that aborts capture. Surface a clear message instead.
         const isBrowserBlock =
           err instanceof SyntaxError ||
           (err instanceof Error && /SafariAppExtension|duplicate variable/i.test(err.message));
@@ -298,6 +346,8 @@ async function captureSlideImages(ctx: ExportContext): Promise<string[]> {
       images.push(canvas.toDataURL("image/jpeg", 0.92));
     }
   } finally {
+    // Restore the slide the user was originally on.
+    stage.goTo?.(currentIndex);
     lab.cleanup();
   }
 

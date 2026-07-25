@@ -45,7 +45,7 @@ export const COURSES: Course[] = [
       {
         label: "Semana 2 — Arquitectura de la computadora",
         file: "Semana 2 - Flujos y Algoritmos.html",
-        slides: 17,
+        slides: 25,
       },
     ],
   },

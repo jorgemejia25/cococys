@@ -1010,6 +1010,29 @@ Console.<span class="tf">WriteLine</span>(<span class="ts">"¡Hasta luego!"</spa
       </section>
     </deck-stage>
 
+    <script type="application/json" id="speaker-notes">
+[
+  "Bienvenida a la sesión de Fundamentos de C#. Hoy construyen su primera aplicación de consola; el hilo conductor es un sistema de tickets de soporte.",
+  "Recorre la agenda: apertura (5 min), fundamentos de C# (~35 min), Git (~10 min), demo en vivo (~20 min), práctica (40 min) y cierre (15 min).",
+  "Enmarca la sesión: no es solo sintaxis, sino usar bien las herramientas. Competencia actitudinal: responsabilidad — entregar a tiempo y trabajar con disciplina en C# y Git.",
+  "C# es el lenguaje; .NET es la plataforma que compila y ejecuta. C# es tipado y orientado a objetos. Los archivos fuente son .cs. Pregunta: ¿qué parte del Hello World es instrucción y qué parte es texto?",
+  "Tres piezas: .NET SDK (dotnet), editor (VS Code + C# Dev Kit o Visual Studio) y Git. Demo: dotnet --version, git --version, dotnet new console -n MiApp, cd MiApp, dotnet run.",
+  "Una variable guarda un valor con tipo fijo. Tipos de hoy: int, double, string, bool. Muestra interpolación con $\"...\". Ejercicio oral: inventar variables de un ticket (id, título, abierto/cerrado).",
+  "El programa elige según una condición booleana: if / else if / else. Operadores: ==, !=, >, <, &&, ||. Relaciona con estados de un ticket (abierto, cerrado, pendiente).",
+  "Una función agrupa lógica reutilizable. Parámetros de entrada, valor de retorno. Muestra un método que calcula o valida algo del ticket.",
+  "for y while repiten bloques. for cuando conoces el número de iteraciones; while mientras se cumpla la condición. Ejemplo: recorrer una lista de tickets.",
+  "string es texto inmutable. Métodos útiles: Length, ToUpper, Contains, Substring. Muestra formatear la salida de un ticket.",
+  "Git guarda el historial del proyecto. git init, add, commit, status. Commits ordenados y frecuentes — el historial cuenta la historia del trabajo.",
+  "Introduce la demo en vivo: sistema de tickets de soporte en consola. Objetivo: registrar, listar y salir. Abre el proyecto de referencia en durante-diapositivas/02-SistemaTickets.",
+  "Modelo Ticket: campos Id, Título, Descripción, Estado. Explica por qué cada campo y qué tipo usar. Construye la clase paso a paso con la clase.",
+  "Método Registrar: pedir datos por consola, crear el objeto Ticket, agregarlo a una lista. Valida entrada básica.",
+  "Método Listar: recorrer la colección y mostrar cada ticket formateado. Si está vacía, mensaje claro al usuario.",
+  "Menú principal con bucle: 1) Registrar, 2) Listar, 3) Salir. while(true) con switch. La app no termina hasta elegir salir.",
+  "Práctica guiada individual (~40 min). Los estudiantes replican o extienden el sistema. Circula, resuelve dudas de compilación y Git.",
+  "Cierre: repasa lo aprendido, recuerda la tarea de fortalecimiento y el uso de Git. Indica dónde está el programa completo para sesiones posteriores."
+]
+    </script>
+
     <!-- Progress bar -->
     <div id="deck-progress"><div id="deck-progress-fill"></div></div>
 

@@ -111,9 +111,11 @@ export function RemoteHostControls({
       index: slideIndex,
       total: slideTotal,
       title: slides[slideIndex]?.title ?? "",
+      script: slides[slideIndex]?.script ?? "",
       deckLabel,
       courseTag,
       slideTitles: slides.map((slide) => slide.title),
+      slideScripts: slides.map((slide) => slide.script),
     };
     sendState(snapshot);
   }, [status, peerPresent, slideIndex, slideTotal, slides, deckLabel, courseTag, sendState]);

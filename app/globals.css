@@ -83,6 +83,18 @@
   background-size: 88px 88px;
 }
 
+/* Safe-area insets for notched phones and tablets (iPad, iPhone). */
+.safe-area-pt {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Phone landscape: use tablet-like split when vertical space is tight. */
+@custom-variant phone-landscape (@media (orientation: landscape) and (max-height: 32rem));
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
