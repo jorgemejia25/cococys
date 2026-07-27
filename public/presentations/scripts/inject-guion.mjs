@@ -8,9 +8,22 @@ const presentations = path.join(base, "..");
 /**
  * Injects a speaker-notes JSON array into a deck HTML file.
  *
- * @param {string} deckFile - Filename under public/presentations/
- * @param {string} jsonFile - Filename under public/presentations/scripts/
+ * Usage: node inject-guion.mjs [--deck=filename.html] [--json=guion.json]
+ * Defaults: Semana 2 - Flujos y Algoritmos.html + semana2-flujos-guion.json
  */
+function parseArgs() {
+  const args = process.argv.slice(2);
+  const opts = {
+    deck: "Semana 2 - Flujos y Algoritmos.html",
+    json: "semana2-flujos-guion.json",
+  };
+  for (const arg of args) {
+    if (arg.startsWith("--deck=")) opts.deck = arg.slice(7);
+    if (arg.startsWith("--json=")) opts.json = arg.slice(7);
+  }
+  return opts;
+}
+
 function injectGuion(deckFile, jsonFile) {
   const htmlPath = path.join(presentations, deckFile);
   const notesPath = path.join(base, jsonFile);
@@ -38,4 +51,5 @@ function injectGuion(deckFile, jsonFile) {
   console.log(`Injected ${notes.length} notes into ${deckFile}`);
 }
 
-injectGuion("Semana 2 - Flujos y Algoritmos.html", "semana2-flujos-guion.json");
+const { deck, json } = parseArgs();
+injectGuion(deck, json);

@@ -66,6 +66,11 @@ export const COURSES: Course[] = [
         file: "Semana 2 - Programacion 2.html",
         slides: 18,
       },
+      {
+        label: "Semana 3 — POO y Git Workflow",
+        file: "Semana 3 - Programacion 2.html",
+        slides: 21,
+      },
     ],
   },
 ];

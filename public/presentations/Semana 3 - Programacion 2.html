@@ -1,0 +1,1185 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IPC2 — Semana 3 · POO y Git Workflow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      deck-stage:not(:defined) {
+        visibility: hidden;
+      }
+    </style>
+    <script src="deck-stage.js"></script>
+
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #f0eeeb;
+        --fg-dim: rgba(240, 238, 235, 0.52);
+        --fg-muted: rgba(240, 238, 235, 0.22);
+        --fg-faint: rgba(240, 238, 235, 0.12);
+        --accent: #00e8d0;
+        --line: rgba(255, 255, 255, 0.09);
+        --grid: rgba(255, 255, 255, 0.022);
+        --wm: rgba(240, 238, 235, 0.035);
+
+        --sans: "Space Grotesk", "Helvetica Neue", sans-serif;
+        --serif: "Cormorant Garamond", ui-serif, Georgia, serif;
+        --mono: "JetBrains Mono", "Courier New", monospace;
+
+        /* type scale */
+        --th: 116px; /* hero */
+        --td: 88px; /* display */
+        --tt: 66px; /* title */
+        --tct: 58px; /* content title */
+        --ts: 46px; /* subtitle */
+        --tb: 34px; /* body */
+        --tsm: 26px; /* small */
+        --tmeta: 24px; /* meta */
+
+        /* spacing */
+        --px: 120px;
+        --pt: 90px;
+        --pb: 78px;
+        --gxl: 56px;
+        --glg: 40px;
+        --gmd: 28px;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: #000;
+      }
+
+      /* ─── Progress bar (portfolio-style) ──────────────────────── */
+      #deck-progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: rgba(255, 255, 255, 0.05);
+        z-index: 99999;
+      }
+      #deck-progress-fill {
+        height: 100%;
+        width: 4.76%;
+        background: var(--accent);
+        box-shadow: 0 0 14px rgba(0, 232, 208, 0.55);
+        transition: width 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      /* ─── All slides ─────────────────────────────────────────── */
+      deck-stage > section {
+        background: var(--bg);
+        color: var(--fg);
+        display: flex;
+        flex-direction: column;
+        padding: var(--pt) var(--px) var(--pb);
+        overflow: hidden;
+      }
+      /* elevate real content above the decoration layer */
+      deck-stage > section > *:not(.layer) {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* ─── Decoration layer: grid + watermark + geo ───────────── */
+      .layer {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+        pointer-events: none;
+        background-image:
+          linear-gradient(var(--grid) 1px, transparent 1px),
+          linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+        background-size: 88px 88px;
+        background-position: center center;
+      }
+
+      .geo {
+        position: absolute;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+      }
+
+      /* giant ghost watermark */
+      .wm {
+        position: absolute;
+        font-family: var(--sans);
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        color: var(--wm);
+        line-height: 0.78;
+        white-space: nowrap;
+        user-select: none;
+      }
+      .wm.serif {
+        font-family: var(--serif);
+        font-style: italic;
+        font-weight: 600;
+        letter-spacing: 0;
+      }
+
+      /* floating accent dot */
+      .fdot {
+        display: none;
+      }
+      .fdot.white {
+        display: none;
+      }
+
+      /* ─── Reusable type / layout ─────────────────────────────── */
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .meta {
+        font-family: var(--mono);
+        font-size: var(--tmeta);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--fg-muted);
+        white-space: nowrap;
+      }
+      .meta.faint {
+        color: var(--fg-faint);
+      }
+
+      .stag {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-family: var(--mono);
+        font-size: var(--tmeta);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--fg-muted);
+      }
+      .stag .tl {
+        display: inline-block;
+        width: 32px;
+        height: 1px;
+        background: currentColor;
+        flex-shrink: 0;
+      }
+      .stag.ac {
+        color: var(--accent);
+      }
+
+      .cbody {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: var(--glg);
+        max-width: 1180px;
+      }
+      .ctitle {
+        font-family: var(--sans);
+        font-weight: 700;
+        font-size: var(--tct);
+        line-height: 1.08;
+        letter-spacing: -0.025em;
+        color: var(--fg);
+      }
+      .body {
+        font-family: var(--sans);
+        font-size: var(--tb);
+        line-height: 1.6;
+        color: var(--fg-dim);
+      }
+      .note {
+        font-family: var(--mono);
+        font-size: var(--tmeta);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--fg-muted);
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+      }
+      .chip {
+        display: inline-block;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        padding: 11px 26px;
+        font-family: var(--mono);
+        font-size: 24px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--fg-dim);
+        transition:
+          border-color 0.3s,
+          color 0.3s;
+      }
+
+      .hr {
+        width: 100%;
+        height: 1px;
+        background: var(--line);
+        flex-shrink: 0;
+      }
+
+      /* stat box */
+      .sbox {
+        border: 1px solid var(--line);
+        padding: 30px 38px;
+        min-width: 200px;
+        flex: 1;
+      }
+      .sbox-n {
+        font-family: var(--sans);
+        font-size: 76px;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        color: var(--fg);
+        line-height: 1;
+      }
+      .sbox-l {
+        font-family: var(--mono);
+        font-size: 24px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--fg-muted);
+        margin-top: 12px;
+      }
+
+      /* ─── Animations ─────────────────────────────────────────── */
+      @media (prefers-reduced-motion: no-preference) {
+        [data-deck-active] .anim-up {
+          animation: slideUp 0.62s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        [data-deck-active] .anim-up.d2 {
+          animation-delay: 0.09s;
+        }
+        [data-deck-active] .anim-up.d3 {
+          animation-delay: 0.18s;
+        }
+        [data-deck-active] .anim-up.d4 {
+          animation-delay: 0.27s;
+        }
+        [data-deck-active] .anim-up.d5 {
+          animation-delay: 0.36s;
+        }
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(26px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        [data-deck-active] .layer {
+          animation: gridIn 1.1s ease both;
+        }
+        @keyframes gridIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        [data-deck-active] .wm {
+          animation: wmIn 1.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        @keyframes wmIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        [data-deck-active] .grow {
+          animation: grow 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+          transform-origin: left center;
+        }
+        @keyframes grow {
+          from {
+            transform: scaleX(0);
+            opacity: 0;
+          }
+          to {
+            transform: scaleX(1);
+            opacity: 1;
+          }
+        }
+      }
+
+      /* ═══ Terminal / code window ══════════════════════════════ */
+      .term {
+        width: 100%;
+        border: 1px solid var(--line);
+        background: #0d0d0d;
+        box-shadow: 0 40px 90px -50px rgba(0, 0, 0, 0.9);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .term-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 18px 26px;
+        background: #111;
+        border-bottom: 1px solid var(--line);
+      }
+      .term-dot {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .term-dot.r { background: #ff5f56; }
+      .term-dot.y { background: #ffbd2e; }
+      .term-dot.g { background: #27c93f; }
+      .term-name {
+        margin-left: 14px;
+        font-family: var(--mono);
+        font-size: 22px;
+        letter-spacing: 0.04em;
+        color: var(--fg-muted);
+      }
+      .term-body {
+        padding: 34px 40px;
+        font-family: var(--mono);
+        font-size: 28px;
+        line-height: 1.62;
+        color: var(--fg);
+        min-height: 120px;
+        white-space: pre;
+        overflow: hidden;
+      }
+      .term-body.sm { font-size: 24px; line-height: 1.6; }
+      /* typed.js output + cursor */
+      .term-body .typed-cursor {
+        color: var(--accent);
+        opacity: 1;
+        font-weight: 400;
+      }
+      /* syntax accents inside typed strings */
+      .tk { color: #c792ea; }   /* keyword */
+      .ts { color: var(--accent); } /* string */
+      .tn { color: #ffcb6b; }   /* number */
+      .tc { color: var(--fg-muted); font-style: italic; } /* comment */
+      .tf { color: #82aaff; }   /* function */
+      .tp { color: var(--accent); } /* prompt $ */
+
+      /* two-column code layout */
+      .split {
+        display: grid;
+        grid-template-columns: 1fr 1.05fr;
+        gap: var(--gxl);
+        align-items: center;
+        flex: 1;
+      }
+
+      /* live badge */
+      .live {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-family: var(--mono);
+        font-size: 22px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--accent);
+        border: 1px solid rgba(0, 232, 208, 0.35);
+        padding: 9px 22px;
+      }
+      .live::before {
+        content: "";
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 0 0 rgba(0, 232, 208, 0.5);
+        animation: livePulse 1.8s infinite;
+      }
+      @keyframes livePulse {
+        0% { box-shadow: 0 0 0 0 rgba(0, 232, 208, 0.5); }
+        70% { box-shadow: 0 0 0 14px rgba(0, 232, 208, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(0, 232, 208, 0); }
+      }
+
+      /* numbered step list */
+      .steps { display: flex; flex-direction: column; gap: 22px; }
+      .stepr {
+        display: flex;
+        align-items: flex-start;
+        gap: 22px;
+        font-family: var(--sans);
+        font-size: var(--tb);
+        line-height: 1.4;
+        color: var(--fg-dim);
+      }
+      .stepn {
+        flex-shrink: 0;
+        width: 44px;
+        height: 44px;
+        border: 1px solid rgba(0, 232, 208, 0.4);
+        color: var(--accent);
+        font-family: var(--mono);
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* feature / bullet list with tick */
+      .flist { display: flex; flex-direction: column; gap: 24px; }
+      .fitem {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+        font-family: var(--sans);
+        font-size: var(--tb);
+        line-height: 1.4;
+        color: var(--fg-dim);
+      }
+      .fitem b { color: var(--fg); font-weight: 600; }
+      .ftick {
+        flex-shrink: 0;
+        color: var(--accent);
+        font-family: var(--mono);
+        font-size: 30px;
+        line-height: 1.2;
+      }
+
+      /* card grid */
+      .cards3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--gmd);
+      }
+      .qcard { border: 1px solid var(--line); padding: 34px 36px; }
+      .qcard-t {
+        font-family: var(--mono);
+        font-size: 26px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 18px;
+      }
+      .qcard-b {
+        font-family: var(--sans);
+        font-size: 27px;
+        line-height: 1.5;
+        color: var(--fg-dim);
+      }
+      .qcard-b b { color: var(--fg); font-weight: 600; }
+      .qcard-l {
+        display: inline-block;
+        margin-top: 16px;
+        font-family: var(--mono);
+        font-size: 22px;
+        letter-spacing: 0.02em;
+        color: var(--accent);
+        border-bottom: 1px solid rgba(0, 232, 208, 0.4);
+        text-decoration: none;
+      }
+
+      /* agenda rows */
+      .arow {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        padding: 26px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .arow-n {
+        font-family: var(--mono);
+        font-size: 30px;
+        color: var(--accent);
+        width: 60px;
+        flex-shrink: 0;
+      }
+      .arow-t {
+        font-family: var(--sans);
+        font-size: 34px;
+        font-weight: 600;
+        color: var(--fg);
+        flex: 1;
+      }
+      .arow-d {
+        font-family: var(--sans);
+        font-size: 26px;
+        color: var(--fg-dim);
+        flex: 2;
+      }
+      .arow-time {
+        font-family: var(--mono);
+        font-size: 26px;
+        color: var(--fg-muted);
+        letter-spacing: 0.08em;
+      }
+    </style>
+  </head>
+    <deck-stage width="1920" height="1080">
+      <!-- ═══ 01 · PORTADA ═══ -->
+      <section data-label="01" data-screen-label="Portada">
+        <div class="layer">
+          <div class="geo" style="width: 520px; height: 620px; top: 70px; left: 560px"></div>
+          <div class="geo" style="width: 320px; height: 420px; top: 150px; left: 820px; border-color: rgba(0,232,208,0.05)"></div>
+          <div class="wm" style="bottom: -100px; right: -30px; font-size: 320px; color: rgba(240,238,235,0.028)">POO</div>
+        </div>
+        <div class="topbar">
+          <div style="display: flex; align-items: center; gap: 14px">
+            <span style="width: 9px; height: 9px; border-radius: 50%; background: var(--accent); display: inline-block"></span>
+            <span class="meta" style="letter-spacing: 0.12em">ECYS · 771 — IPC2</span>
+          </div>
+          <span class="meta">2S · 2026</span>
+        </div>
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 6px">
+          <div class="stag ac anim-up" style="margin-bottom: 34px">
+            <span class="tl grow"></span>
+            <span>Semana 03 — Sesión de laboratorio</span>
+          </div>
+          <h1 class="anim-up d2" style="font-family: var(--sans); font-size: var(--th); font-weight: 700; line-height: 0.9; letter-spacing: -0.03em; color: var(--fg)">
+            POO Y GIT
+          </h1>
+          <h1 class="anim-up d3" style="font-family: var(--serif); font-size: var(--th); font-weight: 400; font-style: italic; line-height: 1; letter-spacing: -0.01em; color: rgba(240,238,235,0.62)">
+            Clases, objetos y ramas estructuradas.
+          </h1>
+          <div class="anim-up d4" style="display: flex; gap: 18px; margin-top: 44px">
+            <span class="chip">80 min</span>
+          </div>
+        </div>
+        <div class="hr" style="margin-bottom: 28px"></div>
+        <div class="topbar">
+          <span class="meta">Jorge Mejía</span>
+          <span class="meta faint">Guatemala, GT</span>
+        </div>
+      </section>
+
+      <!-- ═══ 02 · AGENDA ═══ -->
+      <section data-label="02" data-screen-label="Agenda">
+        <div class="layer">
+          <div class="wm serif" style="bottom: -70px; right: -30px; font-size: 300px; color: rgba(0,232,208,0.04)">03</div>
+        </div>
+        <div class="topbar">
+          <span class="stag ac"><span class="tl"></span><span>Ruta de la sesión</span></span>
+          <span class="meta">80 MIN</span>
+        </div>
+        <div class="cbody" style="max-width: 1500px">
+          <h2 class="ctitle anim-up">Lo que haremos hoy</h2>
+          <div style="display: flex; flex-direction: column">
+            <div class="arow anim-up d2"><span class="arow-n">01</span><span class="arow-t">Actitudinal</span><span class="arow-d">Responsabilidad, puntualidad y compromiso</span><span class="arow-time">5 min</span></div>
+            <div class="arow anim-up d3"><span class="arow-n">02</span><span class="arow-t">POO en C#</span><span class="arow-d">Clases, objetos, encapsulamiento, herencia, polimorfismo y abstracción</span><span class="arow-time">25 min</span></div>
+            <div class="arow anim-up d4"><span class="arow-n">03</span><span class="arow-t">Git Workflow</span><span class="arow-d">Configuración, ramas, merge y versionamiento semántico</span><span class="arow-time">15 min</span></div>
+            <div class="arow anim-up d5"><span class="arow-n">04</span><span class="arow-t">Ejercicio demostrativo</span><span class="arow-d">Sistema de coordinación de soporte técnico con POO + Git</span><span class="arow-time">15 min</span></div>
+            <div class="arow anim-up d5"><span class="arow-n">05</span><span class="arow-t">Actividad + cierre</span><span class="arow-d">Práctica individual y repaso de puntos clave</span><span class="arow-time">20 min</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 03 · RESPONSABILIDAD ═══ -->
+      <section data-label="03" data-screen-label="Responsabilidad">
+        <div class="layer">
+          <div class="geo" style="width: 620px; height: 620px; top: -150px; right: -130px; border-color: rgba(0,232,208,0.05)"></div>
+          <div class="wm serif" style="bottom: -60px; left: -30px; font-size: 260px; color: rgba(0,232,208,0.04)">Ser</div>
+        </div>
+        <div class="topbar">
+          <span class="stag ac"><span class="tl"></span><span>Área actitudinal — Saber ser</span></span>
+          <span class="meta">5 MIN</span>
+        </div>
+        <div class="split" style="margin-top: 40px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Responsabilidad y puntualidad</h2>
+            <p class="body anim-up d2">Asistencia, puntualidad y compromiso con las actividades. La disciplina en programación se refleja también en el trabajo con <b style="color:var(--fg)">XML</b> y en el flujo ordenado con <b style="color:var(--fg)">Git</b>.</p>
+          </div>
+          <div class="flist">
+            <div class="fitem anim-up d3"><span class="ftick">▹</span><span><b>Asistencia.</b> Llegar a tiempo permite aprovechar demos y ejercicios en vivo.</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">▹</span><span><b>Puntualidad.</b> Entregar tareas en la fecha acordada — como un commit en el momento correcto.</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">▹</span><span><b>Compromiso.</b> Seguir instrucciones con rigor, igual que respetar la estructura de un documento XML bien formado.</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 04 · QUÉ ES POO ═══ -->
+      <section data-label="04" data-screen-label="¿Qué es la POO?">
+        <div class="layer">
+          <div class="wm" style="bottom: -90px; right: -20px; font-size: 300px; color: rgba(240,238,235,0.025)">OOP</div>
+        </div>
+        <div class="topbar">
+          <span class="stag ac"><span class="tl"></span><span>Saber — Paradigma</span></span>
+          <span class="meta">POO</span>
+        </div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">¿Qué es la POO?</h2>
+            <p class="body anim-up d2">Paradigma que <b style="color:var(--fg)">modela el mundo real con objetos</b>: cada entidad combina datos y comportamiento en una unidad coherente.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">▹</span><span><b>Clase</b> = molde o plantilla (ej. plano de una casa).</span></div>
+              <div class="fitem anim-up d4"><span class="ftick">▹</span><span><b>Objeto</b> = instancia concreta creada a partir de ese molde.</span></div>
+            </div>
+          </div>
+          <div class="cards3 anim-up d3" style="grid-template-columns: 1fr 1fr; gap: var(--gmd)">
+            <div class="qcard"><div class="qcard-t">Clase Ticket</div><div class="qcard-b">Define qué datos y acciones puede tener <b>cualquier</b> ticket.</div></div>
+            <div class="qcard"><div class="qcard-t">Objeto ticket #42</div><div class="qcard-b">Instancia real: <b>"Impresora no funciona"</b>, prioridad 3, estado Abierto.</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 05 · CLASES Y OBJETOS ═══ -->
+      <section data-label="05" data-screen-label="Clases y Objetos">
+        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:280px; color:rgba(240,238,235,0.022)">class</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — POO</span></span><span class="meta">01 / 06</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Clases y Objetos</h2>
+            <p class="body anim-up d2">La clase <b style="color:var(--fg)">Ticket</b> declara los atributos que comparten todos los tickets del sistema de soporte.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">#</span><span><b>Id</b>, <b>Titulo</b>, <b>Prioridad</b>, <b>Estado</b></span></div>
+              <div class="fitem anim-up d4"><span class="ftick">new</span><span><b>new Ticket()</b> crea un objeto en memoria</span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">Ticket.cs</span></div>
+            <div class="term-body"><span id="t05" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t05" hidden><span class="tk">class</span> <span class="tf">Ticket</span>
+{
+    <span class="tk">public</span> <span class="tk">int</span> Id;
+    <span class="tk">public</span> <span class="tk">string</span> Titulo;
+    <span class="tk">public</span> <span class="tk">int</span> Prioridad;
+    <span class="tk">public</span> <span class="tk">string</span> Estado;
+}
+
+<span class="tk">var</span> t = <span class="tk">new</span> <span class="tf">Ticket</span> {
+    Id = <span class="tn">1</span>, Titulo = <span class="ts">"Red caída"</span>,
+    Prioridad = <span class="tn">3</span>, Estado = <span class="ts">"Abierto"</span>
+};</div>
+        </div>
+      </section>
+
+      <!-- ═══ 06 · MÉTODOS Y ATRIBUTOS ═══ -->
+      <section data-label="06" data-screen-label="Métodos y Atributos">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">()</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — POO</span></span><span class="meta">02 / 06</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Métodos y Atributos</h2>
+            <p class="body anim-up d2"><b style="color:var(--fg)">Atributos</b> = datos que describe el objeto. <b style="color:var(--fg)">Métodos</b> = comportamiento: acciones que el objeto puede realizar.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">→</span><span><b>ToString()</b> — representar el ticket como texto</span></div>
+              <div class="fitem anim-up d4"><span class="ftick">↻</span><span><b>CambiarEstado()</b> — modificar el estado del ticket</span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">Ticket.cs</span></div>
+            <div class="term-body sm"><span id="t06" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t06" hidden><span class="tk">public</span> <span class="tk">override</span> <span class="tk">string</span> <span class="tf">ToString</span>()
+    =&gt; <span class="ts">$"#{Id} {Titulo} [{Estado}]"</span>;
+
+<span class="tk">public</span> <span class="tk">void</span> <span class="tf">CambiarEstado</span>(<span class="tk">string</span> nuevo)
+{
+    Estado = nuevo;
+}
+
+t.<span class="tf">CambiarEstado</span>(<span class="ts">"En progreso"</span>);
+Console.<span class="tf">WriteLine</span>(t); <span class="tc">// #1 Red caída [En progreso]</span></div>
+        </div>
+      </section>
+
+      <!-- ═══ 07 · ENCAPSULAMIENTO ═══ -->
+      <section data-label="07" data-screen-label="Encapsulamiento">
+        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:260px; color:rgba(240,238,235,0.022)">private</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — POO</span></span><span class="meta">03 / 06</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Encapsulamiento</h2>
+            <p class="body anim-up d2">Ocultar los datos internos con <b style="color:var(--fg)">campos private</b> y exponerlos mediante <b style="color:var(--fg)">propiedades public</b>. Protege la integridad del objeto.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">+</span><span><b>private</b> — solo la clase accede al campo</span></div>
+              <div class="fitem anim-up d4"><span class="ftick">⇔</span><span><b>public property</b> — acceso controlado desde fuera</span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">Ticket.cs</span></div>
+            <div class="term-body sm"><span id="t07" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t07" hidden><span class="tk">class</span> <span class="tf">Ticket</span>
+{
+    <span class="tk">private</span> <span class="tk">string</span> _estado = <span class="ts">"Abierto"</span>;
+
+    <span class="tk">public</span> <span class="tk">string</span> Estado
+    {
+        <span class="tk">get</span> =&gt; _estado;
+        <span class="tk">set</span> =&gt; _estado = <span class="tk">string</span>.<span class="tf">IsNullOrWhiteSpace</span>(value)
+            ? _estado : value;
+    }
+}</div>
+        </div>
+      </section>
+
+      <!-- ═══ 08 · HERENCIA ═══ -->
+      <section data-label="08" data-screen-label="Herencia">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">:</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — POO</span></span><span class="meta">04 / 06</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Herencia</h2>
+            <p class="body anim-up d2"><b style="color:var(--fg)">SoporteTicket</b> hereda de <b style="color:var(--fg)">Ticket</b>: reutiliza atributos y métodos de la clase base, y agrega comportamiento propio.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">:</span><span>Sintaxis: <b>class SoporteTicket : Ticket</b></span></div>
+              <div class="fitem anim-up d4"><span class="ftick">base</span><span><b>base(...)</b> invoca el constructor de la clase padre</span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">SoporteTicket.cs</span></div>
+            <div class="term-body sm"><span id="t08" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t08" hidden><span class="tk">class</span> <span class="tf">SoporteTicket</span> : <span class="tf">Ticket</span>
+{
+    <span class="tk">public</span> <span class="tk">string</span> TecnicoAsignado { <span class="tk">get</span>; <span class="tk">set</span>; }
+
+    <span class="tk">public</span> <span class="tf">SoporteTicket</span>(<span class="tk">int</span> id, <span class="tk">string</span> titulo)
+        : <span class="tk">base</span>()
+    {
+        Id = id; Titulo = titulo;
+        Estado = <span class="ts">"Abierto"</span>;
+    }
+}</div>
+        </div>
+      </section>
+
+      <!-- ═══ 09 · POLIMORFISMO ═══ -->
+      <section data-label="09" data-screen-label="Polimorfismo">
+        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:240px; color:rgba(240,238,235,0.022)">override</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — POO</span></span><span class="meta">05 / 06</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Polimorfismo</h2>
+            <p class="body anim-up d2">Con <b style="color:var(--fg)">virtual</b> y <b style="color:var(--fg)">override</b>, el mismo método produce distinto comportamiento según el tipo real del objeto.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">virtual</span><span>En la clase base: método que <b>puede</b> redefinirse</span></div>
+              <div class="fitem anim-up d4"><span class="ftick">override</span><span>En la subclase: implementación <b>específica</b></span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">Ticket.cs</span></div>
+            <div class="term-body sm"><span id="t09" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t09" hidden><span class="tc">// En Ticket (base)</span>
+<span class="tk">public</span> <span class="tk">virtual</span> <span class="tk">string</span> <span class="tf">Resumen</span>()
+    =&gt; <span class="ts">$"Ticket #{Id}: {Titulo}"</span>;
+
+<span class="tc">// En SoporteTicket (derivada)</span>
+<span class="tk">public</span> <span class="tk">override</span> <span class="tk">string</span> <span class="tf">Resumen</span>()
+    =&gt; <span class="ts">$"[SOPORTE] #{Id} → {TecnicoAsignado}"</span>;</div>
+        </div>
+      </section>
+
+      <!-- ═══ 10 · ABSTRACCIÓN ═══ -->
+      <section data-label="10" data-screen-label="Abstracción">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">abs</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — POO</span></span><span class="meta">06 / 06</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Abstracción</h2>
+            <p class="body anim-up d2">Una <b style="color:var(--fg)">clase abstracta</b> define el contrato sin implementación completa. Obliga a las subclases a concretar los métodos abstractos.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">abstract</span><span><b>TicketBase</b> — no se instancia directamente</span></div>
+              <div class="fitem anim-up d4"><span class="ftick">!</span><span>Métodos abstractos sin cuerpo; las hijas <b>deben</b> implementarlos</span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">TicketBase.cs</span></div>
+            <div class="term-body sm"><span id="t10" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t10" hidden><span class="tk">abstract</span> <span class="tk">class</span> <span class="tf">TicketBase</span>
+{
+    <span class="tk">public</span> <span class="tk">int</span> Id { <span class="tk">get</span>; <span class="tk">set</span>; }
+    <span class="tk">public</span> <span class="tk">abstract</span> <span class="tk">string</span> <span class="tf">Resumen</span>();
+    <span class="tk">public</span> <span class="tk">abstract</span> <span class="tk">void</span> <span class="tf">Cerrar</span>();
+}
+
+<span class="tc">// SoporteTicket : TicketBase implementa Resumen() y Cerrar()</span></div>
+        </div>
+      </section>
+
+      <!-- ═══ 11 · GIT Y CONTROL DE VERSIONES ═══ -->
+      <section data-label="11" data-screen-label="Git">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:280px; color:rgba(0,232,208,0.035)">git</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — Herramienta</span></span><span class="meta">CONTROL DE VERSIONES</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Git y control de versiones</h2>
+            <p class="body anim-up d2">¿Por qué versionar? Cada <b style="color:var(--fg)">commit</b> es una fotografía del código en un momento dado. Permite colaborar, revertir errores y documentar el avance del proyecto.</p>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">terminal — bash</span></div>
+            <div class="term-body sm"><span id="t11" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t11" hidden><span class="tp">$</span> <span class="tf">git</span> init                 <span class="tc"># iniciar repo</span>
+<span class="tp">$</span> <span class="tf">git</span> add .                <span class="tc"># preparar cambios</span>
+<span class="tp">$</span> <span class="tf">git</span> commit -m <span class="ts">"feat: clase Ticket"</span>
+<span class="tp">$</span> <span class="tf">git</span> log --oneline        <span class="tc"># ver historia</span></div>
+        </div>
+      </section>
+
+      <!-- ═══ 12 · CONFIGURACIÓN GIT ═══ -->
+      <section data-label="12" data-screen-label="Configuración Git">
+        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:240px; color:rgba(240,238,235,0.022)">config</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — Herramienta</span></span><span class="meta">SETUP</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Configuración inicial de Git</h2>
+            <p class="body anim-up d2">Antes del primer commit, identifica quién eres en el historial. El archivo <b style="color:var(--fg)">.gitignore</b> excluye carpetas que no deben versionarse.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">@</span><span><b>user.name</b> y <b>user.email</b> — autor de cada commit</span></div>
+              <div class="fitem anim-up d4"><span class="ftick">!</span><span><b>.gitignore</b> — bin/, obj/, .vs/, node_modules/</span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">terminal — bash</span></div>
+            <div class="term-body sm"><span id="t12" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t12" hidden><span class="tp">$</span> <span class="tf">git</span> config --global user.name <span class="ts">"Tu Nombre"</span>
+<span class="tp">$</span> <span class="tf">git</span> config --global user.email <span class="ts">"tu@email.com"</span>
+
+<span class="tc"># .gitignore</span>
+bin/
+obj/
+.vs/
+*.user</div>
+        </div>
+      </section>
+
+      <!-- ═══ 13 · GIT FLOW ═══ -->
+      <section data-label="13" data-screen-label="Git Flow">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">flow</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — Workflow</span></span><span class="meta">RAMAS</span></div>
+        <div class="cbody" style="max-width: 1600px; gap: var(--glg); margin-top: 30px">
+          <h2 class="ctitle anim-up">Git Flow</h2>
+          <p class="body anim-up d2">Modelo de ramas estructuradas: <b style="color:var(--fg)">main</b> (producción estable), <b style="color:var(--fg)">develop</b> (integración) y <b style="color:var(--fg)">feature</b> (trabajo aislado por funcionalidad).</p>
+          <div class="cards3 anim-up d3">
+            <div class="qcard"><div class="qcard-t">main</div><div class="qcard-b">Código estable y desplegable. Solo entra vía merge revisado.</div></div>
+            <div class="qcard"><div class="qcard-t">develop</div><div class="qcard-b">Rama de integración donde convergen las features antes de release.</div></div>
+            <div class="qcard"><div class="qcard-t">feature/*</div><div class="qcard-b">Rama temporal por tarea: <b>feature/ticket-poo</b>, <b>feature/git-setup</b>.</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 14 · BRANCHING Y MERGING ═══ -->
+      <section data-label="14" data-screen-label="Branching y Merging">
+        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:260px; color:rgba(240,238,235,0.022)">merge</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — Workflow</span></span><span class="meta">COMANDOS</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Branching y Merging</h2>
+            <p class="body anim-up d2">Crear ramas permite trabajar en paralelo sin afectar <b style="color:var(--fg)">main</b>. El merge integra los cambios de una rama en otra.</p>
+            <div class="steps">
+              <div class="stepr anim-up d3"><span class="stepn">1</span><span><b>git branch feature/ticket</b> — crear rama</span></div>
+              <div class="stepr anim-up d4"><span class="stepn">2</span><span><b>git checkout feature/ticket</b> — cambiar a ella</span></div>
+              <div class="stepr anim-up d5"><span class="stepn">3</span><span><b>git merge feature/ticket</b> — integrar en develop/main</span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">terminal — bash</span></div>
+            <div class="term-body sm"><span id="t14" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t14" hidden><span class="tc"># flujo típico</span>
+<span class="tp">$</span> <span class="tf">git</span> checkout -b feature/soporte-ticket
+<span class="tc"># ... editar código, commit ...</span>
+<span class="tp">$</span> <span class="tf">git</span> checkout develop
+<span class="tp">$</span> <span class="tf">git</span> merge feature/soporte-ticket
+<span class="tc"># develop ahora incluye los cambios</span></div>
+        </div>
+      </section>
+
+      <!-- ═══ 15 · TAGS Y VERSIONAMIENTO ═══ -->
+      <section data-label="15" data-screen-label="Tags">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">v1</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — Workflow</span></span><span class="meta">SEMVER</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Tags y versionamiento semántico</h2>
+            <p class="body anim-up d2"><b style="color:var(--fg)">SemVer</b>: MAJOR.MINOR.PATCH — <b>v1.0.0</b> (inicial), <b>v1.1.0</b> (nueva funcionalidad), <b>v1.1.1</b> (corrección).</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">v</span><span><b>git tag v1.0.0</b> — marcar un punto en el historial</span></div>
+              <div class="fitem anim-up d4"><span class="ftick">-a</span><span><b>git tag -a v1.0.0 -m "..."</b> — tag anotado con mensaje</span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">terminal — bash</span></div>
+            <div class="term-body sm"><span id="t15" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t15" hidden><span class="tp">$</span> <span class="tf">git</span> tag -a v0.1.0 -m <span class="ts">"Primera versión POO"</span>
+<span class="tp">$</span> <span class="tf">git</span> tag                  <span class="tc"># listar tags</span>
+<span class="tp">$</span> <span class="tf">git</span> show v0.1.0          <span class="tc"># ver detalle</span>
+
+<span class="tc"># v1.0.0 → release estable</span>
+<span class="tc"># v1.1.0 → nueva feature (SoporteTicket)</span></div>
+        </div>
+      </section>
+
+      <!-- ═══ 16 · DEMO INTRO ═══ -->
+      <section data-label="16" data-screen-label="Demo en vivo">
+        <div class="layer">
+          <div class="geo" style="width: 640px; height: 640px; top: -150px; right: -140px; border-color: rgba(0,232,208,0.06)"></div>
+          <div class="wm" style="bottom: -100px; left: -30px; font-size: 300px; color: rgba(0,232,208,0.04)">LIVE</div>
+        </div>
+        <div class="topbar">
+          <span class="live anim-up">Programación en vivo</span>
+          <span class="meta">15 MIN</span>
+        </div>
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 6px">
+          <h1 class="anim-up d2" style="font-family: var(--sans); font-size: var(--td); font-weight: 700; line-height: 0.95; letter-spacing: -0.03em; color: var(--fg)">
+            Ejercicio demostrativo
+          </h1>
+          <h1 class="anim-up d3" style="font-family: var(--serif); font-size: var(--td); font-weight: 400; font-style: italic; color: var(--accent)">
+            POO + Git en conjunto.
+          </h1>
+          <p class="body anim-up d4" style="margin-top: 34px; max-width: 1100px">Sistema de <b style="color:var(--fg)">coordinación de soporte técnico</b>: clases en C# versionadas con Git. El estudiante sigue en su editor paso a paso.</p>
+        </div>
+        <div class="hr" style="margin-bottom: 28px"></div>
+        <div class="topbar"><span class="meta">Abre su terminal</span><span class="meta faint">git init · dotnet new console</span></div>
+      </section>
+
+      <!-- ═══ 17 · DEMO PASO 1 ═══ -->
+      <section data-label="17" data-screen-label="Demo · Repo y Ticket">
+        <div class="layer"></div>
+        <div class="topbar"><span class="live">En vivo</span><span class="meta">PASO 1 / 3</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Crear repo Git y clase Ticket</h2>
+            <p class="body anim-up d2">Inicializar el repositorio, crear el proyecto de consola y definir la clase <b style="color:var(--fg)">Ticket</b> con sus atributos.</p>
+            <div class="steps">
+              <div class="stepr anim-up d3"><span class="stepn">a</span><span><b>git init</b> + <b>dotnet new console</b></span></div>
+              <div class="stepr anim-up d4"><span class="stepn">b</span><span>Clase <b>Ticket</b> con Id, Titulo, Prioridad, Estado</span></div>
+              <div class="stepr anim-up d5"><span class="stepn">c</span><span>Primer commit: <b>feat: agregar clase Ticket</b></span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">terminal + Ticket.cs</span></div>
+            <div class="term-body sm"><span id="t17" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t17" hidden><span class="tp">$</span> <span class="tf">git</span> init
+<span class="tp">$</span> <span class="tf">dotnet</span> new console -n SoporteApp
+<span class="tp">$</span> <span class="tk">cd</span> SoporteApp
+
+<span class="tk">class</span> <span class="tf">Ticket</span> {
+    <span class="tk">public</span> <span class="tk">int</span> Id;
+    <span class="tk">public</span> <span class="tk">string</span> Titulo;
+    <span class="tk">public</span> <span class="tk">int</span> Prioridad;
+    <span class="tk">public</span> <span class="tk">string</span> Estado;
+}
+
+<span class="tp">$</span> <span class="tf">git</span> add . &amp;&amp; <span class="tf">git</span> commit -m <span class="ts">"feat: agregar clase Ticket"</span></div>
+        </div>
+      </section>
+
+      <!-- ═══ 18 · DEMO PASO 2 ═══ -->
+      <section data-label="18" data-screen-label="Demo · Herencia">
+        <div class="layer"></div>
+        <div class="topbar"><span class="live">En vivo</span><span class="meta">PASO 2 / 3</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Refactorizar con herencia</h2>
+            <p class="body anim-up d2">Crear <b style="color:var(--fg)">SoporteTicket : Ticket</b> en una rama feature. Agrega el atributo <b style="color:var(--fg)">TecnicoAsignado</b> y override de <b style="color:var(--fg)">Resumen()</b>.</p>
+            <div class="steps">
+              <div class="stepr anim-up d3"><span class="stepn">a</span><span><b>git checkout -b feature/soporte-ticket</b></span></div>
+              <div class="stepr anim-up d4"><span class="stepn">b</span><span>Clase <b>SoporteTicket</b> hereda de Ticket</span></div>
+              <div class="stepr anim-up d5"><span class="stepn">c</span><span>Commit: <b>feat: agregar SoporteTicket con herencia</b></span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">SoporteTicket.cs</span></div>
+            <div class="term-body sm"><span id="t18" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t18" hidden><span class="tp">$</span> <span class="tf">git</span> checkout -b feature/soporte-ticket
+
+<span class="tk">class</span> <span class="tf">SoporteTicket</span> : <span class="tf">Ticket</span>
+{
+    <span class="tk">public</span> <span class="tk">string</span> TecnicoAsignado { <span class="tk">get</span>; <span class="tk">set</span>; }
+
+    <span class="tk">public</span> <span class="tk">override</span> <span class="tk">string</span> <span class="tf">ToString</span>()
+        =&gt; <span class="ts">$"[SOP] #{Id} → {TecnicoAsignado}"</span>;
+}
+
+<span class="tp">$</span> <span class="tf">git</span> add . &amp;&amp; <span class="tf">git</span> commit -m <span class="ts">"feat: SoporteTicket con herencia"</span></div>
+        </div>
+      </section>
+
+      <!-- ═══ 19 · DEMO PASO 3 ═══ -->
+      <section data-label="19" data-screen-label="Demo · Tag">
+        <div class="layer"></div>
+        <div class="topbar"><span class="live">En vivo</span><span class="meta">PASO 3 / 3</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Commit semántico y tag v0.1.0</h2>
+            <p class="body anim-up d2">Merge de la feature a <b style="color:var(--fg)">main</b>, commit con mensaje semántico y etiqueta <b style="color:var(--fg)">v0.1.0</b> para marcar la primera versión funcional.</p>
+            <div class="steps">
+              <div class="stepr anim-up d3"><span class="stepn">a</span><span><b>git checkout main</b> + <b>git merge feature/soporte-ticket</b></span></div>
+              <div class="stepr anim-up d4"><span class="stepn">b</span><span>Commit final: <b>chore: integrar módulo de soporte</b></span></div>
+              <div class="stepr anim-up d5"><span class="stepn">c</span><span><b>git tag -a v0.1.0</b> — primera versión POO</span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">terminal — bash</span></div>
+            <div class="term-body sm"><span id="t19" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t19" hidden><span class="tp">$</span> <span class="tf">git</span> checkout main
+<span class="tp">$</span> <span class="tf">git</span> merge feature/soporte-ticket
+<span class="tp">$</span> <span class="tf">git</span> commit -m <span class="ts">"chore: integrar módulo soporte"</span>
+<span class="tp">$</span> <span class="tf">git</span> tag -a v0.1.0 -m <span class="ts">"v0.1.0 — POO básica"</span>
+<span class="tp">$</span> <span class="tf">git</span> log --oneline --decorate</div>
+        </div>
+      </section>
+
+      <!-- ═══ 20 · ACTIVIDAD ═══ -->
+      <section data-label="20" data-screen-label="Actividad práctica">
+        <div class="layer">
+          <div class="geo" style="width: 560px; height: 560px; top: -120px; left: -120px; border-color: rgba(0,232,208,0.05)"></div>
+          <div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.04)">20m</div>
+        </div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber hacer — Actividad obligatoria</span></span><span class="meta">20 MIN · INDIVIDUAL</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Actividad práctica</h2>
+            <p class="body anim-up d2">El estudiante replica el ejercicio: programa de consola con <b style="color:var(--fg)">POO</b> (mínimo 2 clases) y un historial <b style="color:var(--fg)">Git</b> documentado.</p>
+            <div class="anim-up d3" style="display: flex; gap: 16px; margin-top: 8px">
+              <span class="chip">20 min</span><span class="chip">Individual</span>
+            </div>
+          </div>
+          <div class="flist">
+            <div class="fitem anim-up d2"><span class="ftick">1</span><span>Al menos <b>2 clases</b> con relación de herencia o composición</span></div>
+            <div class="fitem anim-up d3"><span class="ftick">2</span><span>Usar <b>encapsulamiento</b> (private + properties)</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">3</span><span>Historial Git con <b>3 commits</b> descriptivos</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">4</span><span>Al menos <b>1 tag</b> semántico (ej. v0.1.0)</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">5</span><span>Mostrar <b>git log --oneline</b> al finalizar</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 21 · CIERRE ═══ -->
+      <section data-label="21" data-screen-label="Cierre">
+        <div class="layer"><div class="wm serif" style="bottom:-70px; right:-30px; font-size:300px; color:rgba(0,232,208,0.04)">fin</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Cierre</span></span><span class="meta">CIERRE</span></div>
+        <div class="cbody" style="max-width: 1600px; gap: var(--glg)">
+          <h2 class="ctitle anim-up">Cierre y tarea</h2>
+          <div class="cards3">
+            <div class="qcard anim-up d2"><div class="qcard-t">Dudas</div><div class="qcard-b">Se resuelven dudas finales sobre POO, Git o la actividad práctica.</div></div>
+            <div class="qcard anim-up d3"><div class="qcard-t">Repaso</div><div class="qcard-b">Clase/objeto, encapsulamiento, herencia, polimorfismo, abstracción, ramas y tags.</div></div>
+            <div class="qcard anim-up d4"><div class="qcard-t">Tarea XML</div><div class="qcard-b">Continuar con ejercicios de <b>XML</b> bien formado y validación de estructura.</div></div>
+          </div>
+          <p class="body anim-up d5" style="margin-top: 10px"><b style="color:var(--fg)">Puntos clave:</b> la POO modela entidades reales; Git documenta cada paso del desarrollo. La disciplina en ambos refleja responsabilidad profesional.</p>
+        </div>
+      </section>
+    </deck-stage>
+
+    <script type="application/json" id="speaker-notes">
+    [
+      "[5 MIN · PORTADA]\n\nBuenos días. Semana 03 de Introducción a la Programación y Computación 2, ECYS 771. Hoy unimos dos temas: Programación Orientada a Objetos en C# y Git Workflow.\n\nObjetivo de los 80 minutos: que cada estudiante entienda clases, objetos y los cuatro pilares de la POO, y que sepa usar Git con ramas, merges y tags para versionar su proyecto.\n\nPresentación breve: soy Jorge Mejía. Canal oficial: foro y WhatsApp del curso.\n\nTransición: agenda.",
+      "[2 MIN · AGENDA]\n\nSesión de 80 minutos en cinco bloques:\n\n01 — Área actitudinal (5 min): responsabilidad y puntualidad.\n02 — POO en C# (25 min): paradigma, clases, objetos y los cuatro pilares.\n03 — Git Workflow (15 min): control de versiones, configuración, ramas, merges y tags.\n04 — Ejercicio demostrativo (15 min): sistema de coordinación de soporte técnico.\n05 — Actividad práctica y cierre (20 min): el estudiante replica el ejercicio.\n\nRegla de oro: interrumpan con preguntas. La POO se entiende mejor con ejemplos que con definiciones.\n\nTransición: responsabilidad y puntualidad.",
+      "[5 MIN · RESPONSABILIDAD Y PUNTUALIDAD]\n\nÁrea actitudinal — Saber ser.\n\nLea los tres puntos:\n1. Asistencia y puntualidad: llegar a tiempo al laboratorio es parte del compromiso profesional.\n2. Compromiso en la ejecución: seguir instrucciones, completar ejercicios y entregar a tiempo.\n3. Relación con la sesión: la misma disciplina que usan para entregar un ejercicio de XML correctamente se aplica al escribir código C# y al versionar con Git.\n\nEn programación, la responsabilidad se refleja en el historial de commits: orden, frecuencia y mensajes claros.\n\nPregunta: ¿qué diferencia hay entre un estudiante responsable y uno que no? Tome una respuesta.\n\nTransición: ¿qué es la POO?",
+      "[4 MIN · ¿QUÉ ES LA POO?]\n\nLa Programación Orientada a Objetos es un paradigma que modela el mundo real con objetos.\n\nAnalogía central:\n- Clase = molde o plano.\n- Objeto = instancia concreta creada a partir del molde.\n\nEjemplo: la clase Ticket define que todo ticket tiene Id, Título y Prioridad. Cada ticket que un usuario registra es un objeto distinto con sus propios valores.\n\nVentajas: reutilización, organización, mantenimiento.\n\nEn C# todo gira alrededor de objetos. Incluso un string es un objeto con métodos como .ToUpper().\n\nPregunta: ¿qué objeto usarían para modelar un estudiante? Campos: carnet, nombre, carrera.\n\nTransición: clases y objetos en C#.",
+      "[5 MIN · CLASES Y OBJETOS]\n\nSiga el ejemplo del terminal.\n\nClase: se define con class Ticket. Es el plano.\nAtributos: los datos que guarda cada objeto — Id, Titulo, Prioridad, Estado.\nObjeto: se crea con new Ticket() y se asigna a una variable.\n\nEn el ejemplo:\n- class Ticket con cuatro atributos públicos.\n- Ticket t = new Ticket() crea el objeto.\n- t.Id = 1 asigna valores a ese objeto específico.\n\nCada objeto tiene su propia copia de los atributos. Dos tickets distintos pueden tener el mismo Id pero son objetos independientes en memoria.\n\nPregunta: ¿qué diferencia hay entre la clase y el objeto?\n\nTransición: métodos y atributos.",
+      "[4 MIN · MÉTODOS Y ATRIBUTOS]\n\nAtributos = datos (qué sabe el objeto).\nMétodos = comportamiento (qué hace el objeto).\n\nEjemplo:\n- Atributos: Id, Titulo, Prioridad, Estado.\n- Método ToString(): devuelve una representación en texto del ticket.\n- Método CambiarEstado(string nuevo): modifica el Estado del ticket.\n\nUn método es una función dentro de una clase. Puede recibir parámetros y devolver un valor.\n\nBuena práctica: los métodos deben tener un solo propósito claro.\n\nPregunta: ¿por qué no modificar Estado directamente desde fuera en lugar de usar un método? Adelanto: eso lleva a encapsulamiento.\n\nTransición: encapsulamiento.",
+      "[4 MIN · ENCAPSULAMIENTO]\n\nEncapsulamiento = proteger los datos internos y exponer solo lo necesario.\n\nEn C#:\n- private string _titulo: el campo es privado, solo la clase lo ve.\n- public string Titulo { get; set; }: la propiedad pública controla el acceso.\n\nVentajas:\n- Evita que otros modifiquen datos de forma inválida.\n- Permite validar en el setter.\n- Oculta la implementación interna.\n\nAnalogía: como el motor de un carro — no tocas el motor directo, usas el pedal y el volante.\n\nEn el ejemplo, Titulo tiene validación para no quedar vacío.\n\nPregunta: ¿qué pasaría si todos los campos fueran públicos?\n\nTransición: herencia.",
+      "[4 MIN · HERENCIA]\n\nHerencia = una clase deriva de otra y reutiliza sus atributos y métodos.\n\nSintaxis: class SoporteTicket : Ticket\n\n- Ticket es la clase base (padre).\n- SoporteTicket es la clase derivada (hija).\n- SoporteTicket hereda Id, Titulo, Prioridad, Estado y añade TecnicoAsignado.\n\nVentaja: no repetir código. Todo lo que Ticket sabe, SoporteTicket también lo sabe.\n\nEn C# solo se hereda de una clase (no hay herencia múltiple de clases).\n\nPregunta: ¿qué clases derivadas de Ticket podrían existir? Ejemplo: TicketUrgente, TicketInterno.\n\nTransición: polimorfismo.",
+      "[4 MIN · POLIMORFISMO]\n\nPolimorfismo = muchas formas. Mismo método, distinto comportamiento según el objeto.\n\nSintaxis:\n- En la base: public virtual string Etiqueta()\n- En la derivada: public override string Etiqueta()\n\nEjemplo:\n- Ticket.Etiqueta() devuelve \"Ticket #1\".\n- SoporteTicket.Etiqueta() devuelve \"Ticket #1 [Soporte]\".\n\nAunque la variable sea de tipo Ticket, al llamar Etiqueta() se ejecuta la versión de SoporteTicket si el objeto es SoporteTicket.\n\nEsto permite tratar objetos distintos de forma uniforme.\n\nPregunta: ¿por qué es útil en una lista de tickets?\n\nTransición: abstracción.",
+      "[4 MIN · ABSTRACCIÓN]\n\nAbstracción = definir el contrato sin implementar todo el detalle.\n\nabstract class TicketBase:\n- No se puede instanciar con new TicketBase().\n- Define métodos abstractos que las clases hijas deben implementar.\n\nEjemplo:\n- abstract string Resumen();\n- SoporteTicket debe implementar Resumen().\n\nSirve para: obligar a que todas las clases de una jerarquía tengan ciertos métodos.\n\nDiferencia con interfaz: abstract puede tener código implementado; interface solo firmas (lo verán más adelante).\n\nPregunta: ¿por qué no usar solo clases normales?\n\nTransición: Git y control de versiones.",
+      "[5 MIN · GIT Y CONTROL DE VERSIONES]\n\nGit es un sistema de control de versiones distribuido.\n\nPor qué versionar:\n- Historial completo de cambios.\n- Volver a un estado anterior si algo falla.\n- Trabajar en equipo sin pisar código.\n- Documentar qué se hizo y cuándo.\n\nCuatro comandos básicos:\n- git init: crea un repositorio.\n- git add .: prepara cambios para commit.\n- git commit -m \"mensaje\": guarda el estado con descripción.\n- git log --oneline: muestra el historial resumido.\n\nCada commit es una foto del proyecto en ese momento.\n\nTransición: configuración inicial de Git.",
+      "[4 MIN · CONFIGURACIÓN INICIAL DE GIT]\n\nAntes de usar Git en un proyecto:\n\ngit config --global user.name \"Tu Nombre\"\ngit config --global user.email \"tu@email.com\"\n\nEsto identifica quién hizo cada commit.\n\n.gitignore: archivo que lista qué no subir al repositorio.\nEn proyectos C# se ignoran:\n- bin/ y obj/ (archivos compilados).\n- .vs/ (configuración local de Visual Studio).\n- *.user (preferencias del usuario).\n\nUn buen .gitignore mantiene el repositorio limpio y portable.\n\nPregunta: ¿por qué no subir los archivos compilados?\n\nTransición: Git Flow.",
+      "[5 MIN · GIT FLOW]\n\nGit Flow es un modelo de trabajo con ramas troncales y ramas de funcionalidad.\n\nRamas principales:\n- main: código estable, listo para producción.\n- develop: integración de funcionalidades, siguiente release.\n\nRamas de soporte:\n- feature/nombre: desarrollo de una funcionalidad.\n- release/x.y.z: preparación de una versión.\n- hotfix/x.y.z: corrección urgente en producción.\n\nFlujo:\n1. Crear feature desde develop.\n2. Trabajar y hacer commits.\n3. Merge de feature a develop.\n4. Cuando develop está estable, merge a main y tag de versión.\n\nTransición: branching y merging.",
+      "[4 MIN · BRANCHING Y MERGING]\n\nRama = línea de desarrollo independiente.\n\nComandos:\n- git branch nombre: crea una rama.\n- git checkout nombre: cambia a esa rama.\n- git merge nombre: fusiona la rama indicada en la actual.\n\nEjemplo:\n- Estás en develop.\n- git checkout -b feature/tickets\n- Haces cambios y commits.\n- git checkout develop\n- git merge feature/tickets\n\nLos cambios de la rama ahora están en develop.\n\nSi dos ramas modifican la misma línea, hay conflicto: Git pide resolver manualmente.\n\nPregunta: ¿cuándo conviene crear una rama nueva?\n\nTransición: tags y versionamiento semántico.",
+      "[4 MIN · TAGS Y VERSIONAMIENTO SEMÁNTICO]\n\nTag = etiqueta permanente en un commit específico.\n\nComandos:\n- git tag v1.0.0: crea una etiqueta ligera.\n- git tag -a v1.0.0 -m \"Primera versión\": etiqueta anotada.\n- git push origin v1.0.0: subir el tag al remoto.\n\nVersionamiento semántico (SemVer):\n- MAJOR.MINOR.PATCH\n- 1.0.0: primera versión estable.\n- 1.1.0: nueva funcionalidad, compatible.\n- 1.1.1: corrección de errores.\n\nEn el ejercicio usaremos v0.1.0 como primera versión del sistema de soporte.\n\nPregunta: ¿por qué no usar solo números de commit?\n\nTransición: ejercicio demostrativo.",
+      "[15 MIN · EJERCICIO DEMOSTRATIVO — INTRO]\n\nBloque en vivo. Sistema de coordinación y soporte técnico.\n\nObjetivo: crear una aplicación de consola C# con POO y gestionarla con Git.\n\nTres pasos:\n1. Crear repositorio Git y clase Ticket.\n2. Refactorizar con herencia: SoporteTicket : Ticket.\n3. Hacer commit semántico y tag v0.1.0.\n\nEl estudiante sigue en su editor. Circule por el salón.\n\nAbran terminal y VS Code o Visual Studio.\n\nTransición: paso 1 — repo y clase Ticket.",
+      "[5 MIN · DEMO PASO 1 — REPO Y CLASE TICKET]\n\nPasos en terminal:\n\nmkdir SistemaSoporte\ncd SistemaSoporte\ndotnet new console\ngit init\ngit add .\ngit commit -m \"feat: proyecto inicial de sistema de soporte\"\n\nCrear archivo Ticket.cs:\n\nclass Ticket\n{\n    public int Id;\n    public string Titulo;\n    public int Prioridad;\n    public string Estado;\n}\n\nHacer commit:\ngit add Ticket.cs\ngit commit -m \"feat: clase Ticket con atributos básicos\"\n\nExplique que cada commit es un punto seguro.\n\nTransición: paso 2 — herencia.",
+      "[5 MIN · DEMO PASO 2 — HERENCIA]\n\nRefactorizar: crear SoporteTicket que hereda de Ticket.\n\nclass SoporteTicket : Ticket\n{\n    public string TecnicoAsignado;\n\n    public override string ToString()\n    {\n        return $\"#{Id} {Titulo} [{Estado}] — {TecnicoAsignado}\";\n    }\n}\n\nEn Program.cs:\nSoporteTicket t = new SoporteTicket();\nt.Id = 1;\nt.Titulo = \"No enciende el equipo\";\nt.Prioridad = 3;\nt.Estado = \"Abierto\";\nt.TecnicoAsignado = \"María\";\nConsole.WriteLine(t);\n\nCommit:\ngit add .\ngit commit -m \"feat: herencia SoporteTicket y override ToString\"\n\nExplique que SoporteTicket reutiliza TodoTicket.\n\nTransición: paso 3 — commit semántico y tag.",
+      "[5 MIN · DEMO PASO 3 — COMMIT SEMÁNTICO Y TAG]\n\nConvención de commits semánticos:\n- feat: nueva funcionalidad.\n- fix: corrección de error.\n- docs: documentación.\n- refactor: cambio de código sin nueva funcionalidad.\n\nTag de versión:\ngit tag -a v0.1.0 -m \"Primera versión funcional con POO\"\ngit log --oneline\ngit tag\n\nMostrar que el tag marca el punto donde el proyecto ya tiene POO básico.\n\nSi hay remoto: git push origin main --tags\n\nCierre del ejercicio: el estudiante hará lo mismo en la actividad.\n\nTransición: actividad práctica.",
+      "[20 MIN · ACTIVIDAD PRÁCTICA]\n\nActividad obligatoria, individual, 20 minutos.\n\nInstrucciones:\n1. Crear un proyecto de consola C# llamado SistemaCoordinacion.\n2. Crear al menos dos clases con herencia (ejemplo: Ticket y SoporteTicket, o Persona y Estudiante).\n3. Inicializar Git, configurar usuario y .gitignore.\n4. Hacer al menos 3 commits semánticos con mensajes claros.\n5. Crear un tag v0.1.0.\n\nCircular por el salón; revise que cada estudiante tenga:\n- Una clase base y una derivada.\n- Historial Git con 3+ commits.\n- Tag v0.1.0 creado.\n\nAviso: en 5 minutos cerramos la actividad.\n\nTransición: cierre y tarea.",
+      "[10 MIN · CIERRE Y TAREA]\n\nResolver dudas finales sobre POO o Git.\n\nTarea relacionada con la práctica de XML: revisar cómo la misma disciplina de estructura y validación se aplica al programar en C#.\n\nPuntos clave de la sesión:\n- Clase = molde; objeto = instancia.\n- Cuatro pilares: encapsulamiento, herencia, polimorfismo, abstracción.\n- Git: init, add, commit, branch, merge, tag.\n\nPróxima sesión: más POO (interfaces, colecciones) y Git remoto con GitHub.\n\nAgradezca la participación y despida al grupo."
+    ]
+    </script>
+
+    <!-- Progress bar -->
+    <div id="deck-progress"><div id="deck-progress-fill"></div></div>
+
+    <!-- Terminal typing engine (vendored) -->
+    <script src="vendor/typed.umd.js"></script>
+    <script>
+      (function () {
+        var stage = document.querySelector("deck-stage");
+        var fill = document.getElementById("deck-progress-fill");
+        if (!stage) return;
+
+        // Map every hidden source (.tsrc) to its target span id.
+        var sources = {};
+        document.querySelectorAll(".tsrc").forEach(function (el) {
+          sources[el.getAttribute("data-for")] = el.innerHTML;
+        });
+
+        var typedOnce = {};   // id -> true once fully typed
+        var instances = {};   // id -> Typed instance (to destroy on re-entry)
+
+        function runTerminal(target) {
+          var id = target.id;
+          var src = sources[id];
+          if (src == null) return;
+
+          // Already typed before: just restore full text instantly, no re-anim.
+          if (typedOnce[id]) {
+            if (instances[id]) { instances[id].destroy(); instances[id] = null; }
+            target.innerHTML = src;
+            return;
+          }
+
+          if (instances[id]) { instances[id].destroy(); }
+          target.innerHTML = "";
+          instances[id] = new Typed("#" + id, {
+            strings: [src],
+            typeSpeed: 14,
+            startDelay: 260,
+            showCursor: true,
+            cursorChar: "▋",
+            contentType: "html",
+            onComplete: function () {
+              typedOnce[id] = true;
+            },
+          });
+        }
+
+        function activate(section) {
+          if (!section) return;
+          section.querySelectorAll("[data-typed-target]").forEach(runTerminal);
+        }
+
+        stage.addEventListener("slidechange", function (e) {
+          var d = e.detail;
+          if (fill && d.total) {
+            fill.style.width = (((d.index + 1) / d.total) * 100).toFixed(2) + "%";
+          }
+          activate(d.slide);
+        });
+      })();
+    </script>
+  </body>
+</html>
