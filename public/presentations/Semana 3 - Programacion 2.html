@@ -76,7 +76,7 @@
       }
       #deck-progress-fill {
         height: 100%;
-        width: 4.76%;
+        width: 2.78%;
         background: var(--accent);
         box-shadow: 0 0 14px rgba(0, 232, 208, 0.55);
         transition: width 0.65s cubic-bezier(0.16, 1, 0.3, 1);
@@ -536,6 +536,361 @@
         color: var(--fg-muted);
         letter-spacing: 0.08em;
       }
+
+      /* ═══ Video cards ═════════════════════════════════════════ */
+      .video-card {
+        display: flex;
+        align-items: center;
+        gap: 36px;
+        border: 1px solid var(--line);
+        padding: 38px 44px;
+        text-decoration: none;
+        color: inherit;
+        transition: border-color 0.3s;
+        max-width: 1200px;
+      }
+      .video-card:hover { border-color: rgba(0, 232, 208, 0.45); }
+      .video-play {
+        flex-shrink: 0;
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        background: rgba(0, 232, 208, 0.1);
+        border: 2px solid rgba(0, 232, 208, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .video-play::after {
+        content: "";
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 15px 0 15px 26px;
+        border-color: transparent transparent transparent var(--accent);
+        margin-left: 7px;
+      }
+      .video-title {
+        font-family: var(--sans);
+        font-size: 32px;
+        font-weight: 600;
+        color: var(--fg);
+        margin-bottom: 10px;
+        line-height: 1.25;
+      }
+      .video-desc {
+        font-family: var(--sans);
+        font-size: 26px;
+        color: var(--fg-dim);
+        line-height: 1.5;
+      }
+      .video-url {
+        font-family: var(--mono);
+        font-size: 22px;
+        color: var(--accent);
+        margin-top: 14px;
+        letter-spacing: 0.02em;
+      }
+
+      /* ═══ Image slides ════════════════════════════════════════ */
+      .img-slide {
+        display: grid;
+        grid-template-columns: 1fr 1.05fr;
+        gap: var(--gxl);
+        align-items: center;
+        flex: 1;
+        margin-top: 20px;
+      }
+      .img-wrap img {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+        border: 1px solid var(--line);
+        display: block;
+      }
+      .img-cap {
+        font-family: var(--mono);
+        font-size: 22px;
+        color: var(--fg-muted);
+        margin-top: 12px;
+        letter-spacing: 0.04em;
+      }
+
+      /* ═══ CSS diagrams ════════════════════════════════════════ */
+      .diagram {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        padding: 20px 0;
+      }
+      .diagram-node {
+        border: 1px solid rgba(0, 232, 208, 0.5);
+        background: rgba(0, 232, 208, 0.06);
+        padding: 22px 52px;
+        font-family: var(--sans);
+        font-size: 30px;
+        font-weight: 600;
+        color: var(--fg);
+        text-align: center;
+        min-width: 220px;
+      }
+      .diagram-node.base {
+        border-color: rgba(0, 232, 208, 0.7);
+        box-shadow: 0 0 30px rgba(0, 232, 208, 0.08);
+      }
+      .diagram-node.child {
+        border-color: var(--line);
+        background: #0d0d0d;
+        font-size: 26px;
+        font-weight: 500;
+        min-width: 180px;
+        padding: 18px 36px;
+      }
+      .diagram-vline {
+        width: 2px;
+        height: 44px;
+        background: rgba(255, 255, 255, 0.28);
+      }
+      .diagram-hline-wrap {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        max-width: 520px;
+      }
+      .diagram-hline-wrap::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 25%;
+        right: 25%;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.28);
+      }
+      .diagram-row {
+        display: flex;
+        gap: 100px;
+        justify-content: center;
+      }
+      .diagram-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .diagram-col .diagram-vline { height: 36px; }
+
+      /* Git flow branch diagram */
+      .git-flow {
+        position: relative;
+        width: 100%;
+        max-width: 1400px;
+        height: 380px;
+        margin-top: 20px;
+      }
+      .git-branch-line {
+        position: absolute;
+        height: 3px;
+        border-radius: 2px;
+      }
+      .git-branch-line.main {
+        top: 80px;
+        left: 60px;
+        right: 60px;
+        background: rgba(255, 255, 255, 0.35);
+      }
+      .git-branch-line.develop {
+        top: 180px;
+        left: 120px;
+        right: 200px;
+        background: rgba(0, 232, 208, 0.45);
+      }
+      .git-branch-line.feature {
+        top: 280px;
+        left: 280px;
+        width: 340px;
+        background: rgba(255, 189, 46, 0.55);
+        transform: rotate(-8deg);
+        transform-origin: left center;
+      }
+      .git-commit {
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 2px solid var(--bg);
+        transform: translate(-50%, -50%);
+      }
+      .git-commit.main-c { background: #f0eeeb; top: 80px; }
+      .git-commit.dev-c { background: var(--accent); top: 180px; }
+      .git-commit.feat-c { background: #ffbd2e; top: 280px; }
+      .git-label {
+        position: absolute;
+        font-family: var(--mono);
+        font-size: 22px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--fg-muted);
+      }
+      .git-label.main-l { top: 42px; left: 60px; color: var(--fg); }
+      .git-label.dev-l { top: 142px; left: 120px; color: var(--accent); }
+      .git-label.feat-l { top: 242px; left: 280px; color: #ffbd2e; }
+      .git-merge-arrow {
+        position: absolute;
+        top: 230px;
+        right: 280px;
+        width: 2px;
+        height: 60px;
+        background: rgba(0, 232, 208, 0.5);
+      }
+      .git-merge-arrow::after {
+        content: "";
+        position: absolute;
+        bottom: -6px;
+        left: -5px;
+        border: 6px solid transparent;
+        border-top-color: rgba(0, 232, 208, 0.7);
+      }
+
+      /* ═══ Timeline ════════════════════════════════════════════ */
+      .timeline {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        position: relative;
+        padding: 50px 20px 10px;
+        margin-top: 20px;
+      }
+      .timeline::before {
+        content: "";
+        position: absolute;
+        top: 58px;
+        left: 50px;
+        right: 50px;
+        height: 2px;
+        background: var(--line);
+      }
+      .tl-step {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 0 6px;
+        position: relative;
+        z-index: 1;
+      }
+      .tl-dot {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--accent);
+        border: 3px solid var(--bg);
+        margin-bottom: 18px;
+        box-shadow: 0 0 12px rgba(0, 232, 208, 0.4);
+      }
+      .tl-label {
+        font-family: var(--mono);
+        font-size: 22px;
+        color: var(--accent);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+      .tl-desc {
+        font-family: var(--sans);
+        font-size: 23px;
+        color: var(--fg-dim);
+        line-height: 1.35;
+      }
+
+      /* ═══ Pillars grid ════════════════════════════════════════ */
+      .pillars {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--gmd);
+        margin-top: 10px;
+      }
+      .pillar {
+        border: 1px solid var(--line);
+        padding: 36px 34px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .pillar-ico {
+        font-family: var(--mono);
+        font-size: 42px;
+        color: var(--accent);
+        line-height: 1;
+      }
+      .pillar-n {
+        font-family: var(--sans);
+        font-size: 32px;
+        font-weight: 600;
+        color: var(--fg);
+      }
+      .pillar-d {
+        font-family: var(--sans);
+        font-size: 25px;
+        color: var(--fg-dim);
+        line-height: 1.45;
+      }
+
+      /* ═══ Folder tree ═════════════════════════════════════════ */
+      .ftree {
+        font-family: var(--mono);
+        font-size: 26px;
+        line-height: 1.85;
+        color: var(--fg-dim);
+        border: 1px solid var(--line);
+        padding: 38px 46px;
+        background: #0d0d0d;
+      }
+      .ftree .fd { color: var(--accent); }
+      .ftree .fl { color: var(--fg); }
+      .ftree .fi { color: var(--fg-muted); font-size: 22px; }
+
+      /* merge step visual */
+      .merge-visual {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--gxl);
+        align-items: stretch;
+        flex: 1;
+        margin-top: 20px;
+      }
+      .branch-mini {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 28px;
+        border: 1px solid var(--line);
+        background: #0d0d0d;
+      }
+      .branch-mini-t {
+        font-family: var(--mono);
+        font-size: 24px;
+        color: var(--accent);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .branch-dots {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px 0;
+      }
+      .bdot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--fg-muted);
+      }
+      .bdot.ac { background: var(--accent); box-shadow: 0 0 10px rgba(0,232,208,0.5); }
+      .bline { flex: 1; height: 2px; background: var(--line); min-width: 30px; }
     </style>
   </head>
     <deck-stage width="1920" height="1080">
@@ -588,10 +943,10 @@
           <h2 class="ctitle anim-up">Lo que haremos hoy</h2>
           <div style="display: flex; flex-direction: column">
             <div class="arow anim-up d2"><span class="arow-n">01</span><span class="arow-t">Actitudinal</span><span class="arow-d">Responsabilidad, puntualidad y compromiso</span><span class="arow-time">5 min</span></div>
-            <div class="arow anim-up d3"><span class="arow-n">02</span><span class="arow-t">POO en C#</span><span class="arow-d">Clases, objetos, encapsulamiento, herencia, polimorfismo y abstracción</span><span class="arow-time">25 min</span></div>
-            <div class="arow anim-up d4"><span class="arow-n">03</span><span class="arow-t">Git Workflow</span><span class="arow-d">Configuración, ramas, merge y versionamiento semántico</span><span class="arow-time">15 min</span></div>
-            <div class="arow anim-up d5"><span class="arow-n">04</span><span class="arow-t">Ejercicio demostrativo</span><span class="arow-d">Sistema de coordinación de soporte técnico con POO + Git</span><span class="arow-time">15 min</span></div>
-            <div class="arow anim-up d5"><span class="arow-n">05</span><span class="arow-t">Actividad + cierre</span><span class="arow-d">Práctica individual y repaso de puntos clave</span><span class="arow-time">20 min</span></div>
+            <div class="arow anim-up d3"><span class="arow-n">02</span><span class="arow-t">POO en C#</span><span class="arow-d">Paradigma, clases, objetos, 4 pilares + videos y ejemplos visuales</span><span class="arow-time">28 min</span></div>
+            <div class="arow anim-up d4"><span class="arow-n">03</span><span class="arow-t">Git Workflow</span><span class="arow-d">Configuración, ramas, merge, tags + diagramas y videos</span><span class="arow-time">17 min</span></div>
+            <div class="arow anim-up d5"><span class="arow-n">04</span><span class="arow-t">Ejercicio demostrativo</span><span class="arow-d">Sistema de soporte técnico con POO + Git (flujo completo)</span><span class="arow-time">15 min</span></div>
+            <div class="arow anim-up d5"><span class="arow-n">05</span><span class="arow-t">Actividad + cierre</span><span class="arow-d">Práctica individual, repaso visual y puntos clave</span><span class="arow-time">15 min</span></div>
           </div>
         </div>
       </section>
@@ -644,8 +999,47 @@
         </div>
       </section>
 
-      <!-- ═══ 05 · CLASES Y OBJETOS ═══ -->
-      <section data-label="05" data-screen-label="Clases y Objetos">
+      <!-- ═══ 05 · VIDEO POO EXPLICADO ═══ -->
+      <section data-label="05" data-screen-label="Video · POO explicado">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">▶</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Video recomendado</span></span><span class="meta">POO</span></div>
+        <div class="cbody" style="gap: var(--glg)">
+          <h2 class="ctitle anim-up">Video: POO explicado</h2>
+          <p class="body anim-up d2">Introducción visual a los conceptos fundamentales antes de ver el código en C#.</p>
+          <a class="video-card anim-up d3" href="https://www.youtube.com/watch?v=SI7O81GMG2A" target="_blank" rel="noopener">
+            <div class="video-play"></div>
+            <div>
+              <div class="video-title">Programación Orientada a Objetos: Abstracción, Encapsulamiento, Herencia, Polimorfismo</div>
+              <div class="video-desc">Explicación clara de los cuatro pilares con ejemplos del mundo real. Ideal para complementar la teoría.</div>
+              <div class="video-url">youtube.com/watch?v=SI7O81GMG2A</div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- ═══ 06 · ANALOGÍA MOLDE ═══ -->
+      <section data-label="06" data-screen-label="Analogía · El molde">
+        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:280px; color:rgba(240,238,235,0.022)">obj</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Analogía visual</span></span><span class="meta">CLASE / OBJETO</span></div>
+        <div class="img-slide anim-up d2">
+          <div class="img-wrap">
+            <img src="https://images.unsplash.com/photo-1587668178277-295251f900ce?w=800" alt="Molde para galletas" />
+            <div class="img-cap">Un molde → muchas galletas idénticas en forma</div>
+          </div>
+          <div class="cbody" style="gap: var(--gmd); justify-content: center">
+            <h2 class="ctitle" style="font-size: 52px">Analogía: el molde</h2>
+            <div class="flist">
+              <div class="fitem"><span class="ftick">◆</span><span><b>Clase</b> = el molde (define la forma)</span></div>
+              <div class="fitem"><span class="ftick">●</span><span><b>Objeto</b> = cada galleta (instancia concreta)</span></div>
+              <div class="fitem"><span class="ftick">→</span><span>Un molde produce <b>muchas</b> galletas con la misma estructura pero distinto sabor/color</span></div>
+            </div>
+            <p class="body" style="margin-top: 10px">Igual en código: <b style="color:var(--fg)">class Ticket</b> es el molde; cada <b style="color:var(--fg)">new Ticket()</b> es una galleta distinta.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 07 · CLASES Y OBJETOS ═══ -->
+      <section data-label="07" data-screen-label="Clases y Objetos">
         <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:280px; color:rgba(240,238,235,0.022)">class</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — POO</span></span><span class="meta">01 / 06</span></div>
         <div class="split" style="margin-top: 30px">
@@ -676,8 +1070,8 @@
         </div>
       </section>
 
-      <!-- ═══ 06 · MÉTODOS Y ATRIBUTOS ═══ -->
-      <section data-label="06" data-screen-label="Métodos y Atributos">
+      <!-- ═══ 08 · MÉTODOS Y ATRIBUTOS ═══ -->
+      <section data-label="08" data-screen-label="Métodos y Atributos">
         <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">()</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — POO</span></span><span class="meta">02 / 06</span></div>
         <div class="split" style="margin-top: 30px">
@@ -706,8 +1100,58 @@ Console.<span class="tf">WriteLine</span>(t); <span class="tc">// #1 Red caída 
         </div>
       </section>
 
-      <!-- ═══ 07 · ENCAPSULAMIENTO ═══ -->
-      <section data-label="07" data-screen-label="Encapsulamiento">
+      <!-- ═══ 09 · VIDEO CLASES C# ═══ -->
+      <section data-label="09" data-screen-label="Video · Clases C#">
+        <div class="layer"><div class="wm" style="bottom:-80px; right:-20px; font-size:260px; color:rgba(240,238,235,0.022)">▶</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Video recomendado</span></span><span class="meta">MICROSOFT</span></div>
+        <div class="cbody" style="gap: var(--glg)">
+          <h2 class="ctitle anim-up">Video: Clases y objetos en C#</h2>
+          <p class="body anim-up d2">Serie oficial de Microsoft Learn para principiantes: cómo definir clases, crear objetos y aplicar POO en C#.</p>
+          <a class="video-card anim-up d3" href="https://learn.microsoft.com/es-es/shows/csharp-for-beginners/object-oriented-programming-oop-csharp-for-beginners" target="_blank" rel="noopener">
+            <div class="video-play"></div>
+            <div>
+              <div class="video-title">Microsoft Learn — OOP in C# for Beginners</div>
+              <div class="video-desc">Introducción oficial a clases, objetos, propiedades y métodos en el ecosistema .NET.</div>
+              <div class="video-url">learn.microsoft.com · C# for Beginners</div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- ═══ 10 · EJEMPLO CLASE AUTO ═══ -->
+      <section data-label="10" data-screen-label="Ejemplo · Clase Auto">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">car</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Ejemplo visual</span></span><span class="meta">CLASE</span></div>
+        <div class="img-slide anim-up d2">
+          <div class="img-wrap">
+            <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800" alt="Plano de automóvil" />
+            <div class="img-cap">Plano = clase · Auto real = objeto</div>
+          </div>
+          <div>
+            <h2 class="ctitle" style="font-size: 48px; margin-bottom: 20px">Ejemplo: clase Auto</h2>
+            <div class="term" style="box-shadow: none">
+              <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">Auto.cs</span></div>
+              <div class="term-body sm" style="font-size: 22px; line-height: 1.55"><span class="tk">class</span> <span class="tf">Auto</span>
+{
+    <span class="tk">public</span> <span class="tk">string</span> Color;
+    <span class="tk">public</span> <span class="tk">string</span> Modelo;
+    <span class="tk">public</span> <span class="tk">string</span> Marca;
+
+    <span class="tk">public</span> <span class="tk">void</span> <span class="tf">Arrancar</span>() { ... }
+    <span class="tk">public</span> <span class="tk">void</span> <span class="tf">Frenar</span>()  { ... }
+}
+
+<span class="tk">var</span> miAuto = <span class="tk">new</span> <span class="tf">Auto</span> {
+    Marca = <span class="ts">"Toyota"</span>, Modelo = <span class="ts">"Corolla"</span>,
+    Color = <span class="ts">"Rojo"</span>
+};</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 11 · ENCAPSULAMIENTO ═══ -->
+      <section data-label="11" data-screen-label="Encapsulamiento">
         <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:260px; color:rgba(240,238,235,0.022)">private</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — POO</span></span><span class="meta">03 / 06</span></div>
         <div class="split" style="margin-top: 30px">
@@ -737,8 +1181,8 @@ Console.<span class="tf">WriteLine</span>(t); <span class="tc">// #1 Red caída 
         </div>
       </section>
 
-      <!-- ═══ 08 · HERENCIA ═══ -->
-      <section data-label="08" data-screen-label="Herencia">
+      <!-- ═══ 12 · HERENCIA ═══ -->
+      <section data-label="12" data-screen-label="Herencia">
         <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">:</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — POO</span></span><span class="meta">04 / 06</span></div>
         <div class="split" style="margin-top: 30px">
@@ -768,8 +1212,53 @@ Console.<span class="tf">WriteLine</span>(t); <span class="tc">// #1 Red caída 
         </div>
       </section>
 
-      <!-- ═══ 09 · POLIMORFISMO ═══ -->
-      <section data-label="09" data-screen-label="Polimorfismo">
+      <!-- ═══ 13 · DIAGRAMA HERENCIA ═══ -->
+      <section data-label="13" data-screen-label="Diagrama · Herencia">
+        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:260px; color:rgba(240,238,235,0.022)">tree</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Diagrama visual</span></span><span class="meta">HERENCIA</span></div>
+        <div class="cbody" style="gap: var(--gmd)">
+          <h2 class="ctitle anim-up">Diagrama: jerarquía de herencia</h2>
+          <p class="body anim-up d2">La clase base define lo común. Las clases hijas especializan el comportamiento sin repetir código.</p>
+          <div class="diagram anim-up d3">
+            <div class="diagram-node base">Personaje</div>
+            <div class="diagram-vline"></div>
+            <div class="diagram-hline-wrap">
+              <div class="diagram-row">
+                <div class="diagram-col">
+                  <div class="diagram-vline"></div>
+                  <div class="diagram-node child">Guerrero</div>
+                </div>
+                <div class="diagram-col">
+                  <div class="diagram-vline"></div>
+                  <div class="diagram-node child">Mago</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="note anim-up d4" style="margin-top: 20px">En nuestro ejemplo: Ticket → SoporteTicket</p>
+        </div>
+      </section>
+
+      <!-- ═══ 14 · VIDEO POO C# ═══ -->
+      <section data-label="14" data-screen-label="Video · POO con C#">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">▶</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Video recomendado</span></span><span class="meta">C#</span></div>
+        <div class="cbody" style="gap: var(--glg)">
+          <h2 class="ctitle anim-up">Video: POO con C#</h2>
+          <p class="body anim-up d2">Clase de la UTN sobre Programación II: herencia, polimorfismo y abstracción aplicados en C#.</p>
+          <a class="video-card anim-up d3" href="https://www.youtube.com/watch?v=woeMxX1X5wg" target="_blank" rel="noopener">
+            <div class="video-play"></div>
+            <div>
+              <div class="video-title">UTN — Programación II: POO en C#</div>
+              <div class="video-desc">Ejemplos prácticos de clases, herencia y polimorfismo en el lenguaje que usamos en el curso.</div>
+              <div class="video-url">youtube.com/watch?v=woeMxX1X5wg</div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- ═══ 15 · POLIMORFISMO ═══ -->
+      <section data-label="15" data-screen-label="Polimorfismo">
         <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:240px; color:rgba(240,238,235,0.022)">override</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — POO</span></span><span class="meta">05 / 06</span></div>
         <div class="split" style="margin-top: 30px">
@@ -795,8 +1284,8 @@ Console.<span class="tf">WriteLine</span>(t); <span class="tc">// #1 Red caída 
         </div>
       </section>
 
-      <!-- ═══ 10 · ABSTRACCIÓN ═══ -->
-      <section data-label="10" data-screen-label="Abstracción">
+      <!-- ═══ 16 · ABSTRACCIÓN ═══ -->
+      <section data-label="16" data-screen-label="Abstracción">
         <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">abs</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — POO</span></span><span class="meta">06 / 06</span></div>
         <div class="split" style="margin-top: 30px">
@@ -823,8 +1312,41 @@ Console.<span class="tf">WriteLine</span>(t); <span class="tc">// #1 Red caída 
         </div>
       </section>
 
-      <!-- ═══ 11 · GIT Y CONTROL DE VERSIONES ═══ -->
-      <section data-label="11" data-screen-label="Git">
+      <!-- ═══ 17 · RESUMEN 4 PILARES ═══ -->
+      <section data-label="17" data-screen-label="Resumen · 4 pilares">
+        <div class="layer"><div class="wm" style="bottom:-80px; right:-20px; font-size:280px; color:rgba(0,232,208,0.04)">4</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Resumen visual</span></span><span class="meta">POO</span></div>
+        <div class="cbody" style="max-width: 1500px; gap: var(--gmd)">
+          <h2 class="ctitle anim-up">Los 4 pilares de la POO</h2>
+          <div class="pillars anim-up d2">
+            <div class="pillar"><div class="pillar-ico">◈</div><div class="pillar-n">Encapsulamiento</div><div class="pillar-d">Ocultar datos internos con <b style="color:var(--fg)">private</b> y exponer con propiedades controladas.</div></div>
+            <div class="pillar"><div class="pillar-ico">↳</div><div class="pillar-n">Herencia</div><div class="pillar-d">Reutilizar código: una clase hija hereda atributos y métodos de la clase padre.</div></div>
+            <div class="pillar"><div class="pillar-ico">◇</div><div class="pillar-n">Polimorfismo</div><div class="pillar-d">Mismo método, distinto comportamiento según el tipo real del objeto (<b style="color:var(--fg)">override</b>).</div></div>
+            <div class="pillar"><div class="pillar-ico">△</div><div class="pillar-n">Abstracción</div><div class="pillar-d">Definir el contrato sin implementar todo: clases y métodos <b style="color:var(--fg)">abstract</b>.</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 18 · VIDEO 4 PILARES ═══ -->
+      <section data-label="18" data-screen-label="Video · 4 pilares">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; left:-20px; font-size:260px; color:rgba(0,232,208,0.035)">▶</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Video recomendado</span></span><span class="meta">REPASO</span></div>
+        <div class="cbody" style="gap: var(--glg)">
+          <h2 class="ctitle anim-up">Video: Los 4 pilares</h2>
+          <p class="body anim-up d2">Repaso visual de los cuatro pilares antes de pasar a Git. Mismo video de introducción, ahora con contexto completo.</p>
+          <a class="video-card anim-up d3" href="https://www.youtube.com/watch?v=SI7O81GMG2A" target="_blank" rel="noopener">
+            <div class="video-play"></div>
+            <div>
+              <div class="video-title">POO: Abstracción, Encapsulamiento, Herencia, Polimorfismo</div>
+              <div class="video-desc">Repaso integrado de los cuatro conceptos fundamentales con ejemplos claros.</div>
+              <div class="video-url">youtube.com/watch?v=SI7O81GMG2A</div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- ═══ 19 · GIT Y CONTROL DE VERSIONES ═══ -->
+      <section data-label="19" data-screen-label="Git">
         <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:280px; color:rgba(0,232,208,0.035)">git</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — Herramienta</span></span><span class="meta">CONTROL DE VERSIONES</span></div>
         <div class="split" style="margin-top: 30px">
@@ -843,8 +1365,8 @@ Console.<span class="tf">WriteLine</span>(t); <span class="tc">// #1 Red caída 
         </div>
       </section>
 
-      <!-- ═══ 12 · CONFIGURACIÓN GIT ═══ -->
-      <section data-label="12" data-screen-label="Configuración Git">
+      <!-- ═══ 20 · CONFIGURACIÓN GIT ═══ -->
+      <section data-label="20" data-screen-label="Configuración Git">
         <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:240px; color:rgba(240,238,235,0.022)">config</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — Herramienta</span></span><span class="meta">SETUP</span></div>
         <div class="split" style="margin-top: 30px">
@@ -871,8 +1393,44 @@ obj/
         </div>
       </section>
 
-      <!-- ═══ 13 · GIT FLOW ═══ -->
-      <section data-label="13" data-screen-label="Git Flow">
+      <!-- ═══ 21 · VIDEO GIT DESDE CERO ═══ -->
+      <section data-label="21" data-screen-label="Video · Git desde cero">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">▶</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Video recomendado</span></span><span class="meta">GIT</span></div>
+        <div class="cbody" style="gap: var(--glg)">
+          <h2 class="ctitle anim-up">Video: Git desde cero</h2>
+          <p class="body anim-up d2">Curso completo para repasar los fundamentos de Git y GitHub antes de practicar en el laboratorio.</p>
+          <a class="video-card anim-up d3" href="https://www.youtube.com/watch?v=3GymExBkKjE" target="_blank" rel="noopener">
+            <div class="video-play"></div>
+            <div>
+              <div class="video-title">Curso COMPLETO de GIT y GITHUB</div>
+              <div class="video-desc">Desde instalación hasta ramas, merges y trabajo colaborativo. Ideal como referencia para la sesión.</div>
+              <div class="video-url">youtube.com/watch?v=3GymExBkKjE</div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- ═══ 22 · VIDEO GIT GITHUB BLUUWEB ═══ -->
+      <section data-label="22" data-screen-label="Video · Git y GitHub">
+        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:260px; color:rgba(240,238,235,0.022)">▶</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Video recomendado</span></span><span class="meta">GITHUB</span></div>
+        <div class="cbody" style="gap: var(--glg)">
+          <h2 class="ctitle anim-up">Video: Git y GitHub</h2>
+          <p class="body anim-up d2">Tutorial en español de Bluuweb: comandos esenciales, repositorios remotos y flujo de trabajo en equipo.</p>
+          <a class="video-card anim-up d3" href="https://www.youtube.com/watch?v=PW_A-lOpVV0" target="_blank" rel="noopener">
+            <div class="video-play"></div>
+            <div>
+              <div class="video-title">Bluuweb — Git y GitHub desde cero</div>
+              <div class="video-desc">Incluye sección de tags y versionamiento (ver diapositiva dedicada). Muy recomendado para repaso.</div>
+              <div class="video-url">youtube.com/watch?v=PW_A-lOpVV0</div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- ═══ 23 · GIT FLOW ═══ -->
+      <section data-label="23" data-screen-label="Git Flow">
         <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">flow</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — Workflow</span></span><span class="meta">RAMAS</span></div>
         <div class="cbody" style="max-width: 1600px; gap: var(--glg); margin-top: 30px">
@@ -886,8 +1444,8 @@ obj/
         </div>
       </section>
 
-      <!-- ═══ 14 · BRANCHING Y MERGING ═══ -->
-      <section data-label="14" data-screen-label="Branching y Merging">
+      <!-- ═══ 24 · BRANCHING Y MERGING ═══ -->
+      <section data-label="24" data-screen-label="Branching y Merging">
         <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:260px; color:rgba(240,238,235,0.022)">merge</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — Workflow</span></span><span class="meta">COMANDOS</span></div>
         <div class="split" style="margin-top: 30px">
@@ -913,8 +1471,66 @@ obj/
         </div>
       </section>
 
-      <!-- ═══ 15 · TAGS Y VERSIONAMIENTO ═══ -->
-      <section data-label="15" data-screen-label="Tags">
+      <!-- ═══ 25 · DIAGRAMA GIT FLOW ═══ -->
+      <section data-label="25" data-screen-label="Diagrama · Git Flow">
+        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:260px; color:rgba(240,238,235,0.022)">git</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Diagrama visual</span></span><span class="meta">RAMAS</span></div>
+        <div class="cbody" style="max-width: 1600px; gap: var(--gmd)">
+          <h2 class="ctitle anim-up">Diagrama: Git Flow visual</h2>
+          <p class="body anim-up d2">Tres líneas de desarrollo paralelas. Las features nacen de <b style="color:var(--fg)">develop</b> y convergen antes de llegar a <b style="color:var(--fg)">main</b>.</p>
+          <div class="git-flow anim-up d3">
+            <span class="git-label main-l">main — producción</span>
+            <div class="git-branch-line main"></div>
+            <span class="git-commit main-c" style="left: 120px"></span>
+            <span class="git-commit main-c" style="left: 480px"></span>
+            <span class="git-commit main-c" style="left: 900px"></span>
+            <span class="git-commit main-c" style="left: 1300px"></span>
+            <span class="git-label dev-l">develop — integración</span>
+            <div class="git-branch-line develop"></div>
+            <span class="git-commit dev-c" style="left: 200px"></span>
+            <span class="git-commit dev-c" style="left: 560px"></span>
+            <span class="git-commit dev-c" style="left: 820px"></span>
+            <span class="git-label feat-l">feature/* — trabajo aislado</span>
+            <div class="git-branch-line feature"></div>
+            <span class="git-commit feat-c" style="left: 400px"></span>
+            <span class="git-commit feat-c" style="left: 560px"></span>
+            <div class="git-merge-arrow"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 26 · EJEMPLO MERGE PASO A PASO ═══ -->
+      <section data-label="26" data-screen-label="Ejemplo · Merge paso a paso">
+        <div class="layer"></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Ejemplo paso a paso</span></span><span class="meta">MERGE</span></div>
+        <div class="cbody" style="max-width: 1600px; gap: var(--gmd)">
+          <h2 class="ctitle anim-up">Crear y mergear una rama</h2>
+          <div class="merge-visual anim-up d2">
+            <div class="term" style="box-shadow: none">
+              <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">terminal</span></div>
+              <div class="term-body sm" style="font-size: 22px; line-height: 1.55"><span class="tp">$</span> <span class="tf">git</span> checkout -b feature/ticket
+<span class="tc"># editar código...</span>
+<span class="tp">$</span> <span class="tf">git</span> add . &amp;&amp; <span class="tf">git</span> commit -m <span class="ts">"feat: ticket"</span>
+<span class="tp">$</span> <span class="tf">git</span> checkout develop
+<span class="tp">$</span> <span class="tf">git</span> merge feature/ticket</div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 20px">
+              <div class="branch-mini anim-up d3">
+                <div class="branch-mini-t">Antes del merge</div>
+                <div class="branch-dots"><span class="bdot ac"></span><span class="bline"></span><span class="bdot"></span><span style="font-family:var(--mono);font-size:20px;color:var(--fg-muted)">develop</span></div>
+                <div class="branch-dots"><span class="bdot"></span><span class="bline"></span><span class="bdot ac"></span><span style="font-family:var(--mono);font-size:20px;color:#ffbd2e">feature/ticket</span></div>
+              </div>
+              <div class="branch-mini anim-up d4">
+                <div class="branch-mini-t">Después del merge</div>
+                <div class="branch-dots"><span class="bdot ac"></span><span class="bline"></span><span class="bdot ac"></span><span class="bline"></span><span class="bdot ac"></span><span style="font-family:var(--mono);font-size:20px;color:var(--accent)">develop (integrado)</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 27 · TAGS Y VERSIONAMIENTO ═══ -->
+      <section data-label="27" data-screen-label="Tags">
         <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">v1</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — Workflow</span></span><span class="meta">SEMVER</span></div>
         <div class="split" style="margin-top: 30px">
@@ -939,8 +1555,26 @@ obj/
         </div>
       </section>
 
-      <!-- ═══ 16 · DEMO INTRO ═══ -->
-      <section data-label="16" data-screen-label="Demo en vivo">
+      <!-- ═══ 28 · VIDEO TAGS ═══ -->
+      <section data-label="28" data-screen-label="Video · Tags">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">▶</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Video recomendado</span></span><span class="meta">TAGS</span></div>
+        <div class="cbody" style="gap: var(--glg)">
+          <h2 class="ctitle anim-up">Video: Tags y versionamiento</h2>
+          <p class="body anim-up d2">Sección del curso de Bluuweb sobre etiquetas y versionamiento semántico. Inicia en el minuto <b style="color:var(--fg)">01:49:38</b>.</p>
+          <a class="video-card anim-up d3" href="https://www.youtube.com/watch?v=PW_A-lOpVV0&t=6588" target="_blank" rel="noopener">
+            <div class="video-play"></div>
+            <div>
+              <div class="video-title">Bluuweb — Git y GitHub (sección Tags)</div>
+              <div class="video-desc">Cómo crear tags anotados, listarlos y usar SemVer para marcar releases estables del proyecto.</div>
+              <div class="video-url">youtube.com/watch?v=PW_A-lOpVV0 · 01:49:38</div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- ═══ 29 · DEMO INTRO ═══ -->
+      <section data-label="29" data-screen-label="Demo en vivo">
         <div class="layer">
           <div class="geo" style="width: 640px; height: 640px; top: -150px; right: -140px; border-color: rgba(0,232,208,0.06)"></div>
           <div class="wm" style="bottom: -100px; left: -30px; font-size: 300px; color: rgba(0,232,208,0.04)">LIVE</div>
@@ -962,8 +1596,8 @@ obj/
         <div class="topbar"><span class="meta">Abre su terminal</span><span class="meta faint">git init · dotnet new console</span></div>
       </section>
 
-      <!-- ═══ 17 · DEMO PASO 1 ═══ -->
-      <section data-label="17" data-screen-label="Demo · Repo y Ticket">
+      <!-- ═══ 30 · DEMO PASO 1 ═══ -->
+      <section data-label="30" data-screen-label="Demo · Repo y Ticket">
         <div class="layer"></div>
         <div class="topbar"><span class="live">En vivo</span><span class="meta">PASO 1 / 3</span></div>
         <div class="split" style="margin-top: 30px">
@@ -995,8 +1629,8 @@ obj/
         </div>
       </section>
 
-      <!-- ═══ 18 · DEMO PASO 2 ═══ -->
-      <section data-label="18" data-screen-label="Demo · Herencia">
+      <!-- ═══ 31 · DEMO PASO 2 ═══ -->
+      <section data-label="31" data-screen-label="Demo · Herencia">
         <div class="layer"></div>
         <div class="topbar"><span class="live">En vivo</span><span class="meta">PASO 2 / 3</span></div>
         <div class="split" style="margin-top: 30px">
@@ -1027,8 +1661,8 @@ obj/
         </div>
       </section>
 
-      <!-- ═══ 19 · DEMO PASO 3 ═══ -->
-      <section data-label="19" data-screen-label="Demo · Tag">
+      <!-- ═══ 32 · DEMO PASO 3 ═══ -->
+      <section data-label="32" data-screen-label="Demo · Tag">
         <div class="layer"></div>
         <div class="topbar"><span class="live">En vivo</span><span class="meta">PASO 3 / 3</span></div>
         <div class="split" style="margin-top: 30px">
@@ -1053,19 +1687,62 @@ obj/
         </div>
       </section>
 
-      <!-- ═══ 20 · ACTIVIDAD ═══ -->
-      <section data-label="20" data-screen-label="Actividad práctica">
+      <!-- ═══ 33 · RESUMEN FLUJO COMPLETO ═══ -->
+      <section data-label="33" data-screen-label="Resumen · Flujo completo">
+        <div class="layer"><div class="wm" style="bottom:-80px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">flow</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Resumen visual</span></span><span class="meta">GIT + POO</span></div>
+        <div class="cbody" style="max-width: 1600px; gap: var(--gmd)">
+          <h2 class="ctitle anim-up">Flujo completo del ejercicio</h2>
+          <p class="body anim-up d2">Cada paso del demo sigue un orden lógico: inicializar, versionar, ramificar, integrar y etiquetar.</p>
+          <div class="timeline anim-up d3">
+            <div class="tl-step"><div class="tl-dot"></div><div class="tl-label">init</div><div class="tl-desc">Crear repo y proyecto</div></div>
+            <div class="tl-step"><div class="tl-dot"></div><div class="tl-label">commit</div><div class="tl-desc">Clase Ticket</div></div>
+            <div class="tl-step"><div class="tl-dot"></div><div class="tl-label">branch</div><div class="tl-desc">feature/soporte</div></div>
+            <div class="tl-step"><div class="tl-dot"></div><div class="tl-label">commit</div><div class="tl-desc">SoporteTicket</div></div>
+            <div class="tl-step"><div class="tl-dot"></div><div class="tl-label">merge</div><div class="tl-desc">Integrar a main</div></div>
+            <div class="tl-step"><div class="tl-dot"></div><div class="tl-label">tag</div><div class="tl-desc">v0.1.0</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 34 · ESTRUCTURA PROYECTO ═══ -->
+      <section data-label="34" data-screen-label="Estructura de proyecto">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; left:-20px; font-size:260px; color:rgba(240,238,235,0.022)">dir</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Resumen visual</span></span><span class="meta">ESTRUCTURA</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Estructura del proyecto</h2>
+            <p class="body anim-up d2">Al finalizar el ejercicio, el repositorio debe tener esta organización. Solo se versiona el código fuente, no los binarios.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">✓</span><span><b>Ticket.cs</b> y <b>SoporteTicket.cs</b> — clases POO</span></div>
+              <div class="fitem anim-up d4"><span class="ftick">✓</span><span><b>.gitignore</b> — excluye bin/ y obj/</span></div>
+            </div>
+          </div>
+          <div class="ftree anim-up d3">
+<span class="fd">SoporteApp/</span>
+├── <span class="fd">.git/</span>              <span class="fi"># historial Git</span>
+├── <span class="fl">.gitignore</span>
+├── <span class="fl">SoporteApp.csproj</span>
+├── <span class="fl">Program.cs</span>
+├── <span class="fl">Ticket.cs</span>          <span class="fi"># clase base</span>
+└── <span class="fl">SoporteTicket.cs</span>   <span class="fi"># herencia</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 35 · ACTIVIDAD ═══ -->
+      <section data-label="35" data-screen-label="Actividad práctica">
         <div class="layer">
           <div class="geo" style="width: 560px; height: 560px; top: -120px; left: -120px; border-color: rgba(0,232,208,0.05)"></div>
-          <div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.04)">20m</div>
+          <div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.04)">15m</div>
         </div>
-        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber hacer — Actividad obligatoria</span></span><span class="meta">20 MIN · INDIVIDUAL</span></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber hacer — Actividad obligatoria</span></span><span class="meta">15 MIN · INDIVIDUAL</span></div>
         <div class="split" style="margin-top: 30px">
           <div class="cbody" style="gap: var(--gmd)">
             <h2 class="ctitle anim-up">Actividad práctica</h2>
             <p class="body anim-up d2">El estudiante replica el ejercicio: programa de consola con <b style="color:var(--fg)">POO</b> (mínimo 2 clases) y un historial <b style="color:var(--fg)">Git</b> documentado.</p>
             <div class="anim-up d3" style="display: flex; gap: 16px; margin-top: 8px">
-              <span class="chip">20 min</span><span class="chip">Individual</span>
+              <span class="chip">15 min</span><span class="chip">Individual</span>
             </div>
           </div>
           <div class="flist">
@@ -1078,8 +1755,8 @@ obj/
         </div>
       </section>
 
-      <!-- ═══ 21 · CIERRE ═══ -->
-      <section data-label="21" data-screen-label="Cierre">
+      <!-- ═══ 36 · CIERRE ═══ -->
+      <section data-label="36" data-screen-label="Cierre">
         <div class="layer"><div class="wm serif" style="bottom:-70px; right:-30px; font-size:300px; color:rgba(0,232,208,0.04)">fin</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Cierre</span></span><span class="meta">CIERRE</span></div>
         <div class="cbody" style="max-width: 1600px; gap: var(--glg)">
@@ -1097,24 +1774,39 @@ obj/
     <script type="application/json" id="speaker-notes">
     [
       "[5 MIN · PORTADA]\n\nBuenos días. Semana 03 de Introducción a la Programación y Computación 2, ECYS 771. Hoy unimos dos temas: Programación Orientada a Objetos en C# y Git Workflow.\n\nObjetivo de los 80 minutos: que cada estudiante entienda clases, objetos y los cuatro pilares de la POO, y que sepa usar Git con ramas, merges y tags para versionar su proyecto.\n\nPresentación breve: soy Jorge Mejía. Canal oficial: foro y WhatsApp del curso.\n\nTransición: agenda.",
-      "[2 MIN · AGENDA]\n\nSesión de 80 minutos en cinco bloques:\n\n01 — Área actitudinal (5 min): responsabilidad y puntualidad.\n02 — POO en C# (25 min): paradigma, clases, objetos y los cuatro pilares.\n03 — Git Workflow (15 min): control de versiones, configuración, ramas, merges y tags.\n04 — Ejercicio demostrativo (15 min): sistema de coordinación de soporte técnico.\n05 — Actividad práctica y cierre (20 min): el estudiante replica el ejercicio.\n\nRegla de oro: interrumpan con preguntas. La POO se entiende mejor con ejemplos que con definiciones.\n\nTransición: responsabilidad y puntualidad.",
+      "[2 MIN · AGENDA]\n\nSesión de 80 minutos en cinco bloques:\n\n01 — Área actitudinal (5 min): responsabilidad y puntualidad.\n02 — POO en C# (30 min): paradigma, clases, objetos, pilares y ejemplos visuales.\n03 — Git Workflow (20 min): control de versiones, configuración, ramas, merges y tags.\n04 — Ejercicio demostrativo (15 min): sistema de coordinación de soporte técnico.\n05 — Actividad práctica y cierre (10 min): el estudiante replica el ejercicio.\n\nRegla de oro: interrumpan con preguntas. La POO se entiende mejor con ejemplos que con definiciones.\n\nTransición: responsabilidad y puntualidad.",
       "[5 MIN · RESPONSABILIDAD Y PUNTUALIDAD]\n\nÁrea actitudinal — Saber ser.\n\nLea los tres puntos:\n1. Asistencia y puntualidad: llegar a tiempo al laboratorio es parte del compromiso profesional.\n2. Compromiso en la ejecución: seguir instrucciones, completar ejercicios y entregar a tiempo.\n3. Relación con la sesión: la misma disciplina que usan para entregar un ejercicio de XML correctamente se aplica al escribir código C# y al versionar con Git.\n\nEn programación, la responsabilidad se refleja en el historial de commits: orden, frecuencia y mensajes claros.\n\nPregunta: ¿qué diferencia hay entre un estudiante responsable y uno que no? Tome una respuesta.\n\nTransición: ¿qué es la POO?",
-      "[4 MIN · ¿QUÉ ES LA POO?]\n\nLa Programación Orientada a Objetos es un paradigma que modela el mundo real con objetos.\n\nAnalogía central:\n- Clase = molde o plano.\n- Objeto = instancia concreta creada a partir del molde.\n\nEjemplo: la clase Ticket define que todo ticket tiene Id, Título y Prioridad. Cada ticket que un usuario registra es un objeto distinto con sus propios valores.\n\nVentajas: reutilización, organización, mantenimiento.\n\nEn C# todo gira alrededor de objetos. Incluso un string es un objeto con métodos como .ToUpper().\n\nPregunta: ¿qué objeto usarían para modelar un estudiante? Campos: carnet, nombre, carrera.\n\nTransición: clases y objetos en C#.",
-      "[5 MIN · CLASES Y OBJETOS]\n\nSiga el ejemplo del terminal.\n\nClase: se define con class Ticket. Es el plano.\nAtributos: los datos que guarda cada objeto — Id, Titulo, Prioridad, Estado.\nObjeto: se crea con new Ticket() y se asigna a una variable.\n\nEn el ejemplo:\n- class Ticket con cuatro atributos públicos.\n- Ticket t = new Ticket() crea el objeto.\n- t.Id = 1 asigna valores a ese objeto específico.\n\nCada objeto tiene su propia copia de los atributos. Dos tickets distintos pueden tener el mismo Id pero son objetos independientes en memoria.\n\nPregunta: ¿qué diferencia hay entre la clase y el objeto?\n\nTransición: métodos y atributos.",
+      "[4 MIN · ¿QUÉ ES LA POO?]\n\nLa Programación Orientada a Objetos es un paradigma que modela el mundo real con objetos.\n\nAnalogía central:\n- Clase = molde o plano.\n- Objeto = instancia concreta creada a partir del molde.\n\nEjemplo: la clase Ticket define que todo ticket tiene Id, Título y Prioridad. Cada ticket que un usuario registra es un objeto distinto con sus propios valores.\n\nVentajas: reutilización, organización, mantenimiento.\n\nEn C# todo gira alrededor de objetos. Incluso un string es un objeto con métodos como .ToUpper().\n\nPregunta: ¿qué objeto usarían para modelar un estudiante? Campos: carnet, nombre, carrera.\n\nTransición: video explicativo de POO.",
+      "[3 MIN · VIDEO: POO EXPLICADO]\n\nReproducir el video de YouTube: Programación Orientada a Objetos — Abstracción, Encapsulamiento, Herencia, Polimorfismo.\n\nURL: https://www.youtube.com/watch?v=SI7O81GMG2A\n\nEl video resume los cuatro pilares con ejemplos visuales y analogías de personajes de videojuegos (Guerrero, Mago).\n\nPausar en los puntos clave para preguntar si hay dudas antes de continuar.\n\nTransición: analogía visual del molde.",
+      "[3 MIN · ANALOGÍA VISUAL: EL MOLDE]\n\nMostrar la imagen del molde de galletas.\n\nAnalogía:\n- Clase = el molde de galletas. Define la forma, pero no es una galleta.\n- Objeto = cada galleta que sale del molde. Misma forma, pero cada una es independiente.\n\nEn código:\n- class Ticket es el molde.\n- new Ticket() crea una galleta (objeto) con esa forma.\n- Cada ticket puede tener su propio Id, Título, Prioridad.\n\nPregunta: si cambio el molde, ¿qué pasa con las galletas ya hechas? (Nada, ya están hechas. Los objetos existentes no cambian retroactivamente.)\n\nTransición: clases y objetos en C#.",
+      "[5 MIN · CLASES Y OBJETOS]\n\nSiga el ejemplo del terminal.\n\nClase: se define con class Ticket. Es el plano.\nAtributos: los datos que guarda cada objeto — Id, Titulo, Prioridad, Estado.\nObjeto: se crea con new Ticket() y se asigna a una variable.\n\nEn el ejemplo:\n- class Ticket con cuatro atributos públicos.\n- Ticket t = new Ticket() crea el objeto.\n- t.Id = 1 asigna valores a ese objeto específico.\n\nCada objeto tiene su propia copia de los atributos. Dos tickets distintos pueden tener el mismo Id pero son objetos independientes en memoria.\n\nPregunta: ¿qué diferencia hay entre la clase y el objeto?\n\nTransición: video de clases y objetos en C#.",
+      "[3 MIN · VIDEO: CLASES Y OBJETOS EN C#]\n\nReproducir el video de Microsoft Learn: Programación Orientada a Objetos (C# para principiantes).\n\nURL: https://learn.microsoft.com/es-es/shows/csharp-for-beginners/object-oriented-programming-oop-csharp-for-beginners\n\nScott Hanselman y David Fowler explican cómo modelar el mundo con objetos: personas, mascotas.\n\nEnfatizar: C# es un lenguaje orientado a objetos desde su diseño.\n\nTransición: ejemplo visual de clase Auto.",
+      "[3 MIN · EJEMPLO VISUAL: CLASE AUTO]\n\nMostrar la imagen del blueprint de auto.\n\nClase Auto:\n- Atributos: color, modelo, marca.\n- Métodos: enciende(), acelera(), frena().\n\nObjetos:\n- vocho1 = new Auto() con color verde, modelo 1980, marca Vocho.\n- chevy = new Auto() con color azul, modelo 2010, marca Chevrolet.\n\nCada objeto tiene su propio estado, pero comparten la misma estructura (la clase).\n\nPregunta: ¿qué atributo agregarían para un sistema de concesionario?\n\nTransición: métodos y atributos.",
       "[4 MIN · MÉTODOS Y ATRIBUTOS]\n\nAtributos = datos (qué sabe el objeto).\nMétodos = comportamiento (qué hace el objeto).\n\nEjemplo:\n- Atributos: Id, Titulo, Prioridad, Estado.\n- Método ToString(): devuelve una representación en texto del ticket.\n- Método CambiarEstado(string nuevo): modifica el Estado del ticket.\n\nUn método es una función dentro de una clase. Puede recibir parámetros y devolver un valor.\n\nBuena práctica: los métodos deben tener un solo propósito claro.\n\nPregunta: ¿por qué no modificar Estado directamente desde fuera en lugar de usar un método? Adelanto: eso lleva a encapsulamiento.\n\nTransición: encapsulamiento.",
       "[4 MIN · ENCAPSULAMIENTO]\n\nEncapsulamiento = proteger los datos internos y exponer solo lo necesario.\n\nEn C#:\n- private string _titulo: el campo es privado, solo la clase lo ve.\n- public string Titulo { get; set; }: la propiedad pública controla el acceso.\n\nVentajas:\n- Evita que otros modifiquen datos de forma inválida.\n- Permite validar en el setter.\n- Oculta la implementación interna.\n\nAnalogía: como el motor de un carro — no tocas el motor directo, usas el pedal y el volante.\n\nEn el ejemplo, Titulo tiene validación para no quedar vacío.\n\nPregunta: ¿qué pasaría si todos los campos fueran públicos?\n\nTransición: herencia.",
-      "[4 MIN · HERENCIA]\n\nHerencia = una clase deriva de otra y reutiliza sus atributos y métodos.\n\nSintaxis: class SoporteTicket : Ticket\n\n- Ticket es la clase base (padre).\n- SoporteTicket es la clase derivada (hija).\n- SoporteTicket hereda Id, Titulo, Prioridad, Estado y añade TecnicoAsignado.\n\nVentaja: no repetir código. Todo lo que Ticket sabe, SoporteTicket también lo sabe.\n\nEn C# solo se hereda de una clase (no hay herencia múltiple de clases).\n\nPregunta: ¿qué clases derivadas de Ticket podrían existir? Ejemplo: TicketUrgente, TicketInterno.\n\nTransición: polimorfismo.",
+      "[4 MIN · HERENCIA]\n\nHerencia = una clase deriva de otra y reutiliza sus atributos y métodos.\n\nSintaxis: class SoporteTicket : Ticket\n\n- Ticket es la clase base (padre).\n- SoporteTicket es la clase derivada (hija).\n- SoporteTicket hereda Id, Titulo, Prioridad, Estado y añade TecnicoAsignado.\n\nVentaja: no repetir código. Todo lo que Ticket sabe, SoporteTicket también lo sabe.\n\nEn C# solo se hereda de una clase (no hay herencia múltiple de clases).\n\nPregunta: ¿qué clases derivadas de Ticket podrían existir? Ejemplo: TicketUrgente, TicketInterno.\n\nTransición: diagrama de jerarquía de herencia.",
+      "[3 MIN · DIAGRAMA: JERARQUÍA DE HERENCIA]\n\nMostrar el diagrama visual de herencia.\n\nPersonaje (clase base)\n├── Guerrero (hereda fuerza, arma)\n├── Mago (hereda mana, hechizo)\n└── Arquero (hereda agilidad, arco)\n\nCada clase hija tiene todo lo del padre más sus propios atributos.\n\nEn C#: class Guerrero : Personaje\n\nPregunta: ¿qué pasa si quiero que todos los personajes tengan un método Atacar() pero cada uno lo haga diferente?\n\nTransición: video de POO con C#.",
+      "[3 MIN · VIDEO: POO CON C#]\n\nReproducir el video de UTN: Programación II — Clase 1 — POO — Windows Forms — C#.\n\nURL: https://www.youtube.com/watch?v=woeMxX1X5wg\n\nMuestra la POO en un entorno visual con Windows Forms, útil para ver objetos en acción.\n\nTransición: polimorfismo.",
       "[4 MIN · POLIMORFISMO]\n\nPolimorfismo = muchas formas. Mismo método, distinto comportamiento según el objeto.\n\nSintaxis:\n- En la base: public virtual string Etiqueta()\n- En la derivada: public override string Etiqueta()\n\nEjemplo:\n- Ticket.Etiqueta() devuelve \"Ticket #1\".\n- SoporteTicket.Etiqueta() devuelve \"Ticket #1 [Soporte]\".\n\nAunque la variable sea de tipo Ticket, al llamar Etiqueta() se ejecuta la versión de SoporteTicket si el objeto es SoporteTicket.\n\nEsto permite tratar objetos distintos de forma uniforme.\n\nPregunta: ¿por qué es útil en una lista de tickets?\n\nTransición: abstracción.",
-      "[4 MIN · ABSTRACCIÓN]\n\nAbstracción = definir el contrato sin implementar todo el detalle.\n\nabstract class TicketBase:\n- No se puede instanciar con new TicketBase().\n- Define métodos abstractos que las clases hijas deben implementar.\n\nEjemplo:\n- abstract string Resumen();\n- SoporteTicket debe implementar Resumen().\n\nSirve para: obligar a que todas las clases de una jerarquía tengan ciertos métodos.\n\nDiferencia con interfaz: abstract puede tener código implementado; interface solo firmas (lo verán más adelante).\n\nPregunta: ¿por qué no usar solo clases normales?\n\nTransición: Git y control de versiones.",
+      "[4 MIN · ABSTRACCIÓN]\n\nAbstracción = definir el contrato sin implementar todo el detalle.\n\nabstract class TicketBase:\n- No se puede instanciar con new TicketBase().\n- Define métodos abstractos que las clases hijas deben implementar.\n\nEjemplo:\n- abstract string Resumen();\n- SoporteTicket debe implementar Resumen().\n\nSirve para: obligar a que todas las clases de una jerarquía tengan ciertos métodos.\n\nDiferencia con interfaz: abstract puede tener código implementado; interface solo firmas (lo verán más adelante).\n\nPregunta: ¿por qué no usar solo clases normales?\n\nTransición: resumen visual de los 4 pilares.",
+      "[3 MIN · RESUMEN VISUAL: 4 PILARES]\n\nMostrar la cuadrícula 2x2 con los cuatro pilares:\n\n1. Encapsulamiento: proteger datos (private + public properties).\n2. Herencia: reutilizar código (class Hija : Padre).\n3. Polimorfismo: mismo método, distinto comportamiento (virtual/override).\n4. Abstracción: definir contrato sin implementar todo (abstract class).\n\nMnemotecnia: E-H-P-A (o como prefieran recordarlo).\n\nPregunta: ¿qué pilar usarían para validar que un título no quede vacío?\n\nTransición: video de los 4 pilares.",
+      "[3 MIN · VIDEO: LOS 4 PILARES]\n\nReproducir nuevamente el video de YouTube: Programación Orientada a Objetos — Abstracción, Encapsulamiento, Herencia, Polimorfismo.\n\nURL: https://www.youtube.com/watch?v=SI7O81GMG2A\n\nEsta vez enfocarse en cómo los cuatro pilares trabajan juntos en un solo ejemplo.\n\nTransición: Git y control de versiones.",
       "[5 MIN · GIT Y CONTROL DE VERSIONES]\n\nGit es un sistema de control de versiones distribuido.\n\nPor qué versionar:\n- Historial completo de cambios.\n- Volver a un estado anterior si algo falla.\n- Trabajar en equipo sin pisar código.\n- Documentar qué se hizo y cuándo.\n\nCuatro comandos básicos:\n- git init: crea un repositorio.\n- git add .: prepara cambios para commit.\n- git commit -m \"mensaje\": guarda el estado con descripción.\n- git log --oneline: muestra el historial resumido.\n\nCada commit es una foto del proyecto en ese momento.\n\nTransición: configuración inicial de Git.",
-      "[4 MIN · CONFIGURACIÓN INICIAL DE GIT]\n\nAntes de usar Git en un proyecto:\n\ngit config --global user.name \"Tu Nombre\"\ngit config --global user.email \"tu@email.com\"\n\nEsto identifica quién hizo cada commit.\n\n.gitignore: archivo que lista qué no subir al repositorio.\nEn proyectos C# se ignoran:\n- bin/ y obj/ (archivos compilados).\n- .vs/ (configuración local de Visual Studio).\n- *.user (preferencias del usuario).\n\nUn buen .gitignore mantiene el repositorio limpio y portable.\n\nPregunta: ¿por qué no subir los archivos compilados?\n\nTransición: Git Flow.",
-      "[5 MIN · GIT FLOW]\n\nGit Flow es un modelo de trabajo con ramas troncales y ramas de funcionalidad.\n\nRamas principales:\n- main: código estable, listo para producción.\n- develop: integración de funcionalidades, siguiente release.\n\nRamas de soporte:\n- feature/nombre: desarrollo de una funcionalidad.\n- release/x.y.z: preparación de una versión.\n- hotfix/x.y.z: corrección urgente en producción.\n\nFlujo:\n1. Crear feature desde develop.\n2. Trabajar y hacer commits.\n3. Merge de feature a develop.\n4. Cuando develop está estable, merge a main y tag de versión.\n\nTransición: branching y merging.",
-      "[4 MIN · BRANCHING Y MERGING]\n\nRama = línea de desarrollo independiente.\n\nComandos:\n- git branch nombre: crea una rama.\n- git checkout nombre: cambia a esa rama.\n- git merge nombre: fusiona la rama indicada en la actual.\n\nEjemplo:\n- Estás en develop.\n- git checkout -b feature/tickets\n- Haces cambios y commits.\n- git checkout develop\n- git merge feature/tickets\n\nLos cambios de la rama ahora están en develop.\n\nSi dos ramas modifican la misma línea, hay conflicto: Git pide resolver manualmente.\n\nPregunta: ¿cuándo conviene crear una rama nueva?\n\nTransición: tags y versionamiento semántico.",
-      "[4 MIN · TAGS Y VERSIONAMIENTO SEMÁNTICO]\n\nTag = etiqueta permanente en un commit específico.\n\nComandos:\n- git tag v1.0.0: crea una etiqueta ligera.\n- git tag -a v1.0.0 -m \"Primera versión\": etiqueta anotada.\n- git push origin v1.0.0: subir el tag al remoto.\n\nVersionamiento semántico (SemVer):\n- MAJOR.MINOR.PATCH\n- 1.0.0: primera versión estable.\n- 1.1.0: nueva funcionalidad, compatible.\n- 1.1.1: corrección de errores.\n\nEn el ejercicio usaremos v0.1.0 como primera versión del sistema de soporte.\n\nPregunta: ¿por qué no usar solo números de commit?\n\nTransición: ejercicio demostrativo.",
+      "[4 MIN · CONFIGURACIÓN INICIAL DE GIT]\n\nAntes de usar Git en un proyecto:\n\ngit config --global user.name \"Tu Nombre\"\ngit config --global user.email \"tu@email.com\"\n\nEsto identifica quién hizo cada commit.\n\n.gitignore: archivo que lista qué no subir al repositorio.\nEn proyectos C# se ignoran:\n- bin/ y obj/ (archivos compilados).\n- .vs/ (configuración local de Visual Studio).\n- *.user (preferencias del usuario).\n\nUn buen .gitignore mantiene el repositorio limpio y portable.\n\nPregunta: ¿por qué no subir los archivos compilados?\n\nTransición: video de Git desde cero.",
+      "[3 MIN · VIDEO: GIT DESDE CERO]\n\nReproducir el video de HolaMundo: Curso COMPLETO de GIT y GITHUB desde CERO para PRINCIPIANTES.\n\nURL: https://www.youtube.com/watch?v=3GymExBkKjE\n\nEnfocarse en los primeros minutos: qué es Git, por qué usarlo, y el primer commit.\n\nTransición: video de Git y GitHub.",
+      "[3 MIN · VIDEO: GIT Y GITHUB]\n\nReproducir el video de Bluuweb: Git y Github — Curso desde cero.\n\nURL: https://www.youtube.com/watch?v=PW_A-lOpVV0\n\nMostrar el índice: ramas, merge, conflictos, tags. Reproducir la sección de branch y merge (01:32:15) si el tiempo lo permite.\n\nTransición: Git Flow.",
+      "[5 MIN · GIT FLOW]\n\nGit Flow es un modelo de trabajo con ramas troncales y ramas de funcionalidad.\n\nRamas principales:\n- main: código estable, listo para producción.\n- develop: integración de funcionalidades, siguiente release.\n\nRamas de soporte:\n- feature/nombre: desarrollo de una funcionalidad.\n- release/x.y.z: preparación de una versión.\n- hotfix/x.y.z: corrección urgente en producción.\n\nFlujo:\n1. Crear feature desde develop.\n2. Trabajar y hacer commits.\n3. Merge de feature a develop.\n4. Cuando develop está estable, merge a main y tag de versión.\n\nTransición: diagrama visual de Git Flow.",
+      "[3 MIN · DIAGRAMA: GIT FLOW VISUAL]\n\nMostrar el diagrama de ramas.\n\nmain ───────────────────────────────────────\n         ↑ merge release/v1.0.0\ndevelop ──┴─────────────────────────────────\n         ↑ merge feature/tickets\nfeature/tickets ──→ commit → commit ──┘\n\nExplicar que cada rama es una línea de desarrollo independiente.\n\nTransición: branching y merging.",
+      "[4 MIN · BRANCHING Y MERGING]\n\nRama = línea de desarrollo independiente.\n\nComandos:\n- git branch nombre: crea una rama.\n- git checkout nombre: cambia a esa rama.\n- git merge nombre: fusiona la rama indicada en la actual.\n\nEjemplo:\n- Estás en develop.\n- git checkout -b feature/tickets\n- Haces cambios y commits.\n- git checkout develop\n- git merge feature/tickets\n\nLos cambios de la rama ahora están en develop.\n\nSi dos ramas modifican la misma línea, hay conflicto: Git pide resolver manualmente.\n\nPregunta: ¿cuándo conviene crear una rama nueva?\n\nTransición: ejemplo paso a paso de crear y mergear rama.",
+      "[3 MIN · EJEMPLO PASO A PASO: CREAR Y MERGEAR RAMA]\n\nMostrar el ejemplo visual con terminal y diagrama.\n\nPaso 1: git checkout -b feature/mi-funcion\nPaso 2: editar código, git add, git commit\nPaso 3: git checkout main\nPaso 4: git merge feature/mi-funcion\nPaso 5: git branch -d feature/mi-funcion (eliminar rama ya fusionada)\n\nMostrar el diagrama de cómo la rama se une a main.\n\nTransición: tags y versionamiento semántico.",
+      "[4 MIN · TAGS Y VERSIONAMIENTO SEMÁNTICO]\n\nTag = etiqueta permanente en un commit específico.\n\nComandos:\n- git tag v1.0.0: crea una etiqueta ligera.\n- git tag -a v1.0.0 -m \"Primera versión\": etiqueta anotada.\n- git push origin v1.0.0: subir el tag al remoto.\n\nVersionamiento semántico (SemVer):\n- MAJOR.MINOR.PATCH\n- 1.0.0: primera versión estable.\n- 1.1.0: nueva funcionalidad, compatible.\n- 1.1.1: corrección de errores.\n\nEn el ejercicio usaremos v0.1.0 como primera versión del sistema de soporte.\n\nPregunta: ¿por qué no usar solo números de commit?\n\nTransición: video de tags y versionamiento.",
+      "[3 MIN · VIDEO: TAGS Y VERSIONAMIENTO]\n\nReproducir la sección de tags del video de Bluuweb: Git y Github.\n\nURL: https://www.youtube.com/watch?v=PW_A-lOpVV0 (minuto 01:49:38)\n\nMostrar cómo crear tags y subirlos a GitHub.\n\nTransición: ejercicio demostrativo.",
       "[15 MIN · EJERCICIO DEMOSTRATIVO — INTRO]\n\nBloque en vivo. Sistema de coordinación y soporte técnico.\n\nObjetivo: crear una aplicación de consola C# con POO y gestionarla con Git.\n\nTres pasos:\n1. Crear repositorio Git y clase Ticket.\n2. Refactorizar con herencia: SoporteTicket : Ticket.\n3. Hacer commit semántico y tag v0.1.0.\n\nEl estudiante sigue en su editor. Circule por el salón.\n\nAbran terminal y VS Code o Visual Studio.\n\nTransición: paso 1 — repo y clase Ticket.",
       "[5 MIN · DEMO PASO 1 — REPO Y CLASE TICKET]\n\nPasos en terminal:\n\nmkdir SistemaSoporte\ncd SistemaSoporte\ndotnet new console\ngit init\ngit add .\ngit commit -m \"feat: proyecto inicial de sistema de soporte\"\n\nCrear archivo Ticket.cs:\n\nclass Ticket\n{\n    public int Id;\n    public string Titulo;\n    public int Prioridad;\n    public string Estado;\n}\n\nHacer commit:\ngit add Ticket.cs\ngit commit -m \"feat: clase Ticket con atributos básicos\"\n\nExplique que cada commit es un punto seguro.\n\nTransición: paso 2 — herencia.",
       "[5 MIN · DEMO PASO 2 — HERENCIA]\n\nRefactorizar: crear SoporteTicket que hereda de Ticket.\n\nclass SoporteTicket : Ticket\n{\n    public string TecnicoAsignado;\n\n    public override string ToString()\n    {\n        return $\"#{Id} {Titulo} [{Estado}] — {TecnicoAsignado}\";\n    }\n}\n\nEn Program.cs:\nSoporteTicket t = new SoporteTicket();\nt.Id = 1;\nt.Titulo = \"No enciende el equipo\";\nt.Prioridad = 3;\nt.Estado = \"Abierto\";\nt.TecnicoAsignado = \"María\";\nConsole.WriteLine(t);\n\nCommit:\ngit add .\ngit commit -m \"feat: herencia SoporteTicket y override ToString\"\n\nExplique que SoporteTicket reutiliza TodoTicket.\n\nTransición: paso 3 — commit semántico y tag.",
-      "[5 MIN · DEMO PASO 3 — COMMIT SEMÁNTICO Y TAG]\n\nConvención de commits semánticos:\n- feat: nueva funcionalidad.\n- fix: corrección de error.\n- docs: documentación.\n- refactor: cambio de código sin nueva funcionalidad.\n\nTag de versión:\ngit tag -a v0.1.0 -m \"Primera versión funcional con POO\"\ngit log --oneline\ngit tag\n\nMostrar que el tag marca el punto donde el proyecto ya tiene POO básico.\n\nSi hay remoto: git push origin main --tags\n\nCierre del ejercicio: el estudiante hará lo mismo en la actividad.\n\nTransición: actividad práctica.",
+      "[5 MIN · DEMO PASO 3 — COMMIT SEMÁNTICO Y TAG]\n\nConvención de commits semánticos:\n- feat: nueva funcionalidad.\n- fix: corrección de error.\n- docs: documentación.\n- refactor: cambio de código sin nueva funcionalidad.\n\nTag de versión:\ngit tag -a v0.1.0 -m \"Primera versión funcional con POO\"\ngit log --oneline\ngit tag\n\nMostrar que el tag marca el punto donde el proyecto ya tiene POO básico.\n\nSi hay remoto: git push origin main --tags\n\nCierre del ejercicio: el estudiante hará lo mismo en la actividad.\n\nTransición: resumen visual del flujo completo.",
+      "[3 MIN · RESUMEN VISUAL: FLUJO COMPLETO]\n\nMostrar la línea de tiempo horizontal:\n\ninit → commit inicial → branch feature → commit → commit → merge → tag v0.1.0\n\nCada paso es un commit en la historia del proyecto.\n\nPregunta: ¿en qué paso usarían una rama hotfix?\n\nTransición: estructura del proyecto.",
+      "[3 MIN · IMAGEN: ESTRUCTURA DE PROYECTO]\n\nMostrar la estructura de carpetas visual:\n\nSistemaSoporte/\n├── .git/\n├── .gitignore\n├── Program.cs\n├── Ticket.cs\n├── SoporteTicket.cs\n├── bin/\n└── obj/\n\nExplicar que .git/ es la base de datos del repositorio, .gitignore evita subir bin/ y obj/.\n\nTransición: actividad práctica.",
       "[20 MIN · ACTIVIDAD PRÁCTICA]\n\nActividad obligatoria, individual, 20 minutos.\n\nInstrucciones:\n1. Crear un proyecto de consola C# llamado SistemaCoordinacion.\n2. Crear al menos dos clases con herencia (ejemplo: Ticket y SoporteTicket, o Persona y Estudiante).\n3. Inicializar Git, configurar usuario y .gitignore.\n4. Hacer al menos 3 commits semánticos con mensajes claros.\n5. Crear un tag v0.1.0.\n\nCircular por el salón; revise que cada estudiante tenga:\n- Una clase base y una derivada.\n- Historial Git con 3+ commits.\n- Tag v0.1.0 creado.\n\nAviso: en 5 minutos cerramos la actividad.\n\nTransición: cierre y tarea.",
       "[10 MIN · CIERRE Y TAREA]\n\nResolver dudas finales sobre POO o Git.\n\nTarea relacionada con la práctica de XML: revisar cómo la misma disciplina de estructura y validación se aplica al programar en C#.\n\nPuntos clave de la sesión:\n- Clase = molde; objeto = instancia.\n- Cuatro pilares: encapsulamiento, herencia, polimorfismo, abstracción.\n- Git: init, add, commit, branch, merge, tag.\n\nPróxima sesión: más POO (interfaces, colecciones) y Git remoto con GitHub.\n\nAgradezca la participación y despida al grupo."
     ]
