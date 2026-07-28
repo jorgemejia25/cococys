@@ -1769,7 +1769,7 @@ obj/
             <div class="qcard anim-up d3"><div class="qcard-t">Repaso</div><div class="qcard-b">Clase/objeto, 4 pilares, ramas/tags, y repaso de hilos (Thread / Task).</div></div>
             <div class="qcard anim-up d4"><div class="qcard-t">Tarea XML</div><div class="qcard-b">Continuar con ejercicios de <b>XML</b> bien formado y validación de estructura.</div></div>
           </div>
-          <p class="body anim-up d5" style="margin-top: 10px"><b style="color:var(--fg)">Puntos clave:</b> la POO modela entidades reales; Git documenta cada paso. El repaso de hilos (cocina / cocineros) es solo ayuda — ejemplo en <b style="color:var(--fg)">ejemplos-tecnicos/.../08-Hilos</b>.</p>
+          <p class="body anim-up d5" style="margin-top: 10px"><b style="color:var(--fg)">Puntos clave:</b> la POO modela entidades reales; Git documenta cada paso. El repaso de hilos (cocina / cocineros) es solo ayuda — ejemplos <b style="color:var(--fg)">08-SinHilos</b>, <b style="color:var(--fg)">09-ConHilos</b> y <b style="color:var(--fg)">10-HiloSegundoPlano</b>.</p>
         </div>
       </section>
       <!-- ═══ REPASO DE APOYO · HILOS ═══ -->
@@ -1808,7 +1808,7 @@ obj/
             <div class="flist">
               <div class="fitem anim-up d3"><span class="ftick">▹</span><span>Más simple de entender y de depurar.</span></div>
               <div class="fitem anim-up d4"><span class="ftick">▹</span><span>Ideal cuando el trabajo es corto o el orden importa.</span></div>
-              <div class="fitem anim-up d5"><span class="ftick">▹</span><span>Ejemplo: <b>08-Hilos</b> → método <b>SinHilos()</b></span></div>
+              <div class="fitem anim-up d5"><span class="ftick">▹</span><span>Ejemplo: carpeta <b>08-SinHilos</b> → <b>dotnet run</b></span></div>
             </div>
           </div>
           <div class="term anim-up d3">
@@ -1833,7 +1833,7 @@ obj/
             <div class="flist">
               <div class="fitem anim-up d3"><span class="ftick">▹</span><span>Más rápido cuando las tareas son independientes.</span></div>
               <div class="fitem anim-up d4"><span class="ftick">▹</span><span>Hay que cuidar no pisarse en la misma lista.</span></div>
-              <div class="fitem anim-up d5"><span class="ftick">▹</span><span>Ejemplo: <b>08-Hilos</b> → método <b>ConHilos()</b></span></div>
+              <div class="fitem anim-up d5"><span class="ftick">▹</span><span>Ejemplo: carpeta <b>09-ConHilos</b> → <b>dotnet run</b></span></div>
             </div>
           </div>
           <div class="term anim-up d3">
@@ -1849,21 +1849,36 @@ a.<span class="tf">Join</span>();  b.<span class="tf">Join</span>();  c.<span cl
         </div>
       </section>
 
-      <section data-label="40" data-screen-label="Hilos · cuidado simple">
+      <section data-label="40" data-screen-label="Hilo en segundo plano">
         <div class="layer"></div>
-        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Repaso de apoyo — Una sola idea</span></span><span class="meta">CUIDADO</span></div>
-        <div class="cbody" style="max-width: 1600px; gap: var(--glg)">
-          <h2 class="ctitle anim-up">Un solo cuidado (por ahora)</h2>
-          <div class="cards3">
-            <div class="qcard anim-up d2"><div class="qcard-t">Misma libreta</div><div class="qcard-b">Si dos cocineros anotan en la <b>misma libreta</b> al mismo tiempo, se pueden pisar. Con hilos pasa igual si dos tocan la misma lista de tickets.</div></div>
-            <div class="qcard anim-up d3"><div class="qcard-t">Regla práctica</div><div class="qcard-b">Empieza con un solo flujo (sin hilos). Usa hilos cuando de verdad necesites hacer algo “mientras tanto”.</div></div>
-            <div class="qcard anim-up d4"><div class="qcard-t">Para profundizar</div><div class="qcard-b">Si quieres verlo con más calma:<br><a class="qcard-l" href="https://www.youtube.com/watch?v=0_Y3FhG9eY4" target="_blank" rel="noopener">Video intro (YouTube) ↗</a></div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Repaso de apoyo — Ejemplo 10</span></span><span class="meta">SEGUNDO PLANO</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">El menú sigue vivo</h2>
+            <p class="body anim-up d2">Mientras un hilo procesa el ticket, el programa principal sigue imprimiendo. Así se siente el “segundo plano”.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">08</span><span><b>SinHilos</b> — uno tras otro</span></div>
+              <div class="fitem anim-up d4"><span class="ftick">09</span><span><b>ConHilos</b> — los tres juntos</span></div>
+              <div class="fitem anim-up d5"><span class="ftick">10</span><span><b>HiloSegundoPlano</b> — menú + hilo a la vez</span></div>
+            </div>
+            <p class="note anim-up d5" style="margin-top: 8px">Cuidado: no compartir la misma lista entre hilos sin control. Hoy el entregable es POO + Git.</p>
           </div>
-          <p class="body anim-up d5" style="margin-top: 8px"><b style="color:var(--fg)">Hoy el foco es otro:</b> POO y Git. Esto de hilos es solo un repaso de ayuda; no es lo que van a entregar en la actividad.</p>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">segundo-plano.cs</span></div>
+            <div class="term-body sm"><span id="t40" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t40" hidden><span class="tk">var</span> hilo = <span class="tk">new</span> <span class="tf">Thread</span>(ProcesarTicketLargo);
+hilo.<span class="tf">Start</span>();
+
+<span class="tc">// El menú sigue imprimiendo</span>
+<span class="tk">for</span> (<span class="tk">int</span> i = <span class="tn">1</span>; i &lt;= <span class="tn">5</span>; i++)
+{
+    Thread.<span class="tf">Sleep</span>(<span class="tn">400</span>);
+    Console.<span class="tf">WriteLine</span>(<span class="ts">$"[Menú] disponible ({i})"</span>);
+}
+hilo.<span class="tf">Join</span>();</div>
         </div>
       </section>
-
-
 
 
     </deck-stage>
@@ -1907,9 +1922,9 @@ a.<span class="tf">Join</span>();  b.<span class="tf">Join</span>();  c.<span cl
       "[20 MIN · ACTIVIDAD PRÁCTICA]\n\nActividad obligatoria, individual, 20 minutos.\n\nInstrucciones:\n1. Crear un proyecto de consola C# llamado SistemaCoordinacion.\n2. Crear al menos dos clases con herencia (ejemplo: Ticket y SoporteTicket, o Persona y Estudiante).\n3. Inicializar Git, configurar usuario y .gitignore.\n4. Hacer al menos 3 commits semánticos con mensajes claros.\n5. Crear un tag v0.1.0.\n\nCircular por el salón; revise que cada estudiante tenga:\n- Una clase base y una derivada.\n- Historial Git con 3+ commits.\n- Tag v0.1.0 creado.\n\nAviso: en 5 minutos cerramos la actividad.\n\nRecuerda: el repaso de hilos es apoyo; la entrega de hoy es POO + Git.\n\nTransición: cierre y tarea.",
       "[10 MIN · CIERRE Y TAREA]\n\nResolver dudas finales sobre POO o Git.\n\nTarea relacionada con la práctica de XML: revisar cómo la misma disciplina de estructura y validación se aplica al programar en C#.\n\nPuntos clave de la sesión:\n- Clase = molde; objeto = instancia.\n- Cuatro pilares: encapsulamiento, herencia, polimorfismo, abstracción.\n- Git: init, add, commit, branch, merge, tag.\n- Repaso de apoyo: hilo vs proceso; Thread vs Task.\n\nPróxima sesión: más POO (interfaces, colecciones) y Git remoto con GitHub.\n\nAgradezca la participación.\n\nTransición: repaso breve de hilos (ayuda al final).",
       "[5 MIN · ¿QUÉ ES UN HILO? — CON ANALOGÍA]\n\nHabla en lenguaje cotidiano. No uses jerga al inicio.\n\nAnalogía central:\n- El programa = un restaurante / una cocina.\n- Un hilo = un cocinero.\n- Un solo cocinero: hace un plato tras otro.\n- Varios cocineros: varios platos al mismo tiempo.\n\nEjemplo cotidiano: WhatsApp descarga una foto y tú sigues escribiendo. Eso es “segundo plano”.\n\nPregunta: ¿cuándo les ha pasado que una app se congela? (suele ser porque un solo “cocinero” está atascado).\n\nCierra: hoy solo necesitan la idea. No van a entregar un programa con hilos.\n\nTransición: cómo se pide en C# de forma simple.",
-      "[3 MIN · SIN HILOS]\n\nMisma historia: 3 tickets, 1 segundo cada uno.\n\nSin hilos = un cocinero:\nProcesarTicket A\nProcesarTicket B\nProcesarTicket C\nTotal ≈ 3 segundos.\n\nMensaje: es más simple. Úsalo cuando el trabajo es corto o debe ir en orden.\n\nDemo: dotnet run en 08-Hilos y mirar la primera mitad (SinHilos).\n\nTransición: ahora lo mismo con hilos.",
-      "[3 MIN · CON HILOS]\n\nTres cocineros a la vez:\nStart A, Start B, Start C\nJoin A, Join B, Join C\nTotal ≈ 1 segundo.\n\nCompara en voz alta el tiempo de la consola (sin vs con).\n\nMensaje: más rápido si las tareas no dependen entre sí.\nCuidado: no compartir la misma lista a lo loco.\n\nDemo: segunda mitad de 08-Hilos (ConHilos).\n\nTransición: un solo cuidado.",
-      "[3 MIN · UN SOLO CUIDADO]\n\nAnalogía de la libreta:\nDos cocineros escribiendo en la misma libreta al mismo tiempo → se pisan.\nDos hilos tocando la misma lista de tickets → problemas.\n\nRegla práctica: primero programa simple (un solo flujo). Hilos solo cuando haga falta.\n\nRecuerda: la actividad de hoy es POO + Git, no hilos.\n\nEnlace opcional al video si alguien quiere ampliar en casa.\n\nFin del repaso. Si hay tiempo, abrir ejemplos-tecnicos/.../08-Hilos con dotnet run."
+      "[3 MIN · SIN HILOS]\n\nMisma historia: 3 tickets, 1 segundo cada uno.\n\nSin hilos = un cocinero:\nProcesarTicket A\nProcesarTicket B\nProcesarTicket C\nTotal ≈ 3 segundos.\n\nMensaje: es más simple. Úsalo cuando el trabajo es corto o debe ir en orden.\n\nDemo: dotnet run en 08-SinHilos (dotnet run).\n\nTransición: ahora lo mismo con hilos.",
+      "[3 MIN · CON HILOS]\n\nTres cocineros a la vez:\nStart A, Start B, Start C\nJoin A, Join B, Join C\nTotal ≈ 1 segundo.\n\nCompara en voz alta el tiempo de la consola (sin vs con).\n\nMensaje: más rápido si las tareas no dependen entre sí.\nCuidado: no compartir la misma lista a lo loco.\n\nDemo: 09-ConHilos (dotnet run).\n\nTransición: un solo cuidado.",
+      "[3 MIN · HILO EN SEGUNDO PLANO]\n\nDemo en vivo (recomendado):\ncd ejemplos-tecnicos/ipc2/Clase 3/durante-diapositivas/10-HiloSegundoPlano\ndotnet run\n\nVerán [Menú] y [Hilo] intercalados.\n\nRecorrido completo de ejemplos:\n1. 08-SinHilos → ~3 s\n2. 09-ConHilos → ~1 s\n3. 10-HiloSegundoPlano → menú no se congela\n\nCierre: entregable del día = POO + Git. Hilos = ayuda.\nFin del repaso."
     ]
     </script>
 
