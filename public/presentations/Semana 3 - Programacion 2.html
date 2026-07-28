@@ -958,103 +958,90 @@
           <div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.04)">hilo</div>
         </div>
         <div class="topbar">
-          <span class="stag ac"><span class="tl"></span><span>Repaso de apoyo — Saber</span></span>
+          <span class="stag ac"><span class="tl"></span><span>Repaso de apoyo — Idea simple</span></span>
           <span class="meta">~5 MIN · AYUDA</span>
         </div>
         <div class="split" style="margin-top: 30px">
           <div class="cbody" style="gap: var(--gmd)">
-            <h2 class="ctitle anim-up">¿Qué es un hilo?</h2>
-            <p class="body anim-up d2">Un <b style="color:var(--fg)">hilo (thread)</b> es una línea de ejecución dentro de un proceso. Un proceso puede tener varios hilos que avanzan <b style="color:var(--fg)">en paralelo</b> o de forma intercalada.</p>
+            <h2 class="ctitle anim-up">Imagina una cocina</h2>
+            <p class="body anim-up d2">Tu programa es como un <b style="color:var(--fg)">restaurante</b>. El local completo es el programa. Cada <b style="color:var(--fg)">cocinero</b> es un hilo: puede preparar un plato mientras otro hace otra cosa.</p>
             <div class="flist">
-              <div class="fitem anim-up d3"><span class="ftick">P</span><span><b>Proceso:</b> el programa completo (memoria, recursos).</span></div>
-              <div class="fitem anim-up d4"><span class="ftick">H</span><span><b>Hilo:</b> una ruta de trabajo dentro de ese proceso.</span></div>
-              <div class="fitem anim-up d5"><span class="ftick">≡</span><span><b>Analogía:</b> proceso = cocina; hilos = cocineros trabajando a la vez.</span></div>
+              <div class="fitem anim-up d3"><span class="ftick">1</span><span><b>Un solo cocinero:</b> hace un plato, termina, y recién empieza el siguiente.</span></div>
+              <div class="fitem anim-up d4"><span class="ftick">2</span><span><b>Varios cocineros:</b> varios platos avanzan al mismo tiempo.</span></div>
+              <div class="fitem anim-up d5"><span class="ftick">3</span><span><b>Hilo</b> = un cocinero haciendo una tarea dentro del mismo local.</span></div>
             </div>
           </div>
           <div class="flist" style="gap: 20px">
-            <div class="qcard anim-up d3"><div class="qcard-t">Para qué sirve</div><div class="qcard-b">No bloquear la interfaz, procesar varios tickets a la vez, o hacer trabajo en segundo plano mientras el menú sigue respondiendo.</div></div>
-            <div class="qcard anim-up d4"><div class="qcard-t">Relación con POO</div><div class="qcard-b">Los objetos viven en memoria compartida: varios hilos pueden llamar métodos del mismo objeto — hay que cuidar el estado.</div></div>
+            <div class="qcard anim-up d3"><div class="qcard-t">En la vida real</div><div class="qcard-b">Mientras WhatsApp descarga una foto, tú sigues escribiendo. Eso es trabajo en segundo plano: un hilo no te deja “congelado”.</div></div>
+            <div class="qcard anim-up d4"><div class="qcard-t">En nuestro sistema</div><div class="qcard-b">Mientras se “procesa” un ticket largo, el menú podría seguir abierto. Un hilo ayuda a no trabar toda la app.</div></div>
           </div>
         </div>
       </section>
 
-      <section data-label="04" data-screen-label="Hilos en C# · Thread">
-        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:240px; color:rgba(240,238,235,0.022)">Thread</div></div>
-        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Repaso de apoyo — System.Threading</span></span><span class="meta">EJEMPLO</span></div>
+      <section data-label="04" data-screen-label="Hilos · ejemplo sencillo">
+        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:220px; color:rgba(240,238,235,0.022)">Start</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Repaso de apoyo — En C#</span></span><span class="meta">EJEMPLO</span></div>
         <div class="split" style="margin-top: 30px">
           <div class="cbody" style="gap: var(--gmd)">
-            <h2 class="ctitle anim-up">Thread en C#</h2>
-            <p class="body anim-up d2">Con <b style="color:var(--fg)">System.Threading.Thread</b> se crea un hilo que ejecuta un método. <b style="color:var(--fg)">Start()</b> lo pone a correr; <b style="color:var(--fg)">Join()</b> espera a que termine.</p>
+            <h2 class="ctitle anim-up">Pedirle a otro “cocinero”</h2>
+            <p class="body anim-up d2">En C# puedes decir: “tú ve y procesa este ticket”, y el programa principal sigue su camino. <b style="color:var(--fg)">Start</b> = empieza; <b style="color:var(--fg)">Join</b> = “espérame a que termine”.</p>
             <div class="steps">
-              <div class="stepr anim-up d3"><span class="stepn">1</span><span>Definir el método que hará el trabajo</span></div>
-              <div class="stepr anim-up d4"><span class="stepn">2</span><span>Crear <b>new Thread(...)</b> y llamar <b>Start()</b></span></div>
-              <div class="stepr anim-up d5"><span class="stepn">3</span><span>Opcional: <b>Join()</b> para sincronizar</span></div>
+              <div class="stepr anim-up d3"><span class="stepn">1</span><span>Dices qué trabajo quieres (el método)</span></div>
+              <div class="stepr anim-up d4"><span class="stepn">2</span><span>Creas el hilo y le das <b>Start</b></span></div>
+              <div class="stepr anim-up d5"><span class="stepn">3</span><span>Si necesitas el resultado, usas <b>Join</b> (esperar)</span></div>
             </div>
           </div>
           <div class="term anim-up d3">
-            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">hilos.cs</span></div>
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">ejemplo.cs</span></div>
             <div class="term-body sm"><span id="t35" data-typed-target></span></div>
           </div>
-          <div class="tsrc" data-for="t35" hidden><span class="tk">using</span> System.Threading;
-
-<span class="tk">void</span> <span class="tf">ProcesarTicket</span>()
-{
-    Console.<span class="tf">WriteLine</span>(<span class="ts">"Hilo trabajando..."</span>);
-    Thread.<span class="tf">Sleep</span>(<span class="tn">1000</span>);
-    Console.<span class="tf">WriteLine</span>(<span class="ts">"Ticket listo"</span>);
-}
-
+          <div class="tsrc" data-for="t35" hidden><span class="tc">// "Ve y trabaja en segundo plano"</span>
 <span class="tk">var</span> hilo = <span class="tk">new</span> <span class="tf">Thread</span>(ProcesarTicket);
 hilo.<span class="tf">Start</span>();
-hilo.<span class="tf">Join</span>();  <span class="tc">// espera al hilo</span>
-Console.<span class="tf">WriteLine</span>(<span class="ts">"Main continúa"</span>);</div>
+
+<span class="tc">// "Cuando termines, avísame"</span>
+hilo.<span class="tf">Join</span>();
+Console.<span class="tf">WriteLine</span>(<span class="ts">"Listo, seguimos"</span>);</div>
         </div>
       </section>
 
-      <section data-label="05" data-screen-label="Task · forma moderna">
+      <section data-label="05" data-screen-label="Otra forma más fácil">
         <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:240px; color:rgba(0,232,208,0.035)">Task</div></div>
-        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Repaso de apoyo — System.Threading.Tasks</span></span><span class="meta">RECOMENDADO</span></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Repaso de apoyo — Idea para después</span></span><span class="meta">MÁS SIMPLE</span></div>
         <div class="split" style="margin-top: 30px">
           <div class="cbody" style="gap: var(--gmd)">
-            <h2 class="ctitle anim-up">Task: forma moderna</h2>
-            <p class="body anim-up d2">Hoy se prefiere <b style="color:var(--fg)">Task</b> (o <b style="color:var(--fg)">async/await</b>) sobre crear <b style="color:var(--fg)">Thread</b> a mano. El runtime reutiliza un pool de hilos y es más simple de componer.</p>
+            <h2 class="ctitle anim-up">Hay una forma más fácil</h2>
+            <p class="body anim-up d2">Crear hilos “a mano” funciona, pero en proyectos reales hoy se usa algo llamado <b style="color:var(--fg)">Task</b>: es como pedirle al sistema que asigne el trabajo sin que tú gestiones cada cocinero.</p>
             <div class="flist">
-              <div class="fitem anim-up d3"><span class="ftick">T</span><span><b>Task.Run</b> — trabajo en segundo plano</span></div>
-              <div class="fitem anim-up d4"><span class="ftick">A</span><span><b>await</b> — esperar sin bloquear el hilo principal (apps modernas)</span></div>
-              <div class="fitem anim-up d5"><span class="ftick">!</span><span><b>Regla:</b> para aprender, conoce Thread; para proyectos nuevos, usa Task.</span></div>
+              <div class="fitem anim-up d3"><span class="ftick">▹</span><span><b>Hoy:</b> basta entender la idea de “trabajo en paralelo”.</span></div>
+              <div class="fitem anim-up d4"><span class="ftick">▹</span><span><b>Después:</b> verán Task y async cuando armen apps más grandes.</span></div>
+              <div class="fitem anim-up d5"><span class="ftick">▹</span><span><b>Mensaje:</b> no memorizar APIs; recordar el “por qué”.</span></div>
             </div>
           </div>
           <div class="term anim-up d3">
-            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">task.cs</span></div>
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">idea.cs</span></div>
             <div class="term-body sm"><span id="t36" data-typed-target></span></div>
           </div>
-          <div class="tsrc" data-for="t36" hidden><span class="tk">using</span> System.Threading.Tasks;
-
-<span class="tk">var</span> tarea = Task.<span class="tf">Run</span>(() =&gt;
-{
-    Console.<span class="tf">WriteLine</span>(<span class="ts">"Procesando ticket..."</span>);
-    Thread.<span class="tf">Sleep</span>(<span class="tn">800</span>);
-});
-
-tarea.<span class="tf">Wait</span>();  <span class="tc">// en consola; en apps: await</span>
+          <div class="tsrc" data-for="t36" hidden><span class="tc">// Misma idea, menos detalle de bajo nivel</span>
+<span class="tk">var</span> tarea = Task.<span class="tf">Run</span>(ProcesarTicket);
+tarea.<span class="tf">Wait</span>();
 Console.<span class="tf">WriteLine</span>(<span class="ts">"Listo"</span>);</div>
         </div>
       </section>
 
-      <section data-label="06" data-screen-label="Hilos · cuidados y video">
+      <section data-label="06" data-screen-label="Hilos · cuidado simple">
         <div class="layer"></div>
-        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Repaso de apoyo — Buenas prácticas</span></span><span class="meta">CUIDADOS</span></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Repaso de apoyo — Una sola idea</span></span><span class="meta">CUIDADO</span></div>
         <div class="cbody" style="max-width: 1600px; gap: var(--glg)">
-          <h2 class="ctitle anim-up">Cuidados al usar hilos</h2>
+          <h2 class="ctitle anim-up">Un solo cuidado (por ahora)</h2>
           <div class="cards3">
-            <div class="qcard anim-up d2"><div class="qcard-t">Estado compartido</div><div class="qcard-b">Si dos hilos modifican la misma lista de tickets a la vez, puede haber <b>condiciones de carrera</b>. Usar <b>lock</b> o colecciones concurrentes.</div></div>
-            <div class="qcard anim-up d3"><div class="qcard-t">No abusar</div><div class="qcard-b">Crear muchos hilos no siempre acelera: hay costo de sincronización. Empieza simple; paraleliza cuando haga falta.</div></div>
-            <div class="qcard anim-up d4"><div class="qcard-t">Video de apoyo</div><div class="qcard-b">Thread vs Task en C# (concepto).<br><a class="qcard-l" href="https://learn.microsoft.com/es-es/dotnet/standard/threading/managed-threading-basics" target="_blank" rel="noopener">Microsoft Learn · Threading ↗</a><br><a class="qcard-l" href="https://www.youtube.com/watch?v=0_Y3FhG9eY4" target="_blank" rel="noopener">YouTube · async/await intro ↗</a></div></div>
+            <div class="qcard anim-up d2"><div class="qcard-t">Misma libreta</div><div class="qcard-b">Si dos cocineros anotan en la <b>misma libreta</b> al mismo tiempo, se pueden pisar. Con hilos pasa igual si dos tocan la misma lista de tickets.</div></div>
+            <div class="qcard anim-up d3"><div class="qcard-t">Regla práctica</div><div class="qcard-b">Empieza con un solo flujo (sin hilos). Usa hilos cuando de verdad necesites hacer algo “mientras tanto”.</div></div>
+            <div class="qcard anim-up d4"><div class="qcard-t">Para profundizar</div><div class="qcard-b">Si quieres verlo con más calma:<br><a class="qcard-l" href="https://www.youtube.com/watch?v=0_Y3FhG9eY4" target="_blank" rel="noopener">Video intro (YouTube) ↗</a></div></div>
           </div>
-          <p class="body anim-up d5" style="margin-top: 8px"><b style="color:var(--fg)">Hoy:</b> este bloque es ayuda. El foco de la sesión sigue siendo <b style="color:var(--fg)">POO + Git</b>. Los hilos vuelven con más detalle en sesiones posteriores.</p>
+          <p class="body anim-up d5" style="margin-top: 8px"><b style="color:var(--fg)">Hoy el foco es otro:</b> POO y Git. Esto de hilos es solo un repaso de ayuda; no es lo que van a entregar en la actividad.</p>
         </div>
       </section>
-
 
 
       <!-- ═══ 03 · RESPONSABILIDAD ═══ -->
@@ -1882,10 +1869,10 @@ obj/
     [
       "[5 MIN · PORTADA]\n\nBuenos días. Semana 03 de Introducción a la Programación y Computación 2, ECYS 771. Hoy unimos dos temas: Programación Orientada a Objetos en C# y Git Workflow.\n\nObjetivo de los 80 minutos: que cada estudiante entienda clases, objetos y los cuatro pilares de la POO, y que sepa usar Git con ramas, merges y tags para versionar su proyecto.\n\nPresentación breve: soy Jorge Mejía. Canal oficial: foro y WhatsApp del curso.\n\nTransición: agenda.",
       "[2 MIN · AGENDA]\n\nSesión de 80 minutos:\n\n01 — Repaso de apoyo (~5 min): hilos en C# (Thread / Task) — ayuda al inicio.\n02 — Actitudinal (5 min): responsabilidad y puntualidad.\n03 — POO en C# (~25 min): paradigma, clases, objetos, pilares y ejemplos.\n04 — Git Workflow (~15 min): config, ramas, merge, tags.\n05 — Ejercicio demostrativo (~15 min): sistema de soporte + Git.\n06 — Actividad + cierre (~15 min).\n\nEl bloque de hilos va al inicio como refuerzo solicitado. Luego el foco es POO + Git.\n\nTransición: repaso de hilos.",
-      "[5 MIN · REPASO · ¿QUÉ ES UN HILO?]\n\nBloque de apoyo (solicitado como ayuda). No es el eje de la sesión.\n\nDefinición: un hilo es una línea de ejecución dentro de un proceso.\n- Proceso = el programa completo.\n- Hilo = una ruta de trabajo dentro de ese programa.\n\nAnalogía: cocina (proceso) con varios cocineros (hilos).\n\nPara qué: trabajo en segundo plano, no congelar la UI, procesar varios tickets.\n\nRelación con POO: varios hilos pueden tocar el mismo objeto — cuidado con el estado compartido.\n\nPregunta: ¿en su sistema de tickets, qué trabajo podría ir en un hilo aparte? (ej. generar reporte mientras el menú sigue abierto).\n\nVa al inicio de la sesión como ayuda. Luego seguimos con actitud y POO.\n\nTransición: Thread en C#.",
-      "[3 MIN · HILOS EN C# · THREAD]\n\nMostrar el ejemplo del terminal.\n\nusing System.Threading;\nnew Thread(ProcesarTicket).Start();\nJoin() espera a que el hilo termine.\n\nSleep simula trabajo (no usarlo en producción como \"espera de negocio\").\n\nEnfatizar: Thread es el concepto de bajo nivel. Útil para entender; en código moderno se prefiere Task.\n\nDemo opcional: abrir ejemplos-tecnicos/.../08-Hilos y dotnet run.\n\nTransición: Task moderna.",
-      "[3 MIN · TASK · FORMA MODERNA]\n\nTask.Run(() => { ... }) usa el pool de hilos.\nWait() en consola; en apps con UI: async/await.\n\nRegla de la sesión:\n- Aprender: conocer Thread.\n- Proyectos nuevos: Task / async-await.\n\nNo profundizar en async hoy; solo dejar la puerta abierta.\n\nTransición: cuidados y enlaces.",
-      "[3 MIN · CUIDADOS Y VIDEO]\n\nTres mensajes:\n1. Estado compartido → condiciones de carrera → lock o colecciones concurrentes.\n2. No crear hilos \"por moda\": hay costo.\n3. Enlaces: Microsoft Learn Threading + video async/await intro.\n\nCerrar el repaso: hoy el entregable sigue siendo POO + Git. Hilos = ayuda para reforzar.\n\nTransición: responsabilidad y puntualidad (área actitudinal).",
+      "[5 MIN · ¿QUÉ ES UN HILO? — CON ANALOGÍA]\n\nHabla en lenguaje cotidiano. No uses jerga al inicio.\n\nAnalogía central:\n- El programa = un restaurante / una cocina.\n- Un hilo = un cocinero.\n- Un solo cocinero: hace un plato tras otro.\n- Varios cocineros: varios platos al mismo tiempo.\n\nEjemplo cotidiano: WhatsApp descarga una foto y tú sigues escribiendo. Eso es “segundo plano”.\n\nPregunta: ¿cuándo les ha pasado que una app se congela? (suele ser porque un solo “cocinero” está atascado).\n\nCierra: hoy solo necesitan la idea. No van a entregar un programa con hilos.\n\nTransición: cómo se pide en C# de forma simple.",
+      "[3 MIN · EJEMPLO SENCILLO]\n\nCuenta la historia del código, no los nombres de clases:\n\n1. Le pedimos a otro “cocinero” que procese el ticket.\n2. Start = “empieza”.\n3. Join = “espérame cuando termines”.\n\nLee el código en voz alta como si fuera una conversación:\n“Creo el hilo… lo arranco… espero… y digo listo.”\n\nSi alguien pregunta por Sleep: “es solo para fingir que el trabajo tarda un segundo”.\n\nTransición: hay una forma aún más cómoda.",
+      "[3 MIN · FORMA MÁS FÁCIL]\n\nMensaje: Thread es la idea de base; Task es la forma más cómoda en proyectos nuevos.\n\nNo profundices en async/await. Di solo:\n“Más adelante, cuando hagan apps más grandes, usarán Task. Hoy basta con la idea.”\n\nRegla para el estudiante:\n- Entender el “por qué” (no congelar la app / hacer dos cosas).\n- No memorizar la API hoy.\n\nTransición: un solo cuidado.",
+      "[3 MIN · UN SOLO CUIDADO]\n\nAnalogía de la libreta:\nDos cocineros escribiendo en la misma libreta al mismo tiempo → se pisan.\nDos hilos tocando la misma lista de tickets → problemas.\n\nRegla práctica: primero programa simple (un solo flujo). Hilos solo cuando haga falta.\n\nRecuerda: la actividad de hoy es POO + Git, no hilos.\n\nEnlace opcional al video si alguien quiere ampliar en casa.\n\nTransición: responsabilidad y puntualidad.",
       "[5 MIN · RESPONSABILIDAD Y PUNTUALIDAD]\n\nÁrea actitudinal — Saber ser.\n\nLea los tres puntos:\n1. Asistencia y puntualidad: llegar a tiempo al laboratorio es parte del compromiso profesional.\n2. Compromiso en la ejecución: seguir instrucciones, completar ejercicios y entregar a tiempo.\n3. Relación con la sesión: la misma disciplina que usan para entregar un ejercicio de XML correctamente se aplica al escribir código C# y al versionar con Git.\n\nEn programación, la responsabilidad se refleja en el historial de commits: orden, frecuencia y mensajes claros.\n\nPregunta: ¿qué diferencia hay entre un estudiante responsable y uno que no? Tome una respuesta.\n\nTransición: ¿qué es la POO?",
       "[4 MIN · ¿QUÉ ES LA POO?]\n\nLa Programación Orientada a Objetos es un paradigma que modela el mundo real con objetos.\n\nAnalogía central:\n- Clase = molde o plano.\n- Objeto = instancia concreta creada a partir del molde.\n\nEjemplo: la clase Ticket define que todo ticket tiene Id, Título y Prioridad. Cada ticket que un usuario registra es un objeto distinto con sus propios valores.\n\nVentajas: reutilización, organización, mantenimiento.\n\nEn C# todo gira alrededor de objetos. Incluso un string es un objeto con métodos como .ToUpper().\n\nPregunta: ¿qué objeto usarían para modelar un estudiante? Campos: carnet, nombre, carrera.\n\nTransición: video explicativo de POO.",
       "[3 MIN · VIDEO: POO EXPLICADO]\n\nReproducir el video de YouTube: Programación Orientada a Objetos — Abstracción, Encapsulamiento, Herencia, Polimorfismo.\n\nURL: https://www.youtube.com/watch?v=SI7O81GMG2A\n\nEl video resume los cuatro pilares con ejemplos visuales y analogías de personajes de videojuegos (Guerrero, Mago).\n\nPausar en los puntos clave para preguntar si hay dudas antes de continuar.\n\nTransición: analogía visual del molde.",
