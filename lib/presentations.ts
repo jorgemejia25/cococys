@@ -69,7 +69,7 @@ export const COURSES: Course[] = [
       {
         label: "Semana 3 — POO y Git Workflow",
         file: "Semana 3 - Programacion 2.html",
-        slides: 36,
+        slides: 40,
       },
     ],
   },

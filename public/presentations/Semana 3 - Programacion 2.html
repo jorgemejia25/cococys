@@ -942,17 +942,123 @@
         <div class="cbody" style="max-width: 1500px">
           <h2 class="ctitle anim-up">Lo que haremos hoy</h2>
           <div style="display: flex; flex-direction: column">
-            <div class="arow anim-up d2"><span class="arow-n">01</span><span class="arow-t">Actitudinal</span><span class="arow-d">Responsabilidad, puntualidad y compromiso</span><span class="arow-time">5 min</span></div>
-            <div class="arow anim-up d3"><span class="arow-n">02</span><span class="arow-t">POO en C#</span><span class="arow-d">Paradigma, clases, objetos, 4 pilares + videos y ejemplos visuales</span><span class="arow-time">28 min</span></div>
-            <div class="arow anim-up d4"><span class="arow-n">03</span><span class="arow-t">Git Workflow</span><span class="arow-d">Configuración, ramas, merge, tags + diagramas y videos</span><span class="arow-time">17 min</span></div>
-            <div class="arow anim-up d5"><span class="arow-n">04</span><span class="arow-t">Ejercicio demostrativo</span><span class="arow-d">Sistema de soporte técnico con POO + Git (flujo completo)</span><span class="arow-time">15 min</span></div>
-            <div class="arow anim-up d5"><span class="arow-n">05</span><span class="arow-t">Actividad + cierre</span><span class="arow-d">Práctica individual, repaso visual y puntos clave</span><span class="arow-time">15 min</span></div>
+            <div class="arow anim-up d2"><span class="arow-n">01</span><span class="arow-t">Repaso de apoyo</span><span class="arow-d">Hilos en C# (Thread / Task) — material de ayuda</span><span class="arow-time">5 min</span></div>
+            <div class="arow anim-up d3"><span class="arow-n">02</span><span class="arow-t">Actitudinal</span><span class="arow-d">Responsabilidad, puntualidad y compromiso</span><span class="arow-time">5 min</span></div>
+            <div class="arow anim-up d4"><span class="arow-n">03</span><span class="arow-t">POO en C#</span><span class="arow-d">Paradigma, clases, objetos, 4 pilares + videos y ejemplos visuales</span><span class="arow-time">25 min</span></div>
+            <div class="arow anim-up d5"><span class="arow-n">04</span><span class="arow-t">Git Workflow</span><span class="arow-d">Configuración, ramas, merge, tags + diagramas y videos</span><span class="arow-time">15 min</span></div>
+            <div class="arow anim-up d5"><span class="arow-n">05</span><span class="arow-t">Ejercicio demostrativo</span><span class="arow-d">Sistema de soporte técnico con POO + Git (flujo completo)</span><span class="arow-time">15 min</span></div>
+            <div class="arow anim-up d5"><span class="arow-n">06</span><span class="arow-t">Actividad + cierre</span><span class="arow-d">Práctica individual, repaso visual y puntos clave</span><span class="arow-time">15 min</span></div>
           </div>
         </div>
       </section>
 
+      <!-- ═══ REPASO DE APOYO · HILOS ═══ -->
+      <section data-label="03" data-screen-label="Repaso · ¿Qué es un hilo?">
+        <div class="layer">
+          <div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.04)">hilo</div>
+        </div>
+        <div class="topbar">
+          <span class="stag ac"><span class="tl"></span><span>Repaso de apoyo — Saber</span></span>
+          <span class="meta">~5 MIN · AYUDA</span>
+        </div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">¿Qué es un hilo?</h2>
+            <p class="body anim-up d2">Un <b style="color:var(--fg)">hilo (thread)</b> es una línea de ejecución dentro de un proceso. Un proceso puede tener varios hilos que avanzan <b style="color:var(--fg)">en paralelo</b> o de forma intercalada.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">P</span><span><b>Proceso:</b> el programa completo (memoria, recursos).</span></div>
+              <div class="fitem anim-up d4"><span class="ftick">H</span><span><b>Hilo:</b> una ruta de trabajo dentro de ese proceso.</span></div>
+              <div class="fitem anim-up d5"><span class="ftick">≡</span><span><b>Analogía:</b> proceso = cocina; hilos = cocineros trabajando a la vez.</span></div>
+            </div>
+          </div>
+          <div class="flist" style="gap: 20px">
+            <div class="qcard anim-up d3"><div class="qcard-t">Para qué sirve</div><div class="qcard-b">No bloquear la interfaz, procesar varios tickets a la vez, o hacer trabajo en segundo plano mientras el menú sigue respondiendo.</div></div>
+            <div class="qcard anim-up d4"><div class="qcard-t">Relación con POO</div><div class="qcard-b">Los objetos viven en memoria compartida: varios hilos pueden llamar métodos del mismo objeto — hay que cuidar el estado.</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section data-label="04" data-screen-label="Hilos en C# · Thread">
+        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:240px; color:rgba(240,238,235,0.022)">Thread</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Repaso de apoyo — System.Threading</span></span><span class="meta">EJEMPLO</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Thread en C#</h2>
+            <p class="body anim-up d2">Con <b style="color:var(--fg)">System.Threading.Thread</b> se crea un hilo que ejecuta un método. <b style="color:var(--fg)">Start()</b> lo pone a correr; <b style="color:var(--fg)">Join()</b> espera a que termine.</p>
+            <div class="steps">
+              <div class="stepr anim-up d3"><span class="stepn">1</span><span>Definir el método que hará el trabajo</span></div>
+              <div class="stepr anim-up d4"><span class="stepn">2</span><span>Crear <b>new Thread(...)</b> y llamar <b>Start()</b></span></div>
+              <div class="stepr anim-up d5"><span class="stepn">3</span><span>Opcional: <b>Join()</b> para sincronizar</span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">hilos.cs</span></div>
+            <div class="term-body sm"><span id="t35" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t35" hidden><span class="tk">using</span> System.Threading;
+
+<span class="tk">void</span> <span class="tf">ProcesarTicket</span>()
+{
+    Console.<span class="tf">WriteLine</span>(<span class="ts">"Hilo trabajando..."</span>);
+    Thread.<span class="tf">Sleep</span>(<span class="tn">1000</span>);
+    Console.<span class="tf">WriteLine</span>(<span class="ts">"Ticket listo"</span>);
+}
+
+<span class="tk">var</span> hilo = <span class="tk">new</span> <span class="tf">Thread</span>(ProcesarTicket);
+hilo.<span class="tf">Start</span>();
+hilo.<span class="tf">Join</span>();  <span class="tc">// espera al hilo</span>
+Console.<span class="tf">WriteLine</span>(<span class="ts">"Main continúa"</span>);</div>
+        </div>
+      </section>
+
+      <section data-label="05" data-screen-label="Task · forma moderna">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:240px; color:rgba(0,232,208,0.035)">Task</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Repaso de apoyo — System.Threading.Tasks</span></span><span class="meta">RECOMENDADO</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Task: forma moderna</h2>
+            <p class="body anim-up d2">Hoy se prefiere <b style="color:var(--fg)">Task</b> (o <b style="color:var(--fg)">async/await</b>) sobre crear <b style="color:var(--fg)">Thread</b> a mano. El runtime reutiliza un pool de hilos y es más simple de componer.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">T</span><span><b>Task.Run</b> — trabajo en segundo plano</span></div>
+              <div class="fitem anim-up d4"><span class="ftick">A</span><span><b>await</b> — esperar sin bloquear el hilo principal (apps modernas)</span></div>
+              <div class="fitem anim-up d5"><span class="ftick">!</span><span><b>Regla:</b> para aprender, conoce Thread; para proyectos nuevos, usa Task.</span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">task.cs</span></div>
+            <div class="term-body sm"><span id="t36" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t36" hidden><span class="tk">using</span> System.Threading.Tasks;
+
+<span class="tk">var</span> tarea = Task.<span class="tf">Run</span>(() =&gt;
+{
+    Console.<span class="tf">WriteLine</span>(<span class="ts">"Procesando ticket..."</span>);
+    Thread.<span class="tf">Sleep</span>(<span class="tn">800</span>);
+});
+
+tarea.<span class="tf">Wait</span>();  <span class="tc">// en consola; en apps: await</span>
+Console.<span class="tf">WriteLine</span>(<span class="ts">"Listo"</span>);</div>
+        </div>
+      </section>
+
+      <section data-label="06" data-screen-label="Hilos · cuidados y video">
+        <div class="layer"></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Repaso de apoyo — Buenas prácticas</span></span><span class="meta">CUIDADOS</span></div>
+        <div class="cbody" style="max-width: 1600px; gap: var(--glg)">
+          <h2 class="ctitle anim-up">Cuidados al usar hilos</h2>
+          <div class="cards3">
+            <div class="qcard anim-up d2"><div class="qcard-t">Estado compartido</div><div class="qcard-b">Si dos hilos modifican la misma lista de tickets a la vez, puede haber <b>condiciones de carrera</b>. Usar <b>lock</b> o colecciones concurrentes.</div></div>
+            <div class="qcard anim-up d3"><div class="qcard-t">No abusar</div><div class="qcard-b">Crear muchos hilos no siempre acelera: hay costo de sincronización. Empieza simple; paraleliza cuando haga falta.</div></div>
+            <div class="qcard anim-up d4"><div class="qcard-t">Video de apoyo</div><div class="qcard-b">Thread vs Task en C# (concepto).<br><a class="qcard-l" href="https://learn.microsoft.com/es-es/dotnet/standard/threading/managed-threading-basics" target="_blank" rel="noopener">Microsoft Learn · Threading ↗</a><br><a class="qcard-l" href="https://www.youtube.com/watch?v=0_Y3FhG9eY4" target="_blank" rel="noopener">YouTube · async/await intro ↗</a></div></div>
+          </div>
+          <p class="body anim-up d5" style="margin-top: 8px"><b style="color:var(--fg)">Hoy:</b> este bloque es ayuda. El foco de la sesión sigue siendo <b style="color:var(--fg)">POO + Git</b>. Los hilos vuelven con más detalle en sesiones posteriores.</p>
+        </div>
+      </section>
+
+
+
       <!-- ═══ 03 · RESPONSABILIDAD ═══ -->
-      <section data-label="03" data-screen-label="Responsabilidad">
+      <section data-label="07" data-screen-label="Responsabilidad">
         <div class="layer">
           <div class="geo" style="width: 620px; height: 620px; top: -150px; right: -130px; border-color: rgba(0,232,208,0.05)"></div>
           <div class="wm serif" style="bottom: -60px; left: -30px; font-size: 260px; color: rgba(0,232,208,0.04)">Ser</div>
@@ -975,7 +1081,7 @@
       </section>
 
       <!-- ═══ 04 · QUÉ ES POO ═══ -->
-      <section data-label="04" data-screen-label="¿Qué es la POO?">
+      <section data-label="08" data-screen-label="¿Qué es la POO?">
         <div class="layer">
           <div class="wm" style="bottom: -90px; right: -20px; font-size: 300px; color: rgba(240,238,235,0.025)">OOP</div>
         </div>
@@ -1000,7 +1106,7 @@
       </section>
 
       <!-- ═══ 05 · VIDEO POO EXPLICADO ═══ -->
-      <section data-label="05" data-screen-label="Video · POO explicado">
+      <section data-label="09" data-screen-label="Video · POO explicado">
         <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">▶</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Video recomendado</span></span><span class="meta">POO</span></div>
         <div class="cbody" style="gap: var(--glg)">
@@ -1018,7 +1124,7 @@
       </section>
 
       <!-- ═══ 06 · ANALOGÍA MOLDE ═══ -->
-      <section data-label="06" data-screen-label="Analogía · El molde">
+      <section data-label="10" data-screen-label="Analogía · El molde">
         <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:280px; color:rgba(240,238,235,0.022)">obj</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Analogía visual</span></span><span class="meta">CLASE / OBJETO</span></div>
         <div class="img-slide anim-up d2">
@@ -1039,7 +1145,7 @@
       </section>
 
       <!-- ═══ 07 · CLASES Y OBJETOS ═══ -->
-      <section data-label="07" data-screen-label="Clases y Objetos">
+      <section data-label="11" data-screen-label="Clases y Objetos">
         <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:280px; color:rgba(240,238,235,0.022)">class</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — POO</span></span><span class="meta">01 / 06</span></div>
         <div class="split" style="margin-top: 30px">
@@ -1071,7 +1177,7 @@
       </section>
 
       <!-- ═══ 08 · MÉTODOS Y ATRIBUTOS ═══ -->
-      <section data-label="08" data-screen-label="Métodos y Atributos">
+      <section data-label="12" data-screen-label="Métodos y Atributos">
         <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">()</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — POO</span></span><span class="meta">02 / 06</span></div>
         <div class="split" style="margin-top: 30px">
@@ -1101,7 +1207,7 @@ Console.<span class="tf">WriteLine</span>(t); <span class="tc">// #1 Red caída 
       </section>
 
       <!-- ═══ 09 · VIDEO CLASES C# ═══ -->
-      <section data-label="09" data-screen-label="Video · Clases C#">
+      <section data-label="13" data-screen-label="Video · Clases C#">
         <div class="layer"><div class="wm" style="bottom:-80px; right:-20px; font-size:260px; color:rgba(240,238,235,0.022)">▶</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Video recomendado</span></span><span class="meta">MICROSOFT</span></div>
         <div class="cbody" style="gap: var(--glg)">
@@ -1119,7 +1225,7 @@ Console.<span class="tf">WriteLine</span>(t); <span class="tc">// #1 Red caída 
       </section>
 
       <!-- ═══ 10 · EJEMPLO CLASE AUTO ═══ -->
-      <section data-label="10" data-screen-label="Ejemplo · Clase Auto">
+      <section data-label="14" data-screen-label="Ejemplo · Clase Auto">
         <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">car</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Ejemplo visual</span></span><span class="meta">CLASE</span></div>
         <div class="img-slide anim-up d2">
@@ -1151,7 +1257,7 @@ Console.<span class="tf">WriteLine</span>(t); <span class="tc">// #1 Red caída 
       </section>
 
       <!-- ═══ 11 · ENCAPSULAMIENTO ═══ -->
-      <section data-label="11" data-screen-label="Encapsulamiento">
+      <section data-label="15" data-screen-label="Encapsulamiento">
         <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:260px; color:rgba(240,238,235,0.022)">private</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — POO</span></span><span class="meta">03 / 06</span></div>
         <div class="split" style="margin-top: 30px">
@@ -1182,7 +1288,7 @@ Console.<span class="tf">WriteLine</span>(t); <span class="tc">// #1 Red caída 
       </section>
 
       <!-- ═══ 12 · HERENCIA ═══ -->
-      <section data-label="12" data-screen-label="Herencia">
+      <section data-label="16" data-screen-label="Herencia">
         <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">:</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — POO</span></span><span class="meta">04 / 06</span></div>
         <div class="split" style="margin-top: 30px">
@@ -1213,7 +1319,7 @@ Console.<span class="tf">WriteLine</span>(t); <span class="tc">// #1 Red caída 
       </section>
 
       <!-- ═══ 13 · DIAGRAMA HERENCIA ═══ -->
-      <section data-label="13" data-screen-label="Diagrama · Herencia">
+      <section data-label="17" data-screen-label="Diagrama · Herencia">
         <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:260px; color:rgba(240,238,235,0.022)">tree</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Diagrama visual</span></span><span class="meta">HERENCIA</span></div>
         <div class="cbody" style="gap: var(--gmd)">
@@ -1240,7 +1346,7 @@ Console.<span class="tf">WriteLine</span>(t); <span class="tc">// #1 Red caída 
       </section>
 
       <!-- ═══ 14 · VIDEO POO C# ═══ -->
-      <section data-label="14" data-screen-label="Video · POO con C#">
+      <section data-label="18" data-screen-label="Video · POO con C#">
         <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">▶</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Video recomendado</span></span><span class="meta">C#</span></div>
         <div class="cbody" style="gap: var(--glg)">
@@ -1258,7 +1364,7 @@ Console.<span class="tf">WriteLine</span>(t); <span class="tc">// #1 Red caída 
       </section>
 
       <!-- ═══ 15 · POLIMORFISMO ═══ -->
-      <section data-label="15" data-screen-label="Polimorfismo">
+      <section data-label="19" data-screen-label="Polimorfismo">
         <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:240px; color:rgba(240,238,235,0.022)">override</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — POO</span></span><span class="meta">05 / 06</span></div>
         <div class="split" style="margin-top: 30px">
@@ -1285,7 +1391,7 @@ Console.<span class="tf">WriteLine</span>(t); <span class="tc">// #1 Red caída 
       </section>
 
       <!-- ═══ 16 · ABSTRACCIÓN ═══ -->
-      <section data-label="16" data-screen-label="Abstracción">
+      <section data-label="20" data-screen-label="Abstracción">
         <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">abs</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — POO</span></span><span class="meta">06 / 06</span></div>
         <div class="split" style="margin-top: 30px">
@@ -1313,7 +1419,7 @@ Console.<span class="tf">WriteLine</span>(t); <span class="tc">// #1 Red caída 
       </section>
 
       <!-- ═══ 17 · RESUMEN 4 PILARES ═══ -->
-      <section data-label="17" data-screen-label="Resumen · 4 pilares">
+      <section data-label="21" data-screen-label="Resumen · 4 pilares">
         <div class="layer"><div class="wm" style="bottom:-80px; right:-20px; font-size:280px; color:rgba(0,232,208,0.04)">4</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Resumen visual</span></span><span class="meta">POO</span></div>
         <div class="cbody" style="max-width: 1500px; gap: var(--gmd)">
@@ -1328,7 +1434,7 @@ Console.<span class="tf">WriteLine</span>(t); <span class="tc">// #1 Red caída 
       </section>
 
       <!-- ═══ 18 · VIDEO 4 PILARES ═══ -->
-      <section data-label="18" data-screen-label="Video · 4 pilares">
+      <section data-label="22" data-screen-label="Video · 4 pilares">
         <div class="layer"><div class="wm serif" style="bottom:-60px; left:-20px; font-size:260px; color:rgba(0,232,208,0.035)">▶</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Video recomendado</span></span><span class="meta">REPASO</span></div>
         <div class="cbody" style="gap: var(--glg)">
@@ -1346,7 +1452,7 @@ Console.<span class="tf">WriteLine</span>(t); <span class="tc">// #1 Red caída 
       </section>
 
       <!-- ═══ 19 · GIT Y CONTROL DE VERSIONES ═══ -->
-      <section data-label="19" data-screen-label="Git">
+      <section data-label="23" data-screen-label="Git">
         <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:280px; color:rgba(0,232,208,0.035)">git</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — Herramienta</span></span><span class="meta">CONTROL DE VERSIONES</span></div>
         <div class="split" style="margin-top: 30px">
@@ -1366,7 +1472,7 @@ Console.<span class="tf">WriteLine</span>(t); <span class="tc">// #1 Red caída 
       </section>
 
       <!-- ═══ 20 · CONFIGURACIÓN GIT ═══ -->
-      <section data-label="20" data-screen-label="Configuración Git">
+      <section data-label="24" data-screen-label="Configuración Git">
         <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:240px; color:rgba(240,238,235,0.022)">config</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — Herramienta</span></span><span class="meta">SETUP</span></div>
         <div class="split" style="margin-top: 30px">
@@ -1394,7 +1500,7 @@ obj/
       </section>
 
       <!-- ═══ 21 · VIDEO GIT DESDE CERO ═══ -->
-      <section data-label="21" data-screen-label="Video · Git desde cero">
+      <section data-label="25" data-screen-label="Video · Git desde cero">
         <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">▶</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Video recomendado</span></span><span class="meta">GIT</span></div>
         <div class="cbody" style="gap: var(--glg)">
@@ -1412,7 +1518,7 @@ obj/
       </section>
 
       <!-- ═══ 22 · VIDEO GIT GITHUB BLUUWEB ═══ -->
-      <section data-label="22" data-screen-label="Video · Git y GitHub">
+      <section data-label="26" data-screen-label="Video · Git y GitHub">
         <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:260px; color:rgba(240,238,235,0.022)">▶</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Video recomendado</span></span><span class="meta">GITHUB</span></div>
         <div class="cbody" style="gap: var(--glg)">
@@ -1430,7 +1536,7 @@ obj/
       </section>
 
       <!-- ═══ 23 · GIT FLOW ═══ -->
-      <section data-label="23" data-screen-label="Git Flow">
+      <section data-label="27" data-screen-label="Git Flow">
         <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">flow</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — Workflow</span></span><span class="meta">RAMAS</span></div>
         <div class="cbody" style="max-width: 1600px; gap: var(--glg); margin-top: 30px">
@@ -1445,7 +1551,7 @@ obj/
       </section>
 
       <!-- ═══ 24 · BRANCHING Y MERGING ═══ -->
-      <section data-label="24" data-screen-label="Branching y Merging">
+      <section data-label="28" data-screen-label="Branching y Merging">
         <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:260px; color:rgba(240,238,235,0.022)">merge</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — Workflow</span></span><span class="meta">COMANDOS</span></div>
         <div class="split" style="margin-top: 30px">
@@ -1472,7 +1578,7 @@ obj/
       </section>
 
       <!-- ═══ 25 · DIAGRAMA GIT FLOW ═══ -->
-      <section data-label="25" data-screen-label="Diagrama · Git Flow">
+      <section data-label="29" data-screen-label="Diagrama · Git Flow">
         <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:260px; color:rgba(240,238,235,0.022)">git</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Diagrama visual</span></span><span class="meta">RAMAS</span></div>
         <div class="cbody" style="max-width: 1600px; gap: var(--gmd)">
@@ -1500,7 +1606,7 @@ obj/
       </section>
 
       <!-- ═══ 26 · EJEMPLO MERGE PASO A PASO ═══ -->
-      <section data-label="26" data-screen-label="Ejemplo · Merge paso a paso">
+      <section data-label="30" data-screen-label="Ejemplo · Merge paso a paso">
         <div class="layer"></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Ejemplo paso a paso</span></span><span class="meta">MERGE</span></div>
         <div class="cbody" style="max-width: 1600px; gap: var(--gmd)">
@@ -1530,7 +1636,7 @@ obj/
       </section>
 
       <!-- ═══ 27 · TAGS Y VERSIONAMIENTO ═══ -->
-      <section data-label="27" data-screen-label="Tags">
+      <section data-label="31" data-screen-label="Tags">
         <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">v1</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — Workflow</span></span><span class="meta">SEMVER</span></div>
         <div class="split" style="margin-top: 30px">
@@ -1556,7 +1662,7 @@ obj/
       </section>
 
       <!-- ═══ 28 · VIDEO TAGS ═══ -->
-      <section data-label="28" data-screen-label="Video · Tags">
+      <section data-label="32" data-screen-label="Video · Tags">
         <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">▶</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Video recomendado</span></span><span class="meta">TAGS</span></div>
         <div class="cbody" style="gap: var(--glg)">
@@ -1574,7 +1680,7 @@ obj/
       </section>
 
       <!-- ═══ 29 · DEMO INTRO ═══ -->
-      <section data-label="29" data-screen-label="Demo en vivo">
+      <section data-label="33" data-screen-label="Demo en vivo">
         <div class="layer">
           <div class="geo" style="width: 640px; height: 640px; top: -150px; right: -140px; border-color: rgba(0,232,208,0.06)"></div>
           <div class="wm" style="bottom: -100px; left: -30px; font-size: 300px; color: rgba(0,232,208,0.04)">LIVE</div>
@@ -1597,7 +1703,7 @@ obj/
       </section>
 
       <!-- ═══ 30 · DEMO PASO 1 ═══ -->
-      <section data-label="30" data-screen-label="Demo · Repo y Ticket">
+      <section data-label="34" data-screen-label="Demo · Repo y Ticket">
         <div class="layer"></div>
         <div class="topbar"><span class="live">En vivo</span><span class="meta">PASO 1 / 3</span></div>
         <div class="split" style="margin-top: 30px">
@@ -1630,7 +1736,7 @@ obj/
       </section>
 
       <!-- ═══ 31 · DEMO PASO 2 ═══ -->
-      <section data-label="31" data-screen-label="Demo · Herencia">
+      <section data-label="35" data-screen-label="Demo · Herencia">
         <div class="layer"></div>
         <div class="topbar"><span class="live">En vivo</span><span class="meta">PASO 2 / 3</span></div>
         <div class="split" style="margin-top: 30px">
@@ -1662,7 +1768,7 @@ obj/
       </section>
 
       <!-- ═══ 32 · DEMO PASO 3 ═══ -->
-      <section data-label="32" data-screen-label="Demo · Tag">
+      <section data-label="36" data-screen-label="Demo · Tag">
         <div class="layer"></div>
         <div class="topbar"><span class="live">En vivo</span><span class="meta">PASO 3 / 3</span></div>
         <div class="split" style="margin-top: 30px">
@@ -1688,7 +1794,7 @@ obj/
       </section>
 
       <!-- ═══ 33 · RESUMEN FLUJO COMPLETO ═══ -->
-      <section data-label="33" data-screen-label="Resumen · Flujo completo">
+      <section data-label="37" data-screen-label="Resumen · Flujo completo">
         <div class="layer"><div class="wm" style="bottom:-80px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">flow</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Resumen visual</span></span><span class="meta">GIT + POO</span></div>
         <div class="cbody" style="max-width: 1600px; gap: var(--gmd)">
@@ -1706,7 +1812,7 @@ obj/
       </section>
 
       <!-- ═══ 34 · ESTRUCTURA PROYECTO ═══ -->
-      <section data-label="34" data-screen-label="Estructura de proyecto">
+      <section data-label="38" data-screen-label="Estructura de proyecto">
         <div class="layer"><div class="wm serif" style="bottom:-60px; left:-20px; font-size:260px; color:rgba(240,238,235,0.022)">dir</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Resumen visual</span></span><span class="meta">ESTRUCTURA</span></div>
         <div class="split" style="margin-top: 30px">
@@ -1730,8 +1836,9 @@ obj/
         </div>
       </section>
 
+
       <!-- ═══ 35 · ACTIVIDAD ═══ -->
-      <section data-label="35" data-screen-label="Actividad práctica">
+      <section data-label="39" data-screen-label="Actividad práctica">
         <div class="layer">
           <div class="geo" style="width: 560px; height: 560px; top: -120px; left: -120px; border-color: rgba(0,232,208,0.05)"></div>
           <div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.04)">15m</div>
@@ -1756,14 +1863,14 @@ obj/
       </section>
 
       <!-- ═══ 36 · CIERRE ═══ -->
-      <section data-label="36" data-screen-label="Cierre">
+      <section data-label="40" data-screen-label="Cierre">
         <div class="layer"><div class="wm serif" style="bottom:-70px; right:-30px; font-size:300px; color:rgba(0,232,208,0.04)">fin</div></div>
         <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Cierre</span></span><span class="meta">CIERRE</span></div>
         <div class="cbody" style="max-width: 1600px; gap: var(--glg)">
           <h2 class="ctitle anim-up">Cierre y tarea</h2>
           <div class="cards3">
             <div class="qcard anim-up d2"><div class="qcard-t">Dudas</div><div class="qcard-b">Se resuelven dudas finales sobre POO, Git o la actividad práctica.</div></div>
-            <div class="qcard anim-up d3"><div class="qcard-t">Repaso</div><div class="qcard-b">Clase/objeto, encapsulamiento, herencia, polimorfismo, abstracción, ramas y tags.</div></div>
+            <div class="qcard anim-up d3"><div class="qcard-t">Repaso</div><div class="qcard-b">Clase/objeto, 4 pilares, ramas/tags, y repaso de hilos (Thread / Task).</div></div>
             <div class="qcard anim-up d4"><div class="qcard-t">Tarea XML</div><div class="qcard-b">Continuar con ejercicios de <b>XML</b> bien formado y validación de estructura.</div></div>
           </div>
           <p class="body anim-up d5" style="margin-top: 10px"><b style="color:var(--fg)">Puntos clave:</b> la POO modela entidades reales; Git documenta cada paso del desarrollo. La disciplina en ambos refleja responsabilidad profesional.</p>
@@ -1774,7 +1881,11 @@ obj/
     <script type="application/json" id="speaker-notes">
     [
       "[5 MIN · PORTADA]\n\nBuenos días. Semana 03 de Introducción a la Programación y Computación 2, ECYS 771. Hoy unimos dos temas: Programación Orientada a Objetos en C# y Git Workflow.\n\nObjetivo de los 80 minutos: que cada estudiante entienda clases, objetos y los cuatro pilares de la POO, y que sepa usar Git con ramas, merges y tags para versionar su proyecto.\n\nPresentación breve: soy Jorge Mejía. Canal oficial: foro y WhatsApp del curso.\n\nTransición: agenda.",
-      "[2 MIN · AGENDA]\n\nSesión de 80 minutos en cinco bloques:\n\n01 — Área actitudinal (5 min): responsabilidad y puntualidad.\n02 — POO en C# (30 min): paradigma, clases, objetos, pilares y ejemplos visuales.\n03 — Git Workflow (20 min): control de versiones, configuración, ramas, merges y tags.\n04 — Ejercicio demostrativo (15 min): sistema de coordinación de soporte técnico.\n05 — Actividad práctica y cierre (10 min): el estudiante replica el ejercicio.\n\nRegla de oro: interrumpan con preguntas. La POO se entiende mejor con ejemplos que con definiciones.\n\nTransición: responsabilidad y puntualidad.",
+      "[2 MIN · AGENDA]\n\nSesión de 80 minutos:\n\n01 — Repaso de apoyo (~5 min): hilos en C# (Thread / Task) — ayuda al inicio.\n02 — Actitudinal (5 min): responsabilidad y puntualidad.\n03 — POO en C# (~25 min): paradigma, clases, objetos, pilares y ejemplos.\n04 — Git Workflow (~15 min): config, ramas, merge, tags.\n05 — Ejercicio demostrativo (~15 min): sistema de soporte + Git.\n06 — Actividad + cierre (~15 min).\n\nEl bloque de hilos va al inicio como refuerzo solicitado. Luego el foco es POO + Git.\n\nTransición: repaso de hilos.",
+      "[5 MIN · REPASO · ¿QUÉ ES UN HILO?]\n\nBloque de apoyo (solicitado como ayuda). No es el eje de la sesión.\n\nDefinición: un hilo es una línea de ejecución dentro de un proceso.\n- Proceso = el programa completo.\n- Hilo = una ruta de trabajo dentro de ese programa.\n\nAnalogía: cocina (proceso) con varios cocineros (hilos).\n\nPara qué: trabajo en segundo plano, no congelar la UI, procesar varios tickets.\n\nRelación con POO: varios hilos pueden tocar el mismo objeto — cuidado con el estado compartido.\n\nPregunta: ¿en su sistema de tickets, qué trabajo podría ir en un hilo aparte? (ej. generar reporte mientras el menú sigue abierto).\n\nVa al inicio de la sesión como ayuda. Luego seguimos con actitud y POO.\n\nTransición: Thread en C#.",
+      "[3 MIN · HILOS EN C# · THREAD]\n\nMostrar el ejemplo del terminal.\n\nusing System.Threading;\nnew Thread(ProcesarTicket).Start();\nJoin() espera a que el hilo termine.\n\nSleep simula trabajo (no usarlo en producción como \"espera de negocio\").\n\nEnfatizar: Thread es el concepto de bajo nivel. Útil para entender; en código moderno se prefiere Task.\n\nDemo opcional: abrir ejemplos-tecnicos/.../08-Hilos y dotnet run.\n\nTransición: Task moderna.",
+      "[3 MIN · TASK · FORMA MODERNA]\n\nTask.Run(() => { ... }) usa el pool de hilos.\nWait() en consola; en apps con UI: async/await.\n\nRegla de la sesión:\n- Aprender: conocer Thread.\n- Proyectos nuevos: Task / async-await.\n\nNo profundizar en async hoy; solo dejar la puerta abierta.\n\nTransición: cuidados y enlaces.",
+      "[3 MIN · CUIDADOS Y VIDEO]\n\nTres mensajes:\n1. Estado compartido → condiciones de carrera → lock o colecciones concurrentes.\n2. No crear hilos \"por moda\": hay costo.\n3. Enlaces: Microsoft Learn Threading + video async/await intro.\n\nCerrar el repaso: hoy el entregable sigue siendo POO + Git. Hilos = ayuda para reforzar.\n\nTransición: responsabilidad y puntualidad (área actitudinal).",
       "[5 MIN · RESPONSABILIDAD Y PUNTUALIDAD]\n\nÁrea actitudinal — Saber ser.\n\nLea los tres puntos:\n1. Asistencia y puntualidad: llegar a tiempo al laboratorio es parte del compromiso profesional.\n2. Compromiso en la ejecución: seguir instrucciones, completar ejercicios y entregar a tiempo.\n3. Relación con la sesión: la misma disciplina que usan para entregar un ejercicio de XML correctamente se aplica al escribir código C# y al versionar con Git.\n\nEn programación, la responsabilidad se refleja en el historial de commits: orden, frecuencia y mensajes claros.\n\nPregunta: ¿qué diferencia hay entre un estudiante responsable y uno que no? Tome una respuesta.\n\nTransición: ¿qué es la POO?",
       "[4 MIN · ¿QUÉ ES LA POO?]\n\nLa Programación Orientada a Objetos es un paradigma que modela el mundo real con objetos.\n\nAnalogía central:\n- Clase = molde o plano.\n- Objeto = instancia concreta creada a partir del molde.\n\nEjemplo: la clase Ticket define que todo ticket tiene Id, Título y Prioridad. Cada ticket que un usuario registra es un objeto distinto con sus propios valores.\n\nVentajas: reutilización, organización, mantenimiento.\n\nEn C# todo gira alrededor de objetos. Incluso un string es un objeto con métodos como .ToUpper().\n\nPregunta: ¿qué objeto usarían para modelar un estudiante? Campos: carnet, nombre, carrera.\n\nTransición: video explicativo de POO.",
       "[3 MIN · VIDEO: POO EXPLICADO]\n\nReproducir el video de YouTube: Programación Orientada a Objetos — Abstracción, Encapsulamiento, Herencia, Polimorfismo.\n\nURL: https://www.youtube.com/watch?v=SI7O81GMG2A\n\nEl video resume los cuatro pilares con ejemplos visuales y analogías de personajes de videojuegos (Guerrero, Mago).\n\nPausar en los puntos clave para preguntar si hay dudas antes de continuar.\n\nTransición: analogía visual del molde.",
@@ -1807,8 +1918,8 @@ obj/
       "[5 MIN · DEMO PASO 3 — COMMIT SEMÁNTICO Y TAG]\n\nConvención de commits semánticos:\n- feat: nueva funcionalidad.\n- fix: corrección de error.\n- docs: documentación.\n- refactor: cambio de código sin nueva funcionalidad.\n\nTag de versión:\ngit tag -a v0.1.0 -m \"Primera versión funcional con POO\"\ngit log --oneline\ngit tag\n\nMostrar que el tag marca el punto donde el proyecto ya tiene POO básico.\n\nSi hay remoto: git push origin main --tags\n\nCierre del ejercicio: el estudiante hará lo mismo en la actividad.\n\nTransición: resumen visual del flujo completo.",
       "[3 MIN · RESUMEN VISUAL: FLUJO COMPLETO]\n\nMostrar la línea de tiempo horizontal:\n\ninit → commit inicial → branch feature → commit → commit → merge → tag v0.1.0\n\nCada paso es un commit en la historia del proyecto.\n\nPregunta: ¿en qué paso usarían una rama hotfix?\n\nTransición: estructura del proyecto.",
       "[3 MIN · IMAGEN: ESTRUCTURA DE PROYECTO]\n\nMostrar la estructura de carpetas visual:\n\nSistemaSoporte/\n├── .git/\n├── .gitignore\n├── Program.cs\n├── Ticket.cs\n├── SoporteTicket.cs\n├── bin/\n└── obj/\n\nExplicar que .git/ es la base de datos del repositorio, .gitignore evita subir bin/ y obj/.\n\nTransición: actividad práctica.",
-      "[20 MIN · ACTIVIDAD PRÁCTICA]\n\nActividad obligatoria, individual, 20 minutos.\n\nInstrucciones:\n1. Crear un proyecto de consola C# llamado SistemaCoordinacion.\n2. Crear al menos dos clases con herencia (ejemplo: Ticket y SoporteTicket, o Persona y Estudiante).\n3. Inicializar Git, configurar usuario y .gitignore.\n4. Hacer al menos 3 commits semánticos con mensajes claros.\n5. Crear un tag v0.1.0.\n\nCircular por el salón; revise que cada estudiante tenga:\n- Una clase base y una derivada.\n- Historial Git con 3+ commits.\n- Tag v0.1.0 creado.\n\nAviso: en 5 minutos cerramos la actividad.\n\nTransición: cierre y tarea.",
-      "[10 MIN · CIERRE Y TAREA]\n\nResolver dudas finales sobre POO o Git.\n\nTarea relacionada con la práctica de XML: revisar cómo la misma disciplina de estructura y validación se aplica al programar en C#.\n\nPuntos clave de la sesión:\n- Clase = molde; objeto = instancia.\n- Cuatro pilares: encapsulamiento, herencia, polimorfismo, abstracción.\n- Git: init, add, commit, branch, merge, tag.\n\nPróxima sesión: más POO (interfaces, colecciones) y Git remoto con GitHub.\n\nAgradezca la participación y despida al grupo."
+      "[20 MIN · ACTIVIDAD PRÁCTICA]\n\nActividad obligatoria, individual, 20 minutos.\n\nInstrucciones:\n1. Crear un proyecto de consola C# llamado SistemaCoordinacion.\n2. Crear al menos dos clases con herencia (ejemplo: Ticket y SoporteTicket, o Persona y Estudiante).\n3. Inicializar Git, configurar usuario y .gitignore.\n4. Hacer al menos 3 commits semánticos con mensajes claros.\n5. Crear un tag v0.1.0.\n\nCircular por el salón; revise que cada estudiante tenga:\n- Una clase base y una derivada.\n- Historial Git con 3+ commits.\n- Tag v0.1.0 creado.\n\nAviso: en 5 minutos cerramos la actividad.\n\nRecuerda: el repaso de hilos es apoyo; la entrega de hoy es POO + Git.\n\nTransición: cierre y tarea.",
+      "[10 MIN · CIERRE Y TAREA]\n\nResolver dudas finales sobre POO o Git.\n\nTarea relacionada con la práctica de XML: revisar cómo la misma disciplina de estructura y validación se aplica al programar en C#.\n\nPuntos clave de la sesión:\n- Clase = molde; objeto = instancia.\n- Cuatro pilares: encapsulamiento, herencia, polimorfismo, abstracción.\n- Git: init, add, commit, branch, merge, tag.\n- Repaso de apoyo: hilo vs proceso; Thread vs Task.\n\nPróxima sesión: más POO (interfaces, colecciones) y Git remoto con GitHub.\n\nAgradezca la participación y despida al grupo."
     ]
     </script>
 
