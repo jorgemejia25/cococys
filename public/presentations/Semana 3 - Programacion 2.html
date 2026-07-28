@@ -1793,59 +1793,59 @@ obj/
           </div>
           <div class="flist" style="gap: 20px">
             <div class="qcard anim-up d3"><div class="qcard-t">En la vida real</div><div class="qcard-b">Mientras WhatsApp descarga una foto, tú sigues escribiendo. Eso es trabajo en segundo plano: un hilo no te deja “congelado”.</div></div>
-            <div class="qcard anim-up d4"><div class="qcard-t">En nuestro sistema</div><div class="qcard-b">Mientras se “procesa” un ticket largo, el menú podría seguir abierto. Un hilo ayuda a no trabar toda la app.</div></div>
+            <div class="qcard anim-up d4"><div class="qcard-t">En nuestro sistema</div><div class="qcard-b">En el ejemplo 08-Hilos verán el mismo trabajo <b style="color:var(--fg)">sin hilos</b> (~3 s) y <b style="color:var(--fg)">con hilos</b> (~1 s).</div></div>
           </div>
         </div>
       </section>
 
-      <section data-label="38" data-screen-label="Hilos · ejemplo sencillo">
-        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:220px; color:rgba(240,238,235,0.022)">Start</div></div>
-        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Repaso de apoyo — En C#</span></span><span class="meta">EJEMPLO</span></div>
+      <section data-label="38" data-screen-label="Sin hilos">
+        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:200px; color:rgba(240,238,235,0.022)">1→2→3</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Repaso de apoyo — Comparación</span></span><span class="meta">SIN HILOS</span></div>
         <div class="split" style="margin-top: 30px">
           <div class="cbody" style="gap: var(--gmd)">
-            <h2 class="ctitle anim-up">Pedirle a otro “cocinero”</h2>
-            <p class="body anim-up d2">En C# puedes decir: “tú ve y procesa este ticket”, y el programa principal sigue su camino. <b style="color:var(--fg)">Start</b> = empieza; <b style="color:var(--fg)">Join</b> = “espérame a que termine”.</p>
-            <div class="steps">
-              <div class="stepr anim-up d3"><span class="stepn">1</span><span>Dices qué trabajo quieres (el método)</span></div>
-              <div class="stepr anim-up d4"><span class="stepn">2</span><span>Creas el hilo y le das <b>Start</b></span></div>
-              <div class="stepr anim-up d5"><span class="stepn">3</span><span>Si necesitas el resultado, usas <b>Join</b> (esperar)</span></div>
+            <h2 class="ctitle anim-up">Sin hilos: uno tras otro</h2>
+            <p class="body anim-up d2">Un solo cocinero. Termina el Ticket-A, luego el B, luego el C. Si cada uno tarda 1 segundo, en total son <b style="color:var(--fg)">~3 segundos</b>.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">▹</span><span>Más simple de entender y de depurar.</span></div>
+              <div class="fitem anim-up d4"><span class="ftick">▹</span><span>Ideal cuando el trabajo es corto o el orden importa.</span></div>
+              <div class="fitem anim-up d5"><span class="ftick">▹</span><span>Ejemplo: <b>08-Hilos</b> → método <b>SinHilos()</b></span></div>
             </div>
           </div>
           <div class="term anim-up d3">
-            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">ejemplo.cs</span></div>
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">sin-hilos.cs</span></div>
             <div class="term-body sm"><span id="t35" data-typed-target></span></div>
           </div>
-          <div class="tsrc" data-for="t35" hidden><span class="tc">// "Ve y trabaja en segundo plano"</span>
-<span class="tk">var</span> hilo = <span class="tk">new</span> <span class="tf">Thread</span>(ProcesarTicket);
-hilo.<span class="tf">Start</span>();
-
-<span class="tc">// "Cuando termines, avísame"</span>
-hilo.<span class="tf">Join</span>();
-Console.<span class="tf">WriteLine</span>(<span class="ts">"Listo, seguimos"</span>);</div>
+          <div class="tsrc" data-for="t35" hidden><span class="tc">// Un solo flujo: A, luego B, luego C</span>
+<span class="tf">ProcesarTicket</span>(<span class="ts">"Ticket-A"</span>);
+<span class="tf">ProcesarTicket</span>(<span class="ts">"Ticket-B"</span>);
+<span class="tf">ProcesarTicket</span>(<span class="ts">"Ticket-C"</span>);
+<span class="tc">// ~3 segundos en total</span></div>
         </div>
       </section>
 
-      <section data-label="39" data-screen-label="Otra forma más fácil">
-        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:240px; color:rgba(0,232,208,0.035)">Task</div></div>
-        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Repaso de apoyo — Idea para después</span></span><span class="meta">MÁS SIMPLE</span></div>
+      <section data-label="39" data-screen-label="Con hilos">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:200px; color:rgba(0,232,208,0.035)">||</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Repaso de apoyo — Comparación</span></span><span class="meta">CON HILOS</span></div>
         <div class="split" style="margin-top: 30px">
           <div class="cbody" style="gap: var(--gmd)">
-            <h2 class="ctitle anim-up">Hay una forma más fácil</h2>
-            <p class="body anim-up d2">Crear hilos “a mano” funciona, pero en proyectos reales hoy se usa algo llamado <b style="color:var(--fg)">Task</b>: es como pedirle al sistema que asigne el trabajo sin que tú gestiones cada cocinero.</p>
+            <h2 class="ctitle anim-up">Con hilos: al mismo tiempo</h2>
+            <p class="body anim-up d2">Tres cocineros. Arrancan juntos con <b style="color:var(--fg)">Start</b> y esperamos con <b style="color:var(--fg)">Join</b>. Mismos 3 tickets de 1 segundo → total <b style="color:var(--fg)">~1 segundo</b>.</p>
             <div class="flist">
-              <div class="fitem anim-up d3"><span class="ftick">▹</span><span><b>Hoy:</b> basta entender la idea de “trabajo en paralelo”.</span></div>
-              <div class="fitem anim-up d4"><span class="ftick">▹</span><span><b>Después:</b> verán Task y async cuando armen apps más grandes.</span></div>
-              <div class="fitem anim-up d5"><span class="ftick">▹</span><span><b>Mensaje:</b> no memorizar APIs; recordar el “por qué”.</span></div>
+              <div class="fitem anim-up d3"><span class="ftick">▹</span><span>Más rápido cuando las tareas son independientes.</span></div>
+              <div class="fitem anim-up d4"><span class="ftick">▹</span><span>Hay que cuidar no pisarse en la misma lista.</span></div>
+              <div class="fitem anim-up d5"><span class="ftick">▹</span><span>Ejemplo: <b>08-Hilos</b> → método <b>ConHilos()</b></span></div>
             </div>
           </div>
           <div class="term anim-up d3">
-            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">idea.cs</span></div>
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">con-hilos.cs</span></div>
             <div class="term-body sm"><span id="t36" data-typed-target></span></div>
           </div>
-          <div class="tsrc" data-for="t36" hidden><span class="tc">// Misma idea, menos detalle de bajo nivel</span>
-<span class="tk">var</span> tarea = Task.<span class="tf">Run</span>(ProcesarTicket);
-tarea.<span class="tf">Wait</span>();
-Console.<span class="tf">WriteLine</span>(<span class="ts">"Listo"</span>);</div>
+          <div class="tsrc" data-for="t36" hidden><span class="tk">var</span> a = <span class="tk">new</span> <span class="tf">Thread</span>(() =&gt; <span class="tf">ProcesarTicket</span>(<span class="ts">"A"</span>));
+<span class="tk">var</span> b = <span class="tk">new</span> <span class="tf">Thread</span>(() =&gt; <span class="tf">ProcesarTicket</span>(<span class="ts">"B"</span>));
+<span class="tk">var</span> c = <span class="tk">new</span> <span class="tf">Thread</span>(() =&gt; <span class="tf">ProcesarTicket</span>(<span class="ts">"C"</span>));
+a.<span class="tf">Start</span>(); b.<span class="tf">Start</span>(); c.<span class="tf">Start</span>();
+a.<span class="tf">Join</span>();  b.<span class="tf">Join</span>();  c.<span class="tf">Join</span>();
+<span class="tc">// ~1 segundo en total</span></div>
         </div>
       </section>
 
@@ -1907,8 +1907,8 @@ Console.<span class="tf">WriteLine</span>(<span class="ts">"Listo"</span>);</div
       "[20 MIN · ACTIVIDAD PRÁCTICA]\n\nActividad obligatoria, individual, 20 minutos.\n\nInstrucciones:\n1. Crear un proyecto de consola C# llamado SistemaCoordinacion.\n2. Crear al menos dos clases con herencia (ejemplo: Ticket y SoporteTicket, o Persona y Estudiante).\n3. Inicializar Git, configurar usuario y .gitignore.\n4. Hacer al menos 3 commits semánticos con mensajes claros.\n5. Crear un tag v0.1.0.\n\nCircular por el salón; revise que cada estudiante tenga:\n- Una clase base y una derivada.\n- Historial Git con 3+ commits.\n- Tag v0.1.0 creado.\n\nAviso: en 5 minutos cerramos la actividad.\n\nRecuerda: el repaso de hilos es apoyo; la entrega de hoy es POO + Git.\n\nTransición: cierre y tarea.",
       "[10 MIN · CIERRE Y TAREA]\n\nResolver dudas finales sobre POO o Git.\n\nTarea relacionada con la práctica de XML: revisar cómo la misma disciplina de estructura y validación se aplica al programar en C#.\n\nPuntos clave de la sesión:\n- Clase = molde; objeto = instancia.\n- Cuatro pilares: encapsulamiento, herencia, polimorfismo, abstracción.\n- Git: init, add, commit, branch, merge, tag.\n- Repaso de apoyo: hilo vs proceso; Thread vs Task.\n\nPróxima sesión: más POO (interfaces, colecciones) y Git remoto con GitHub.\n\nAgradezca la participación.\n\nTransición: repaso breve de hilos (ayuda al final).",
       "[5 MIN · ¿QUÉ ES UN HILO? — CON ANALOGÍA]\n\nHabla en lenguaje cotidiano. No uses jerga al inicio.\n\nAnalogía central:\n- El programa = un restaurante / una cocina.\n- Un hilo = un cocinero.\n- Un solo cocinero: hace un plato tras otro.\n- Varios cocineros: varios platos al mismo tiempo.\n\nEjemplo cotidiano: WhatsApp descarga una foto y tú sigues escribiendo. Eso es “segundo plano”.\n\nPregunta: ¿cuándo les ha pasado que una app se congela? (suele ser porque un solo “cocinero” está atascado).\n\nCierra: hoy solo necesitan la idea. No van a entregar un programa con hilos.\n\nTransición: cómo se pide en C# de forma simple.",
-      "[3 MIN · EJEMPLO SENCILLO]\n\nCuenta la historia del código, no los nombres de clases:\n\n1. Le pedimos a otro “cocinero” que procese el ticket.\n2. Start = “empieza”.\n3. Join = “espérame cuando termines”.\n\nLee el código en voz alta como si fuera una conversación:\n“Creo el hilo… lo arranco… espero… y digo listo.”\n\nSi alguien pregunta por Sleep: “es solo para fingir que el trabajo tarda un segundo”.\n\nTransición: hay una forma aún más cómoda.",
-      "[3 MIN · FORMA MÁS FÁCIL]\n\nMensaje: Thread es la idea de base; Task es la forma más cómoda en proyectos nuevos.\n\nNo profundices en async/await. Di solo:\n“Más adelante, cuando hagan apps más grandes, usarán Task. Hoy basta con la idea.”\n\nRegla para el estudiante:\n- Entender el “por qué” (no congelar la app / hacer dos cosas).\n- No memorizar la API hoy.\n\nTransición: un solo cuidado.",
+      "[3 MIN · SIN HILOS]\n\nMisma historia: 3 tickets, 1 segundo cada uno.\n\nSin hilos = un cocinero:\nProcesarTicket A\nProcesarTicket B\nProcesarTicket C\nTotal ≈ 3 segundos.\n\nMensaje: es más simple. Úsalo cuando el trabajo es corto o debe ir en orden.\n\nDemo: dotnet run en 08-Hilos y mirar la primera mitad (SinHilos).\n\nTransición: ahora lo mismo con hilos.",
+      "[3 MIN · CON HILOS]\n\nTres cocineros a la vez:\nStart A, Start B, Start C\nJoin A, Join B, Join C\nTotal ≈ 1 segundo.\n\nCompara en voz alta el tiempo de la consola (sin vs con).\n\nMensaje: más rápido si las tareas no dependen entre sí.\nCuidado: no compartir la misma lista a lo loco.\n\nDemo: segunda mitad de 08-Hilos (ConHilos).\n\nTransición: un solo cuidado.",
       "[3 MIN · UN SOLO CUIDADO]\n\nAnalogía de la libreta:\nDos cocineros escribiendo en la misma libreta al mismo tiempo → se pisan.\nDos hilos tocando la misma lista de tickets → problemas.\n\nRegla práctica: primero programa simple (un solo flujo). Hilos solo cuando haga falta.\n\nRecuerda: la actividad de hoy es POO + Git, no hilos.\n\nEnlace opcional al video si alguien quiere ampliar en casa.\n\nFin del repaso. Si hay tiempo, abrir ejemplos-tecnicos/.../08-Hilos con dotnet run."
     ]
     </script>
