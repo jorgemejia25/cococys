@@ -1,0 +1,1438 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Algoritmos — Semana 3 · Subsistemas y comunicación</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      deck-stage:not(:defined) {
+        visibility: hidden;
+      }
+    </style>
+    <script src="deck-stage.js"></script>
+
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #f0eeeb;
+        --fg-dim: rgba(240, 238, 235, 0.52);
+        --fg-muted: rgba(240, 238, 235, 0.22);
+        --fg-faint: rgba(240, 238, 235, 0.12);
+        --accent: #00e8d0;
+        --line: rgba(255, 255, 255, 0.09);
+        --grid: rgba(255, 255, 255, 0.022);
+        --wm: rgba(240, 238, 235, 0.035);
+
+        --sans: "Space Grotesk", "Helvetica Neue", sans-serif;
+        --serif: "Cormorant Garamond", ui-serif, Georgia, serif;
+        --mono: "JetBrains Mono", "Courier New", monospace;
+
+        /* type scale */
+        --th: 116px; /* hero */
+        --td: 88px; /* display */
+        --tt: 66px; /* title */
+        --tct: 58px; /* content title */
+        --ts: 46px; /* subtitle */
+        --tb: 34px; /* body */
+        --tsm: 26px; /* small */
+        --tmeta: 24px; /* meta */
+
+        /* spacing */
+        --px: 120px;
+        --pt: 90px;
+        --pb: 78px;
+        --gxl: 56px;
+        --glg: 40px;
+        --gmd: 28px;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: #000;
+      }
+
+      /* ─── Progress bar (portfolio-style) ──────────────────────── */
+      #deck-progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: rgba(255, 255, 255, 0.05);
+        z-index: 99999;
+      }
+      #deck-progress-fill {
+        height: 100%;
+        width: 3.45%;
+        background: var(--accent);
+        box-shadow: 0 0 14px rgba(0, 232, 208, 0.55);
+        transition: width 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      /* ─── All slides ─────────────────────────────────────────── */
+      deck-stage > section {
+        background: var(--bg);
+        color: var(--fg);
+        display: flex;
+        flex-direction: column;
+        padding: var(--pt) var(--px) var(--pb);
+        overflow: hidden;
+      }
+      /* elevate real content above the decoration layer */
+      deck-stage > section > *:not(.layer) {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* ─── Decoration layer: grid + watermark + geo ───────────── */
+      .layer {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+        pointer-events: none;
+        background-image:
+          linear-gradient(var(--grid) 1px, transparent 1px),
+          linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+        background-size: 88px 88px;
+        background-position: center center;
+      }
+
+      .geo {
+        position: absolute;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+      }
+
+      /* giant ghost watermark */
+      .wm {
+        position: absolute;
+        font-family: var(--sans);
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        color: var(--wm);
+        line-height: 0.78;
+        white-space: nowrap;
+        user-select: none;
+      }
+      .wm.serif {
+        font-family: var(--serif);
+        font-style: italic;
+        font-weight: 600;
+        letter-spacing: 0;
+      }
+
+      /* floating accent dot */
+      .fdot {
+        display: none;
+      }
+      .fdot.white {
+        display: none;
+      }
+
+      /* ─── Reusable type / layout ─────────────────────────────── */
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .meta {
+        font-family: var(--mono);
+        font-size: var(--tmeta);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--fg-muted);
+        white-space: nowrap;
+      }
+      .meta.faint {
+        color: var(--fg-faint);
+      }
+
+      .stag {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-family: var(--mono);
+        font-size: var(--tmeta);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--fg-muted);
+      }
+      .stag .tl {
+        display: inline-block;
+        width: 32px;
+        height: 1px;
+        background: currentColor;
+        flex-shrink: 0;
+      }
+      .stag.ac {
+        color: var(--accent);
+      }
+
+      .cbody {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: var(--glg);
+        max-width: 1180px;
+      }
+      .ctitle {
+        font-family: var(--sans);
+        font-weight: 700;
+        font-size: var(--tct);
+        line-height: 1.08;
+        letter-spacing: -0.025em;
+        color: var(--fg);
+      }
+      .body {
+        font-family: var(--sans);
+        font-size: var(--tb);
+        line-height: 1.6;
+        color: var(--fg-dim);
+      }
+      .note {
+        font-family: var(--mono);
+        font-size: var(--tmeta);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--fg-muted);
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+      }
+      .chip {
+        display: inline-block;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        padding: 11px 26px;
+        font-family: var(--mono);
+        font-size: 24px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--fg-dim);
+        transition:
+          border-color 0.3s,
+          color 0.3s;
+      }
+
+      .hr {
+        width: 100%;
+        height: 1px;
+        background: var(--line);
+        flex-shrink: 0;
+      }
+
+      /* stat box */
+      .sbox {
+        border: 1px solid var(--line);
+        padding: 30px 38px;
+        min-width: 200px;
+        flex: 1;
+      }
+      .sbox-n {
+        font-family: var(--sans);
+        font-size: 76px;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        color: var(--fg);
+        line-height: 1;
+      }
+      .sbox-l {
+        font-family: var(--mono);
+        font-size: 24px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--fg-muted);
+        margin-top: 12px;
+      }
+
+      /* ─── Animations ─────────────────────────────────────────── */
+      @media (prefers-reduced-motion: no-preference) {
+        [data-deck-active] .anim-up {
+          animation: slideUp 0.62s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        [data-deck-active] .anim-up.d2 {
+          animation-delay: 0.09s;
+        }
+        [data-deck-active] .anim-up.d3 {
+          animation-delay: 0.18s;
+        }
+        [data-deck-active] .anim-up.d4 {
+          animation-delay: 0.27s;
+        }
+        [data-deck-active] .anim-up.d5 {
+          animation-delay: 0.36s;
+        }
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(26px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        [data-deck-active] .layer {
+          animation: gridIn 1.1s ease both;
+        }
+        @keyframes gridIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        [data-deck-active] .wm {
+          animation: wmIn 1.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        @keyframes wmIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        [data-deck-active] .grow {
+          animation: grow 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+          transform-origin: left center;
+        }
+        @keyframes grow {
+          from {
+            transform: scaleX(0);
+            opacity: 0;
+          }
+          to {
+            transform: scaleX(1);
+            opacity: 1;
+          }
+        }
+      }
+
+      /* ═══ Terminal / code window ══════════════════════════════ */
+      .term {
+        width: 100%;
+        border: 1px solid var(--line);
+        background: #0d0d0d;
+        box-shadow: 0 40px 90px -50px rgba(0, 0, 0, 0.9);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .term-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 18px 26px;
+        background: #111;
+        border-bottom: 1px solid var(--line);
+      }
+      .term-dot {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .term-dot.r { background: #ff5f56; }
+      .term-dot.y { background: #ffbd2e; }
+      .term-dot.g { background: #27c93f; }
+      .term-name {
+        margin-left: 14px;
+        font-family: var(--mono);
+        font-size: 22px;
+        letter-spacing: 0.04em;
+        color: var(--fg-muted);
+      }
+      .term-body {
+        padding: 34px 40px;
+        font-family: var(--mono);
+        font-size: 28px;
+        line-height: 1.62;
+        color: var(--fg);
+        min-height: 120px;
+        white-space: pre;
+        overflow: hidden;
+      }
+      .term-body.sm { font-size: 24px; line-height: 1.6; }
+      /* typed.js output + cursor */
+      .term-body .typed-cursor {
+        color: var(--accent);
+        opacity: 1;
+        font-weight: 400;
+      }
+      /* syntax accents inside typed strings */
+      .tk { color: #c792ea; }   /* keyword */
+      .ts { color: var(--accent); } /* string */
+      .tn { color: #ffcb6b; }   /* number */
+      .tc { color: var(--fg-muted); font-style: italic; } /* comment */
+      .tf { color: #82aaff; }   /* function */
+      .tp { color: var(--accent); } /* prompt $ */
+
+      /* two-column code layout */
+      .split {
+        display: grid;
+        grid-template-columns: 1fr 1.05fr;
+        gap: var(--gxl);
+        align-items: center;
+        flex: 1;
+      }
+
+      /* live badge */
+      .live {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-family: var(--mono);
+        font-size: 22px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--accent);
+        border: 1px solid rgba(0, 232, 208, 0.35);
+        padding: 9px 22px;
+      }
+      .live::before {
+        content: "";
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 0 0 rgba(0, 232, 208, 0.5);
+        animation: livePulse 1.8s infinite;
+      }
+      @keyframes livePulse {
+        0% { box-shadow: 0 0 0 0 rgba(0, 232, 208, 0.5); }
+        70% { box-shadow: 0 0 0 14px rgba(0, 232, 208, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(0, 232, 208, 0); }
+      }
+
+      /* numbered step list */
+      .steps { display: flex; flex-direction: column; gap: 22px; }
+      .stepr {
+        display: flex;
+        align-items: flex-start;
+        gap: 22px;
+        font-family: var(--sans);
+        font-size: var(--tb);
+        line-height: 1.4;
+        color: var(--fg-dim);
+      }
+      .stepn {
+        flex-shrink: 0;
+        width: 44px;
+        height: 44px;
+        border: 1px solid rgba(0, 232, 208, 0.4);
+        color: var(--accent);
+        font-family: var(--mono);
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* feature / bullet list with tick */
+      .flist { display: flex; flex-direction: column; gap: 24px; }
+      .fitem {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+        font-family: var(--sans);
+        font-size: var(--tb);
+        line-height: 1.4;
+        color: var(--fg-dim);
+      }
+      .fitem b { color: var(--fg); font-weight: 600; }
+      .ftick {
+        flex-shrink: 0;
+        color: var(--accent);
+        font-family: var(--mono);
+        font-size: 30px;
+        line-height: 1.2;
+      }
+
+      /* DTT pending roster */
+      .dtt-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px 48px;
+      }
+      .dtt-row {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 20px;
+        align-items: baseline;
+        font-family: var(--sans);
+        font-size: var(--tsm);
+        line-height: 1.35;
+        color: var(--fg-dim);
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 12px;
+      }
+      .dtt-carnet {
+        font-family: var(--mono);
+        font-size: 22px;
+        letter-spacing: 0.04em;
+        color: var(--accent);
+      }
+      .dtt-name { color: var(--fg); }
+
+      /* card grid */
+      .cards3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--gmd);
+      }
+      .qcard { border: 1px solid var(--line); padding: 34px 36px; }
+      .qcard-t {
+        font-family: var(--mono);
+        font-size: 26px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 18px;
+      }
+      .qcard-b {
+        font-family: var(--sans);
+        font-size: 27px;
+        line-height: 1.5;
+        color: var(--fg-dim);
+      }
+      .qcard-b b { color: var(--fg); font-weight: 600; }
+
+      /* agenda rows */
+      .arow {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        padding: 26px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .arow-n {
+        font-family: var(--mono);
+        font-size: 30px;
+        color: var(--accent);
+        width: 60px;
+        flex-shrink: 0;
+      }
+      .arow-t {
+        font-family: var(--sans);
+        font-size: 34px;
+        font-weight: 600;
+        color: var(--fg);
+        flex: 1;
+      }
+      .arow-d {
+        font-family: var(--sans);
+        font-size: 26px;
+        color: var(--fg-dim);
+        flex: 2;
+      }
+      .arow-time {
+        font-family: var(--mono);
+        font-size: 26px;
+        color: var(--fg-muted);
+        letter-spacing: 0.08em;
+      }
+
+      /* ═══ Diagramas SVG ═══════════════════════════════════════ */
+      .diagram {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex: 1;
+      }
+      .diagram svg {
+        width: 100%;
+        height: auto;
+        max-height: 760px;
+        overflow: visible;
+      }
+      /* estilos reutilizables dentro del SVG */
+      .d-box { fill: #101010; stroke: rgba(255, 255, 255, 0.16); stroke-width: 1.5; }
+      .d-box-accent { fill: rgba(0, 232, 208, 0.06); stroke: rgba(0, 232, 208, 0.55); stroke-width: 1.8; }
+      .d-cpu { fill: rgba(255, 255, 255, 0.015); stroke: rgba(255, 255, 255, 0.22); stroke-width: 1.8; }
+      .d-t { fill: var(--fg); font-family: var(--sans); font-weight: 600; }
+      .d-t-mono { fill: var(--fg); font-family: var(--mono); }
+      .d-t-dim { fill: var(--fg-dim); font-family: var(--sans); }
+      .d-t-acc { fill: var(--accent); font-family: var(--mono); letter-spacing: 0.04em; }
+      .d-line { stroke: rgba(255, 255, 255, 0.28); stroke-width: 1.6; fill: none; }
+      .d-line-acc { stroke: var(--accent); stroke-width: 2; fill: none; }
+
+      /* timeline de generaciones */
+      .gen { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; }
+      .gen-col {
+        position: relative;
+        padding: 30px 22px 0;
+        border-left: 1px solid var(--line);
+      }
+      .gen-col:first-child { border-left: none; }
+      .gen-dot {
+        position: absolute;
+        top: -7px;
+        left: -7px;
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+        background: var(--accent);
+      }
+      .gen-n {
+        font-family: var(--mono);
+        font-size: 22px;
+        color: var(--accent);
+        letter-spacing: 0.1em;
+        margin-bottom: 10px;
+      }
+      .gen-y {
+        font-family: var(--sans);
+        font-weight: 700;
+        font-size: 30px;
+        color: var(--fg);
+        margin-bottom: 12px;
+      }
+      .gen-d {
+        font-family: var(--sans);
+        font-size: 23px;
+        line-height: 1.42;
+        color: var(--fg-dim);
+      }
+      .gen-tech {
+        font-family: var(--mono);
+        font-size: 20px;
+        color: var(--fg-muted);
+        margin-top: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      /* ─── Semana 3 extras ─────────────────────────────────────── */
+      .cmp {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--gmd);
+      }
+      .cmp-col {
+        border: 1px solid var(--line);
+        padding: 34px 36px;
+      }
+      .cmp-h {
+        font-family: var(--mono);
+        font-size: 26px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 22px;
+      }
+      .cmp-col ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .cmp-col li {
+        font-family: var(--sans);
+        font-size: 27px;
+        line-height: 1.4;
+        color: var(--fg-dim);
+        padding-left: 28px;
+        position: relative;
+      }
+      .cmp-col li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.55em;
+        width: 10px;
+        height: 10px;
+        background: var(--accent);
+        opacity: 0.7;
+      }
+      .pyramid {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+      }
+      .pyr-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(0, 232, 208, 0.35);
+        background: rgba(0, 232, 208, 0.05);
+        padding: 22px 28px;
+        font-family: var(--sans);
+        font-size: 28px;
+        color: var(--fg);
+        gap: 18px;
+      }
+      .pyr-row .pl {
+        font-family: var(--mono);
+        font-size: 22px;
+        color: var(--accent);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        min-width: 160px;
+      }
+      .pyr-row .pm {
+        color: var(--fg-dim);
+        font-size: 24px;
+      }
+      .warn {
+        border: 1px solid rgba(0, 232, 208, 0.35);
+        padding: 22px 28px;
+        font-family: var(--sans);
+        font-size: 26px;
+        line-height: 1.45;
+        color: var(--fg-dim);
+      }
+      .warn b { color: var(--fg); }
+      @media (prefers-reduced-motion: no-preference) {
+        [data-deck-active] .bus-pulse {
+          stroke-dasharray: 10 8;
+          animation: busDash 1.4s linear infinite;
+        }
+        @keyframes busDash {
+          to { stroke-dashoffset: -36; }
+        }
+        [data-deck-active] .pyr-row {
+          animation: slideUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        [data-deck-active] .pyr-row.d2 { animation-delay: 0.08s; }
+        [data-deck-active] .pyr-row.d3 { animation-delay: 0.16s; }
+        [data-deck-active] .pyr-row.d4 { animation-delay: 0.24s; }
+        [data-deck-active] .pyr-row.d5 { animation-delay: 0.32s; }
+      }
+      .cards2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--gmd);
+      }
+      .cards4 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--gmd);
+      }
+    </style>
+  </head>
+
+    <deck-stage width="1920" height="1080">
+
+<section data-label="01" data-screen-label="Portada">
+        <div class="layer">
+          <div class="geo" style="width: 520px; height: 620px; top: 70px; left: 560px"></div>
+          <div class="geo" style="width: 320px; height: 420px; top: 150px; left: 820px; border-color: rgba(0,232,208,0.05)"></div>
+          <div class="wm" style="bottom: -100px; right: -30px; font-size: 280px; color: rgba(240,238,235,0.028)">SYS</div>
+        </div>
+        <div class="topbar">
+          <div style="display: flex; align-items: center; gap: 14px">
+            <span style="width: 9px; height: 9px; border-radius: 50%; background: var(--accent); display: inline-block"></span>
+            <span class="meta" style="letter-spacing: 0.12em">ECYS · 768 — ALGORITMOS</span>
+          </div>
+          <span class="meta">2S · 2026</span>
+        </div>
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 6px">
+          <div class="stag ac anim-up" style="margin-bottom: 34px">
+            <span class="tl grow"></span>
+            <span>Semana 03 — Sesión de laboratorio</span>
+          </div>
+          <h1 class="anim-up d2" style="font-family: var(--sans); font-size: var(--th); font-weight: 700; line-height: 0.9; letter-spacing: -0.03em; color: var(--fg)">
+            SUBSISTEMAS QUE
+          </h1>
+          <h1 class="anim-up d3" style="font-family: var(--serif); font-size: var(--th); font-weight: 400; font-style: italic; line-height: 1; letter-spacing: -0.01em; color: rgba(240,238,235,0.62)">
+            se hablan entre sí.
+          </h1>
+          <p class="body anim-up d4" style="margin-top: 40px; max-width: 1200px">RISC/CISC, memoria, redes y buses — explicados desde cero, como partes de un <b style="color:var(--fg)">mismo sistema</b>.</p>
+        </div>
+        <div class="hr" style="margin-bottom: 28px"></div>
+        <div class="topbar">
+          <span class="meta">Jorge Mejía</span>
+          <span class="meta faint">Guatemala, GT · 100 MIN</span>
+        </div>
+      </section>
+
+<section data-label="02" data-screen-label="Agenda">
+        <div class="layer">
+          <div class="wm serif" style="bottom: -70px; right: -30px; font-size: 300px; color: rgba(0,232,208,0.04)">03</div>
+        </div>
+        <div class="topbar">
+          <span class="stag ac"><span class="tl"></span><span>Ruta de la sesión</span></span>
+          <span class="meta">100 MIN</span>
+        </div>
+        <div class="cbody" style="max-width: 1500px">
+          <h2 class="ctitle anim-up">Estructura de la sesión</h2>
+          <div style="display: flex; flex-direction: column">
+            <div class="arow anim-up d2"><span class="arow-n">01</span><span class="arow-t">Recordatorios</span><span class="arow-d">Práctica 1, Tarea 1 y horarios de calificación</span><span class="arow-time">5 min</span></div>
+            <div class="arow anim-up d3"><span class="arow-n">02</span><span class="arow-t">Pensamiento sistémico</span><span class="arow-d">Ver el hardware como un sistema</span><span class="arow-time">5 min</span></div>
+            <div class="arow anim-up d4"><span class="arow-n">03</span><span class="arow-t">Procesamiento y memoria</span><span class="arow-d">RISC/CISC, memoria principal y secundaria</span><span class="arow-time">25 min</span></div>
+            <div class="arow anim-up d5"><span class="arow-n">04</span><span class="arow-t">Comunicación y buses</span><span class="arow-d">Red, seguridad y buses del sistema</span><span class="arow-time">25 min</span></div>
+            <div class="arow anim-up d5"><span class="arow-n">05</span><span class="arow-t">Demo y cuestionario</span><span class="arow-d">Esquema + actividad obligatoria</span><span class="arow-time">25 min</span></div>
+            <div class="arow anim-up d5"><span class="arow-n">06</span><span class="arow-t">Cierre</span><span class="arow-d">Corto 1 — mismo día</span><span class="arow-time">15 min</span></div>
+          </div>
+        </div>
+      </section>
+
+<section data-label="03" data-screen-label="Recordatorios">
+        <div class="layer"><div class="wm serif" style="bottom:-70px; right:-30px; font-size:280px; color:rgba(0,232,208,0.04)">log</div></div>
+        <div class="topbar">
+          <span class="stag ac"><span class="tl"></span><span>Antes de comenzar</span></span>
+          <span class="meta">5 MIN</span>
+        </div>
+        <div class="cbody" style="max-width: 1600px; gap: var(--glg)">
+          <h2 class="ctitle anim-up">Recordatorios importantes</h2>
+          <div class="cards3">
+            <div class="qcard anim-up d2">
+              <div class="qcard-t">Práctica 1</div>
+              <div class="qcard-b">Revise el enunciado en <b>UEDI</b>. Si aún no la abrió o no entendió los criterios, hágalo hoy. Las dudas se resuelven en foro o al final de clase.</div>
+            </div>
+            <div class="qcard anim-up d3">
+              <div class="qcard-t">Tarea 1 · entrega</div>
+              <div class="qcard-b">Investigación y esquema de evolución/arquitectura. Entrega por <b>UEDI</b>, en equipo, con nombres de todos. Sin atraso injustificado.</div>
+            </div>
+            <div class="qcard anim-up d4">
+              <div class="qcard-t">Horarios de calificación</div>
+              <div class="qcard-b">La calificación es <b>presencial</b> en la franja que registraron. Confirmen su horario y lleguen puntuales con la evidencia lista.</div>
+            </div>
+          </div>
+          <p class="note anim-up d5">Medio oficial de entrega: plataforma UEDI. Laboratorio: sábados, salón 214.</p>
+        </div>
+      </section>
+
+<section data-label="04" data-screen-label="Checklist de entregas">
+        <div class="layer"><div class="wm" style="bottom:-80px; right:-20px; font-size:220px; color:rgba(0,232,208,0.03)">chk</div></div>
+        <div class="topbar">
+          <span class="stag ac"><span class="tl"></span><span>Logística del curso</span></span>
+          <span class="meta">CHECKLIST</span>
+        </div>
+        <div class="cbody" style="max-width: 1500px; gap: var(--glg)">
+          <h2 class="ctitle anim-up">¿Qué deben tener listo?</h2>
+          <div class="flist">
+            <div class="fitem anim-up d2"><span class="ftick">01</span><span><b>Práctica 1 leída.</b> Entender objetivos, formato de entrega y rúbrica antes de preguntar «¿qué hay que hacer?».</span></div>
+            <div class="fitem anim-up d3"><span class="ftick">02</span><span><b>Tarea 1 en marcha o entregada.</b> Un envío grupal; todos responden por el contenido.</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">03</span><span><b>Horario de calificación anotado.</b> Si no lo registraron en el censo, avisen al tutor hoy.</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">04</span><span><b>Hoy hay Corto 1</b> al cierre de la sesión — individual, sobre lo visto en clase.</span></div>
+          </div>
+        </div>
+      </section>
+
+<section data-label="05" data-screen-label="Pensamiento sistémico">
+        <div class="layer">
+          <div class="geo" style="width: 620px; height: 620px; top: -150px; right: -130px; border-color: rgba(0,232,208,0.05)"></div>
+          <div class="wm serif" style="bottom: -60px; left: -30px; font-size: 220px; color: rgba(0,232,208,0.04)">sys</div>
+        </div>
+        <div class="topbar">
+          <span class="stag ac"><span class="tl"></span><span>Área actitudinal — Saber ser</span></span>
+          <span class="meta">5 MIN</span>
+        </div>
+        <div class="split" style="margin-top: 40px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Pensamiento sistémico</h2>
+            <p class="body anim-up d2">Capacidad de ver los componentes individuales como partes <b style="color:var(--fg)">interdependientes</b> de un sistema mayor y coherente.</p>
+          </div>
+          <div class="flist">
+            <div class="fitem anim-up d3"><span class="ftick">▹</span><span>No basta saber «qué es la RAM» o «qué es un router» por separado.</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">▹</span><span>Hay que preguntar: <b>¿con quién habla?</b> y <b>¿qué pasa si falla?</b>.</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">▹</span><span>Hoy dibujarán un esquema de cómo se comunican los componentes.</span></div>
+          </div>
+        </div>
+      </section>
+
+<section data-label="06" data-screen-label="Sistema, no piezas sueltas">
+        <div class="layer"><div class="wm" style="bottom:-80px; right:-20px; font-size:240px; color:rgba(240,238,235,0.022)">+</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Valor de la semana</span></span><span class="meta">APLICACIÓN</span></div>
+        <div class="cbody" style="max-width: 1600px; gap: var(--glg)">
+          <h2 class="ctitle anim-up">RISC, memoria, red y buses solo tienen sentido juntos</h2>
+          <div class="cards2">
+            <div class="qcard anim-up d2"><div class="qcard-t">Pieza aislada</div><div class="qcard-b">«La CPU es rápida», «hay mucha RAM», «el Wi-Fi falla» — datos sueltos sin relación.</div></div>
+            <div class="qcard anim-up d3"><div class="qcard-t">Vista de sistema</div><div class="qcard-b">La CPU pide datos a la RAM por el bus; si la red está lenta, el firewall o el AP pueden ser el cuello de botella.</div></div>
+          </div>
+          <p class="body anim-up d4" style="max-width: 70ch">Meta de hoy: salir con un mapa mental donde <b style="color:var(--fg)">cada caja se conecta a otra</b>.</p>
+        </div>
+      </section>
+
+<section data-label="07" data-screen-label="Desde cero — mapa">
+        <div class="layer"><div class="wm serif" style="bottom:-70px; right:-30px; font-size:260px; color:rgba(0,232,208,0.035)">0</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Unidad 2 — Arquitectura y organización</span></span><span class="meta">DESDE CERO</span></div>
+        <div class="cbody" style="max-width: 1600px; gap: var(--glg)">
+          <h2 class="ctitle anim-up">Partimos de una idea simple</h2>
+          <p class="body anim-up d2" style="max-width: 70ch">La semana pasada vimos Von Neumann: CPU, memoria, entrada/salida y un bus. Hoy ampliamos cada parte <b style="color:var(--fg)">sin asumir que ya saben los nombres técnicos</b>.</p>
+          <div class="cards3">
+            <div class="qcard anim-up d3"><div class="qcard-t">01 · Procesar</div><div class="qcard-b">Cómo la CPU entiende instrucciones: <b>RISC</b> y <b>CISC</b>.</div></div>
+            <div class="qcard anim-up d4"><div class="qcard-t">02 · Guardar</div><div class="qcard-b"><b>Memoria principal</b> (rápida, temporal) y <b>secundaria</b> (permanente).</div></div>
+            <div class="qcard anim-up d5"><div class="qcard-t">03 · Comunicar</div><div class="qcard-b">Red, Wi-Fi, seguridad y los <b>tres buses</b> internos.</div></div>
+          </div>
+        </div>
+      </section>
+
+<section data-label="08" data-screen-label="Qué es una instrucción">
+        <div class="layer"><div class="wm" style="bottom:-90px; right:-20px; font-size:240px; color:rgba(240,238,235,0.025)">op</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Hardware de procesamiento</span></span><span class="meta">BASE</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">¿Qué es una instrucción?</h2>
+            <p class="body anim-up d2">Una <b style="color:var(--fg)">orden mínima</b> que la CPU sabe ejecutar: sumar, copiar un valor, saltar a otra dirección.</p>
+          </div>
+          <div class="flist">
+            <div class="fitem anim-up d3"><span class="ftick">1</span><span>El programa es una <b>lista de instrucciones</b>.</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">2</span><span>Cada instrucción tiene un <b>código</b> (opcode) y a veces <b>datos</b>.</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">3</span><span>El «vocabulario» de instrucciones se llama <b>conjunto de instrucciones</b> (ISA).</span></div>
+          </div>
+        </div>
+      </section>
+
+<section data-label="09" data-screen-label="RISC">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; left:-20px; font-size:240px; color:rgba(0,232,208,0.04)">RISC</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Tecnologías RISC / CISC</span></span><span class="meta">RISC</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">RISC — pocas órdenes, simples</h2>
+            <p class="body anim-up d2"><b style="color:var(--fg)">Reduced Instruction Set Computer</b>: conjunto reducido. Cada instrucción hace poco, pero se ejecuta muy rápido y de forma predecible.</p>
+          </div>
+          <div class="flist">
+            <div class="fitem anim-up d3"><span class="ftick">▹</span><span>Pocas instrucciones, casi todas del <b>mismo tamaño</b>.</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">▹</span><span>Ideal para <b>pipelines</b>: varias instrucciones «en cadena».</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">▹</span><span>Ejemplos familiares: muchos chips <b>ARM</b> (celulares, Mac M-series).</span></div>
+          </div>
+        </div>
+      </section>
+
+<section data-label="10" data-screen-label="CISC">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; left:-20px; font-size:240px; color:rgba(0,232,208,0.04)">CISC</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Tecnologías RISC / CISC</span></span><span class="meta">CISC</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">CISC — muchas órdenes, potentes</h2>
+            <p class="body anim-up d2"><b style="color:var(--fg)">Complex Instruction Set Computer</b>: conjunto complejo. Una sola instrucción puede hacer mucho trabajo (varios accesos a memoria, operaciones combinadas).</p>
+          </div>
+          <div class="flist">
+            <div class="fitem anim-up d3"><span class="ftick">▹</span><span>Muchas instrucciones; algunas son <b>largas y especiales</b>.</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">▹</span><span>Históricamente: menos código en memoria (importante cuando la RAM era cara).</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">▹</span><span>Ejemplo clásico: familia <b>x86</b> de PCs (Intel / AMD de escritorio).</span></div>
+          </div>
+        </div>
+      </section>
+
+<section data-label="11" data-screen-label="RISC vs CISC">
+        <div class="layer"><div class="wm" style="bottom:-80px; right:-20px; font-size:220px; color:rgba(240,238,235,0.022)">vs</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Tecnologías RISC / CISC</span></span><span class="meta">COMPARACIÓN</span></div>
+        <div class="cbody" style="max-width: 1680px; gap: var(--gmd)">
+          <h2 class="ctitle anim-up">RISC frente a CISC</h2>
+          <div class="cmp">
+            <div class="cmp-col anim-up d2">
+              <div class="cmp-h">RISC</div>
+              <ul>
+                <li>Instrucciones simples y uniformes</li>
+                <li>Más instrucciones por tarea compleja</li>
+                <li>Hardware interno más «limpio»</li>
+                <li>Muy usado en móviles y servidores eficientes</li>
+              </ul>
+            </div>
+            <div class="cmp-col anim-up d3">
+              <div class="cmp-h">CISC</div>
+              <ul>
+                <li>Instrucciones ricas y variables</li>
+                <li>Menos instrucciones por tarea compleja</li>
+                <li>Decodificación más elaborada</li>
+                <li>Dominante en PCs de escritorio x86</li>
+              </ul>
+            </div>
+          </div>
+          <p class="note anim-up d4">Hoy la frontera se difumina: chips CISC modernos internamente rompen instrucciones en micro-operaciones parecidas a RISC.</p>
+        </div>
+      </section>
+
+<section data-label="12" data-screen-label="Memoria — para qué">
+        <div class="layer"><div class="wm" style="bottom:-90px; left:-20px; font-size:240px; color:rgba(240,238,235,0.022)">mem</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Hardware de almacenamiento</span></span><span class="meta">DESDE CERO</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">¿Para qué sirve la memoria?</h2>
+            <p class="body anim-up d2">La CPU no puede «pensar» sin un lugar donde guardar el programa y los datos <b style="color:var(--fg)">mientras trabaja</b> — y otro lugar para guardarlos <b style="color:var(--fg)">cuando apagas</b>.</p>
+          </div>
+          <div class="flist">
+            <div class="fitem anim-up d3"><span class="ftick">A</span><span><b>Principal:</b> lo que la CPU usa ahora (RAM).</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">B</span><span><b>Secundaria:</b> lo que debe sobrevivir (disco / SSD).</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">!</span><span>Si confunden ambas, no entenderán por qué «cerrar el navegador libera RAM» pero «borrar un archivo libera disco».</span></div>
+          </div>
+        </div>
+      </section>
+
+<section data-label="13" data-screen-label="Memoria principal">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">RAM</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Memoria principal</span></span><span class="meta">VOLÁTIL</span></div>
+        <div class="cbody" style="max-width: 1600px; gap: var(--glg)">
+          <h2 class="ctitle anim-up">Memoria principal (RAM)</h2>
+          <div class="cards3">
+            <div class="qcard anim-up d2"><div class="qcard-t">Qué es</div><div class="qcard-b">Almacén de trabajo de la CPU: programas abiertos y datos en uso.</div></div>
+            <div class="qcard anim-up d3"><div class="qcard-t">Volátil</div><div class="qcard-b">Al cortar la energía, <b>se pierde</b> el contenido.</div></div>
+            <div class="qcard anim-up d4"><div class="qcard-t">Acceso</div><div class="qcard-b">La CPU la lee/escribe por el bus usando <b>direcciones</b>.</div></div>
+          </div>
+          <p class="body anim-up d5" style="max-width: 70ch">Analogía: el <b style="color:var(--fg)">escritorio</b>. Lo que está encima se usa ya; al apagar, se limpia. El archivero es el disco.</p>
+        </div>
+      </section>
+
+<section data-label="14" data-screen-label="Memoria secundaria">
+        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:220px; color:rgba(240,238,235,0.022)">SSD</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Memoria secundaria</span></span><span class="meta">PERSISTENTE</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Memoria secundaria</h2>
+            <p class="body anim-up d2">Almacenamiento <b style="color:var(--fg)">permanente</b>: HDD, SSD, USB, tarjetas SD. Conserva datos sin energía.</p>
+          </div>
+          <div class="flist">
+            <div class="fitem anim-up d3"><span class="ftick">▹</span><span><b>Más lenta</b> que la RAM, pero mucho más <b>capacidad</b> y barata por GB.</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">▹</span><span>El sistema operativo <b>carga</b> programas del disco a la RAM para ejecutarlos.</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">▹</span><span>SSD (estado sólido) es más rápida que HDD (discos mecánicos).</span></div>
+          </div>
+        </div>
+      </section>
+
+<section data-label="15" data-screen-label="Jerarquía de memoria">
+        <div class="layer"></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Almacenamiento</span></span><span class="meta">JERARQUÍA</span></div>
+        <div class="cbody" style="max-width: 1500px; gap: var(--gmd)">
+          <h2 class="ctitle anim-up">De más rápida a más lenta</h2>
+          <div class="pyramid">
+            <div class="pyr-row anim-up d2" style="width: 55%; align-self: center"><span class="pl">Registros</span><span>Dentro de la CPU</span><span class="pm">más rápida</span></div>
+            <div class="pyr-row anim-up d3" style="width: 70%; align-self: center"><span class="pl">Caché</span><span>Copia cercana a la CPU</span><span class="pm">muy rápida</span></div>
+            <div class="pyr-row anim-up d4" style="width: 85%; align-self: center"><span class="pl">RAM</span><span>Memoria principal</span><span class="pm">rápida</span></div>
+            <div class="pyr-row anim-up d5" style="width: 100%; align-self: center"><span class="pl">Disco / SSD</span><span>Memoria secundaria</span><span class="pm">más lenta · permanente</span></div>
+          </div>
+        </div>
+      </section>
+
+<section data-label="16" data-screen-label="Comunicación — intro">
+        <div class="layer"><div class="wm serif" style="bottom:-70px; right:-30px; font-size:260px; color:rgba(0,232,208,0.035)">net</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Hardware de comunicación</span></span><span class="meta">DESDE CERO</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">La computadora también habla con el mundo</h2>
+            <p class="body anim-up d2">Hasta ahora: CPU y memoria. Ahora: cómo se conecta a <b style="color:var(--fg)">otras máquinas</b> y a Internet.</p>
+          </div>
+          <div class="flist">
+            <div class="fitem anim-up d3"><span class="ftick">1</span><span><b>Tarjeta de red (NIC)</b> — el «puerto» de la PC.</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">2</span><span><b>Switch / Router / AP</b> — el camino entre dispositivos.</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">3</span><span><b>Firewall</b> — el filtro de seguridad.</span></div>
+          </div>
+        </div>
+      </section>
+
+<section data-label="17" data-screen-label="Tarjeta de red">
+        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:220px; color:rgba(240,238,235,0.022)">NIC</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Hardware de comunicación</span></span><span class="meta">NIC</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Tarjeta de red (NIC)</h2>
+            <p class="body anim-up d2"><b style="color:var(--fg)">Network Interface Card</b>: convierte datos del computador en señales que viajan por cable (Ethernet) o Wi-Fi.</p>
+          </div>
+          <div class="flist">
+            <div class="fitem anim-up d3"><span class="ftick">▹</span><span>Tiene una dirección física <b>MAC</b> única.</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">▹</span><span>Puede ser un chip soldado en la placa o un adaptador USB.</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">▹</span><span>Sin NIC (o Wi-Fi equivalente), la PC no participa en la red.</span></div>
+          </div>
+        </div>
+      </section>
+
+<section data-label="18" data-screen-label="Switch y Router">
+        <div class="layer"></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Hardware de comunicación</span></span><span class="meta">SWITCH · ROUTER</span></div>
+        <div class="cbody" style="max-width: 1680px; gap: var(--glg)">
+          <h2 class="ctitle anim-up">Switch y router — no son lo mismo</h2>
+          <div class="cards2">
+            <div class="qcard anim-up d2">
+              <div class="qcard-t">Switch</div>
+              <div class="qcard-b">Conecta equipos de la <b>misma red local</b> (oficina, lab). Reenvía tramas entre puertos según dirección MAC. Piensa: «repartidor interno».</div>
+            </div>
+            <div class="qcard anim-up d3">
+              <div class="qcard-t">Router</div>
+              <div class="qcard-b">Une <b>redes distintas</b> (tu casa e Internet). Decide rutas con direcciones IP. Piensa: «puerta hacia afuera».</div>
+            </div>
+          </div>
+          <p class="note anim-up d4">El «modem/router» casero suele mezclar ambas funciones en una sola caja — por eso confunde. En clase las separamos.</p>
+        </div>
+      </section>
+
+<section data-label="19" data-screen-label="Access Point">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:240px; color:rgba(0,232,208,0.035)">AP</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Hardware de comunicación</span></span><span class="meta">ACCESS POINT</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Access Point (AP)</h2>
+            <p class="body anim-up d2">Punto de acceso Wi-Fi: convierte la red cableada en <b style="color:var(--fg)">red inalámbrica</b> para laptops y celulares.</p>
+          </div>
+          <div class="flist">
+            <div class="fitem anim-up d3"><span class="ftick">▹</span><span>Los clientes se asocian al AP con SSID y clave.</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">▹</span><span>El AP suele conectarse a un <b>switch</b> o router por cable.</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">▹</span><span>Muchos routers domésticos incluyen AP integrado.</span></div>
+          </div>
+        </div>
+      </section>
+
+<section data-label="20" data-screen-label="Firewall">
+        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:220px; color:rgba(240,238,235,0.022)">FW</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Hardware de seguridad</span></span><span class="meta">FIREWALL</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Firewall y HW de seguridad</h2>
+            <p class="body anim-up d2">Un <b style="color:var(--fg)">firewall</b> filtra el tráfico según reglas: qué entra, qué sale, qué se bloquea. Puede ser software o un aparato dedicado.</p>
+          </div>
+          <div class="flist">
+            <div class="fitem anim-up d3"><span class="ftick">▹</span><span>Decide permitir o denegar conexiones (puertos, IPs, protocolos).</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">▹</span><span>Otros HW: IDS/IPS, proxies, UTM — capas adicionales.</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">▹</span><span>Pensamiento sistémico: la seguridad es un <b>subsistema</b> que afecta a toda la red.</span></div>
+          </div>
+        </div>
+      </section>
+
+<section data-label="21" data-screen-label="Mapa de red simple">
+        <div class="layer"></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Hardware de comunicación</span></span><span class="meta">DIAGRAMA</span></div>
+        <h2 class="ctitle anim-up" style="margin-top: 10px">Un camino típico de datos</h2>
+        <div class="diagram anim-up d2" style="margin-top: 8px">
+          <svg viewBox="0 0 1600 720" role="img" aria-label="Mapa de red simple">
+            <defs>
+              <marker id="n1" markerWidth="12" markerHeight="12" refX="8" refY="4" orient="auto">
+                <path d="M0,0 L8,4 L0,8 Z" fill="#00e8d0" />
+              </marker>
+            </defs>
+            <rect class="d-box" x="60" y="280" width="220" height="140" rx="8"/>
+            <text class="d-t" x="170" y="345" font-size="30" text-anchor="middle">PC</text>
+            <text class="d-t-dim" x="170" y="385" font-size="20" text-anchor="middle">+ NIC</text>
+
+            <rect class="d-box-accent" x="360" y="280" width="220" height="140" rx="8"/>
+            <text class="d-t" x="470" y="345" font-size="30" text-anchor="middle">Switch</text>
+            <text class="d-t-dim" x="470" y="385" font-size="20" text-anchor="middle">LAN</text>
+
+            <rect class="d-box-accent" x="660" y="280" width="220" height="140" rx="8"/>
+            <text class="d-t" x="770" y="345" font-size="30" text-anchor="middle">Router</text>
+            <text class="d-t-dim" x="770" y="385" font-size="20" text-anchor="middle">gateway</text>
+
+            <rect class="d-box" x="960" y="280" width="220" height="140" rx="8"/>
+            <text class="d-t" x="1070" y="345" font-size="28" text-anchor="middle">Firewall</text>
+            <text class="d-t-dim" x="1070" y="385" font-size="20" text-anchor="middle">filtro</text>
+
+            <rect class="d-box" x="1260" y="280" width="260" height="140" rx="8"/>
+            <text class="d-t" x="1390" y="345" font-size="30" text-anchor="middle">Internet</text>
+            <text class="d-t-dim" x="1390" y="385" font-size="20" text-anchor="middle">otras redes</text>
+
+            <rect class="d-box" x="360" y="80" width="220" height="120" rx="8"/>
+            <text class="d-t" x="470" y="140" font-size="28" text-anchor="middle">AP Wi-Fi</text>
+            <text class="d-t-dim" x="470" y="175" font-size="20" text-anchor="middle">clientes móviles</text>
+
+            <line class="d-line-acc bus-pulse" x1="280" y1="350" x2="355" y2="350" marker-end="url(#n1)" stroke-width="2.4"/>
+            <line class="d-line-acc bus-pulse" x1="580" y1="350" x2="655" y2="350" marker-end="url(#n1)" stroke-width="2.4"/>
+            <line class="d-line-acc bus-pulse" x1="880" y1="350" x2="955" y2="350" marker-end="url(#n1)" stroke-width="2.4"/>
+            <line class="d-line-acc bus-pulse" x1="1180" y1="350" x2="1255" y2="350" marker-end="url(#n1)" stroke-width="2.4"/>
+            <line class="d-line-acc bus-pulse" x1="470" y1="200" x2="470" y2="275" marker-end="url(#n1)" stroke-width="2.4"/>
+
+            <text class="d-t-acc" x="800" y="520" font-size="24" text-anchor="middle">Cada caja es un subsistema; el tráfico solo fluye si las conexiones y reglas lo permiten</text>
+            <text class="d-t-dim" x="800" y="570" font-size="22" text-anchor="middle">Las líneas animadas representan el flujo de datos entre componentes</text>
+          </svg>
+        </div>
+      </section>
+
+<section data-label="22" data-screen-label="Buses — qué son">
+        <div class="layer"><div class="wm serif" style="bottom:-70px; right:-30px; font-size:280px; color:rgba(0,232,208,0.035)">bus</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Buses del sistema</span></span><span class="meta">DESDE CERO</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">¿Qué es un bus?</h2>
+            <p class="body anim-up d2">Un conjunto de líneas eléctricas (o caminos lógicos) por donde viajan <b style="color:var(--fg)">señales compartidas</b> entre CPU, memoria y periféricos.</p>
+          </div>
+          <div class="flist">
+            <div class="fitem anim-up d3"><span class="ftick">▹</span><span>Analogía: una <b>carretera</b> con carriles especializados.</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">▹</span><span>Hay tres carriles clave: <b>datos</b>, <b>direcciones</b> y <b>control</b>.</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">▹</span><span>Si el bus satura, toda la máquina siente el «cuello de botella».</span></div>
+          </div>
+        </div>
+      </section>
+
+<section data-label="23" data-screen-label="Los tres buses">
+        <div class="layer"></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Buses</span></span><span class="meta">DATOS · DIRECCIÓN · CONTROL</span></div>
+        <div class="cbody" style="max-width: 1680px; gap: var(--glg)">
+          <h2 class="ctitle anim-up">Tres buses, tres trabajos</h2>
+          <div class="cards3">
+            <div class="qcard anim-up d2"><div class="qcard-t">Bus de datos</div><div class="qcard-b">Transporta los <b>valores</b>: números, instrucciones, resultados. Bidireccional.</div></div>
+            <div class="qcard anim-up d3"><div class="qcard-t">Bus de dirección</div><div class="qcard-b">Indica <b>dónde</b> leer o escribir en memoria. Va de la CPU hacia afuera.</div></div>
+            <div class="qcard anim-up d4"><div class="qcard-t">Bus de control</div><div class="qcard-b">Señales de mando: <b>leer</b>, <b>escribir</b>, reloj, interrupciones.</div></div>
+          </div>
+        </div>
+      </section>
+
+<section data-label="24" data-screen-label="Diagrama de buses">
+        <div class="layer"></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Buses</span></span><span class="meta">DIAGRAMA ANIMADO</span></div>
+        <h2 class="ctitle anim-up" style="margin-top: 8px">CPU, memoria y los tres buses</h2>
+        <div class="diagram anim-up d2" style="margin-top: 4px">
+          <svg viewBox="0 0 1600 700" role="img" aria-label="Diagrama de buses">
+            <defs>
+              <marker id="b1" markerWidth="12" markerHeight="12" refX="8" refY="4" orient="auto">
+                <path d="M0,0 L8,4 L0,8 Z" fill="#00e8d0" />
+              </marker>
+            </defs>
+            <rect class="d-cpu" x="120" y="80" width="420" height="220" rx="10"/>
+            <text class="d-t-acc" x="330" y="130" font-size="24" text-anchor="middle">CPU</text>
+            <text class="d-t" x="330" y="190" font-size="32" text-anchor="middle">UC · ALU · Registros</text>
+            <text class="d-t-dim" x="330" y="240" font-size="22" text-anchor="middle">pide y recibe información</text>
+
+            <rect class="d-box" x="1060" y="80" width="420" height="220" rx="10"/>
+            <text class="d-t-acc" x="1270" y="130" font-size="24" text-anchor="middle">MEMORIA</text>
+            <text class="d-t" x="1270" y="190" font-size="32" text-anchor="middle">Principal (RAM)</text>
+            <text class="d-t-dim" x="1270" y="240" font-size="22" text-anchor="middle">guarda programa y datos</text>
+
+            <rect x="200" y="380" width="1200" height="240" rx="12" fill="rgba(0,232,208,0.05)" stroke="rgba(0,232,208,0.45)" stroke-width="1.6"/>
+            <text class="d-t-acc" x="240" y="430" font-size="22">BUS DEL SISTEMA</text>
+
+            <line class="d-line-acc bus-pulse" x1="280" y1="480" x2="1320" y2="480" stroke-width="3"/>
+            <text class="d-t" x="800" y="470" font-size="26" text-anchor="middle">Bus de datos — «qué valor»</text>
+
+            <line class="d-line-acc bus-pulse" x1="280" y1="540" x2="1320" y2="540" stroke-width="3"/>
+            <text class="d-t" x="800" y="530" font-size="26" text-anchor="middle">Bus de dirección — «en qué casilla»</text>
+
+            <line class="d-line-acc bus-pulse" x1="280" y1="600" x2="1320" y2="600" stroke-width="3"/>
+            <text class="d-t" x="800" y="590" font-size="26" text-anchor="middle">Bus de control — «leer / escribir / sincronizar»</text>
+
+            <line class="d-line-acc" x1="330" y1="300" x2="330" y2="380" marker-end="url(#b1)" stroke-width="2.4"/>
+            <line class="d-line-acc" x1="1270" y1="300" x2="1270" y2="380" marker-end="url(#b1)" stroke-width="2.4"/>
+          </svg>
+        </div>
+      </section>
+
+<section data-label="25" data-screen-label="Ejemplo de lectura">
+        <div class="layer"><div class="wm" style="bottom:-80px; right:-20px; font-size:240px; color:rgba(240,238,235,0.022)">RD</div></div>
+        <div class="topbar"><span class="live">Ejemplo guiado</span><span class="meta">LECTURA EN MEMORIA</span></div>
+        <div class="split" style="margin-top: 26px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Cómo se lee un dato</h2>
+            <p class="body anim-up d2">Pasos mínimos cuando la CPU necesita el valor en la dirección 100.</p>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">bus — lectura de memoria</span></div>
+            <div class="term-body sm"><span id="tf23" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="tf23" hidden><span class="tc"># CPU quiere el valor en dirección 100</span>
+<span class="tp">1 </span> Dirección <span class="tn">100</span> → bus de dirección
+<span class="tp">2 </span> Señal <span class="ts">READ</span> → bus de control
+<span class="tp">3 </span> Memoria coloca el valor en bus de datos
+<span class="tp">4 </span> CPU guarda el valor en un registro
+<span class="tp">✓ </span> Dato listo para la ALU</div>
+        </div>
+      </section>
+
+<section data-label="26" data-screen-label="Sistema completo">
+        <div class="layer"></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Pensamiento sistémico</span></span><span class="meta">VISTA INTEGRADA</span></div>
+        <h2 class="ctitle anim-up" style="margin-top: 8px">Todo conectado</h2>
+        <div class="diagram anim-up d2" style="margin-top: 4px">
+          <svg viewBox="0 0 1600 740" role="img" aria-label="Sistema completo">
+            <defs>
+              <marker id="s1" markerWidth="11" markerHeight="11" refX="7.5" refY="4" orient="auto">
+                <path d="M0,0 L8,4 L0,8 Z" fill="#00e8d0" />
+              </marker>
+            </defs>
+            <rect class="d-box-accent" x="620" y="40" width="360" height="130" rx="8"/>
+            <text class="d-t" x="800" y="100" font-size="34" text-anchor="middle">CPU (RISC/CISC)</text>
+            <text class="d-t-dim" x="800" y="140" font-size="20" text-anchor="middle">procesa instrucciones</text>
+
+            <rect class="d-box" x="120" y="280" width="300" height="120" rx="8"/>
+            <text class="d-t" x="270" y="340" font-size="28" text-anchor="middle">RAM</text>
+            <text class="d-t-dim" x="270" y="375" font-size="20" text-anchor="middle">principal</text>
+
+            <rect class="d-box" x="1180" y="280" width="300" height="120" rx="8"/>
+            <text class="d-t" x="1330" y="340" font-size="28" text-anchor="middle">Disco / SSD</text>
+            <text class="d-t-dim" x="1330" y="375" font-size="20" text-anchor="middle">secundaria</text>
+
+            <rect x="480" y="250" width="640" height="180" rx="10" fill="rgba(0,232,208,0.05)" stroke="rgba(0,232,208,0.45)" stroke-width="1.6"/>
+            <text class="d-t-acc" x="800" y="300" font-size="22" text-anchor="middle">BUSES · datos · dirección · control</text>
+            <text class="d-t-dim" x="800" y="350" font-size="22" text-anchor="middle">carretera interna del sistema</text>
+            <text class="d-t-dim" x="800" y="390" font-size="20" text-anchor="middle">sin buses, las piezas no se hablan</text>
+
+            <rect class="d-box" x="200" y="540" width="280" height="120" rx="8"/>
+            <text class="d-t" x="340" y="600" font-size="26" text-anchor="middle">NIC + AP</text>
+            <text class="d-t-dim" x="340" y="635" font-size="20" text-anchor="middle">acceso a red</text>
+
+            <rect class="d-box" x="660" y="540" width="280" height="120" rx="8"/>
+            <text class="d-t" x="800" y="600" font-size="26" text-anchor="middle">Switch / Router</text>
+            <text class="d-t-dim" x="800" y="635" font-size="20" text-anchor="middle">camino de red</text>
+
+            <rect class="d-box" x="1120" y="540" width="280" height="120" rx="8"/>
+            <text class="d-t" x="1260" y="600" font-size="26" text-anchor="middle">Firewall</text>
+            <text class="d-t-dim" x="1260" y="635" font-size="20" text-anchor="middle">seguridad</text>
+
+            <line class="d-line-acc bus-pulse" x1="800" y1="170" x2="800" y2="250" marker-end="url(#s1)" stroke-width="2.4"/>
+            <line class="d-line-acc bus-pulse" x1="420" y1="340" x2="480" y2="340" marker-end="url(#s1)" stroke-width="2.4"/>
+            <line class="d-line-acc bus-pulse" x1="1120" y1="340" x2="1180" y2="340" marker-start="url(#s1)" stroke-width="2.4"/>
+            <line class="d-line-acc bus-pulse" x1="800" y1="430" x2="800" y2="535" marker-end="url(#s1)" stroke-width="2.4"/>
+            <line class="d-line-acc bus-pulse" x1="480" y1="600" x2="655" y2="600" marker-end="url(#s1)" stroke-width="2.2"/>
+            <line class="d-line-acc bus-pulse" x1="940" y1="600" x2="1115" y2="600" marker-end="url(#s1)" stroke-width="2.2"/>
+          </svg>
+        </div>
+      </section>
+
+<section data-label="27" data-screen-label="Demo — esquema">
+        <div class="layer">
+          <div class="geo" style="width: 560px; height: 560px; top: -120px; left: -120px; border-color: rgba(0,232,208,0.05)"></div>
+          <div class="wm serif" style="bottom:-60px; right:-20px; font-size:240px; color:rgba(0,232,208,0.04)">25′</div>
+        </div>
+        <div class="topbar"><span class="live">Ejercicio demostrativo</span><span class="meta">ESQUEMA · 25 MIN</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Elaboren un esquema del sistema</h2>
+            <p class="body anim-up d2">En grupo: dibujen cómo se comunican CPU, RAM, disco, NIC, switch/router, AP, firewall y los tres buses.</p>
+            <div class="anim-up d3" style="display: flex; gap: 16px; margin-top: 8px">
+              <span class="chip">Grupo</span><span class="chip">Papel o digital</span><span class="chip">25 min</span>
+            </div>
+          </div>
+          <div class="flist">
+            <div class="fitem anim-up d2"><span class="ftick">1</span><span>Colocar cada componente como <b>caja</b>.</span></div>
+            <div class="fitem anim-up d3"><span class="ftick">2</span><span>Flechas: qué <b>viaja</b> (datos, direcciones, control, paquetes de red).</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">3</span><span>Marcar un <b>cuello de botella</b> posible.</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">4</span><span>Escribir una frase: «Si falla X, entonces…».</span></div>
+          </div>
+        </div>
+      </section>
+
+<section data-label="28" data-screen-label="Cuestionario">
+        <div class="layer"><div class="wm serif" style="bottom:-70px; right:-30px; font-size:260px; color:rgba(0,232,208,0.04)">Q</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber hacer — Actividad obligatoria</span></span><span class="meta">CUESTIONARIO · 20 MIN</span></div>
+        <div class="cbody" style="max-width: 1600px; gap: var(--glg)">
+          <h2 class="ctitle anim-up">Cuestionario de la sesión</h2>
+          <p class="body anim-up d2" style="max-width: 70ch">Identifiquen componentes físicos y su función dentro de la arquitectura. Ponderación: <b style="color:var(--fg)">2 puntos</b>.</p>
+          <div class="cards3">
+            <div class="qcard anim-up d3"><div class="qcard-t">Temas</div><div class="qcard-b">RISC/CISC, memoria, comunicación, buses.</div></div>
+            <div class="qcard anim-up d4"><div class="qcard-t">Formato</div><div class="qcard-b">Individual. Enlace o hoja según indique el tutor.</div></div>
+            <div class="qcard anim-up d5"><div class="qcard-t">Consejo</div><div class="qcard-b">Piensen en <b>relaciones</b>, no solo definiciones sueltas.</div></div>
+          </div>
+        </div>
+      </section>
+
+<section data-label="29" data-screen-label="Cierre y Corto 1">
+        <div class="layer"><div class="wm serif" style="bottom:-70px; right:-30px; font-size:300px; color:rgba(0,232,208,0.04)">fin</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Cierre</span></span><span class="meta">15 MIN</span></div>
+        <div class="cbody" style="max-width: 1600px; gap: var(--glg)">
+          <h2 class="ctitle anim-up">Cierre — Corto 1 (hoy)</h2>
+          <div class="cards3">
+            <div class="qcard anim-up d2"><div class="qcard-t">Síntesis</div><div class="qcard-b">El hardware es un <b>sistema</b>: CPU, memoria, red y buses cooperan.</div></div>
+            <div class="qcard anim-up d3"><div class="qcard-t">Corto 1</div><div class="qcard-b"><b>Mismo día</b>, individual, sobre lo visto. Guardar celulares; dudas solo de redacción.</div></div>
+            <div class="qcard anim-up d4"><div class="qcard-t">Pendientes</div><div class="qcard-b">Práctica 1, entrega Tarea 1, confirmar horario de calificación.</div></div>
+          </div>
+          <div class="warn anim-up d5"><b>Próxima sesión:</b> software de sistema, aplicación y programación — cómo el software aprovecha este hardware.</div>
+        </div>
+      </section>
+
+    </deck-stage>
+
+    <script type="application/json" id="speaker-notes">
+    [
+      "[3 MIN · PORTADA]\n\nRECORDATORIO JORGE — Foto grupal al inicio si aún no la tomaron.\n\nBienvenida a Semana 03 de Introducción a los Flujos y Algoritmos, ECYS 768. Título: «Subsistemas que se hablan entre sí».\n\nObjetivo: entender RISC/CISC, memoria, hardware de red y buses desde cero, siempre como partes de un mismo sistema.\n\nCanal: foro UEDI y WhatsApp. Preguntas técnicas primero en foro.\n\nTransición: agenda.",
+      "[2 MIN · AGENDA]\n\nSesión de unos 100 minutos:\n\n01 — Recordatorios (5): Práctica 1, Tarea 1, horarios de calificación.\n02 — Pensamiento sistémico (5).\n03 — Procesamiento y memoria (25): RISC/CISC y memorias.\n04 — Comunicación y buses (25).\n05 — Demo de esquema + cuestionario (25).\n06 — Cierre con Corto 1 el mismo día (15).\n\nRegla: interrumpan si un término no queda claro. Hoy hay muchos nombres nuevos; los definimos todos.\n\nTransición: recordatorios.",
+      "[4 MIN · RECORDATORIOS]\n\nLea las tres tarjetas en voz alta.\n\nPRÁCTICA 1 — Deben revisar el enunciado en UEDI: objetivos, formato y rúbrica. Si no la abrieron, háganlo hoy. Dudas al final o en foro.\n\nTAREA 1 — Investigación y esquema de evolución/arquitectura. Entrega en UEDI, en equipo, con todos los nombres. Sin atraso injustificado (política del laboratorio).\n\nHORARIOS DE CALIFICACIÓN — La nota se asigna de forma presencial en la franja que registraron en el censo. Confirmen horario y lleguen con evidencia lista.\n\nLaboratorio: sábados, salón 214.\n\nTransición: checklist.",
+      "[2 MIN · CHECKLIST]\n\nCuatro puntos rápidos:\n1. Práctica 1 leída.\n2. Tarea 1 en marcha o entregada.\n3. Horario de calificación anotado; si no lo registraron, avisen hoy.\n4. Hoy hay Corto 1 al cierre — individual.\n\nPregunte: ¿alguien no tiene claro el enlace de UEDI o su horario? Anote nombres.\n\nTransición: pensamiento sistémico.",
+      "[3 MIN · PENSAMIENTO SISTÉMICO]\n\nDefinición: ver componentes como partes interdependientes de un sistema mayor.\n\nAnalogía: un hospital no es solo quirófano; si falla electricidad o camilleros, el quirófano no sirve. Igual con hardware.\n\nNo basta memorizar «qué es la RAM». Hay que preguntar: ¿con quién habla? ¿qué pasa si falla?\n\nHoy elaborarán un esquema de comunicación entre componentes.\n\nTransición: aplicación al tema.",
+      "[2 MIN · SISTEMA, NO PIEZAS]\n\nContraste: pieza aislada vs vista de sistema.\n\nEjemplo oral: «tengo mucha RAM pero el Wi-Fi falla» — el problema puede ser AP, router o firewall, no la CPU.\n\nMeta: mapa mental con cajas conectadas.\n\nTransición: mapa de la sesión desde cero.",
+      "[2 MIN · MAPA DESDE CERO]\n\nPuente con Semana 2: Von Neumann (CPU, memoria, E/S, bus).\n\nHoy ampliamos tres bloques sin asumir vocabulario previo:\n01 Procesar — RISC/CISC.\n02 Guardar — memoria principal y secundaria.\n03 Comunicar — red, seguridad y tres buses.\n\nTransición: qué es una instrucción.",
+      "[3 MIN · QUÉ ES UNA INSTRUCCIÓN]\n\nDesde cero: una instrucción es una orden mínima que la CPU entiende (sumar, copiar, saltar).\n\nUn programa = lista de instrucciones.\nCada una tiene opcode y a veces operandos.\nEl vocabulario completo se llama conjunto de instrucciones o ISA.\n\nPregunta: ¿su código Python es «instrucciones de CPU»? No directamente: el intérprete/compilador las traduce.\n\nTransición: RISC.",
+      "[4 MIN · RISC]\n\nRISC = Reduced Instruction Set Computer.\n\nPocas instrucciones, simples, casi del mismo tamaño.\nBuenas para pipelines: varias instrucciones en distintas fases a la vez.\nEjemplos: muchos chips ARM en celulares y Mac Apple Silicon.\n\nAnalogía: menú corto de un restaurante rápido — cada plato es simple, pero sirven muchos por minuto.\n\nTransición: CISC.",
+      "[4 MIN · CISC]\n\nCISC = Complex Instruction Set Computer.\n\nMuchas instrucciones; algunas hacen mucho trabajo en un solo opcode.\nHistóricamente ahorraba memoria de programa cuando la RAM era cara.\nEjemplo: x86 en PCs Intel/AMD de escritorio.\n\nAnalogía: menú de restaurante gourmet — un plato «completo» hace varias cosas a la vez.\n\nTransición: comparación.",
+      "[4 MIN · RISC VS CISC]\n\nRecorra la tabla. No diga que uno es «mejor»: depende del contexto.\n\nNota moderna: CPUs CISC a menudo descomponen instrucciones complejas en micro-operaciones tipo RISC por dentro.\n\nPregunta al grupo: ¿su celular probablemente es más RISC o CISC? (ARM → RISC).\n\nTransición: memoria — para qué sirve.",
+      "[3 MIN · MEMORIA PARA QUÉ]\n\nLa CPU necesita: (A) lugar de trabajo ahora y (B) lugar permanente al apagar.\n\nPrincipal = RAM. Secundaria = disco/SSD.\n\nError común: creer que «borrar archivos libera RAM». No: libera almacenamiento secundario.\n\nTransición: RAM.",
+      "[4 MIN · MEMORIA PRINCIPAL]\n\nRAM: almacén de trabajo. Volátil. Acceso por direcciones vía bus.\n\nAnalogía del escritorio vs archivero.\n\nSi abren muchas pestañas, la RAM se llena; el SO puede usar swap en disco (más lento).\n\nTransición: secundaria.",
+      "[3 MIN · MEMORIA SECUNDARIA]\n\nPersistente: HDD, SSD, USB.\nMás lenta, más capacidad.\nEl SO carga programas del disco a la RAM para ejecutarlos.\nSSD > HDD en velocidad.\n\nTransición: jerarquía.",
+      "[4 MIN · JERARQUÍA]\n\nDe arriba a abajo: registros, caché, RAM, disco.\nMás arriba = más rápida y más cara/pequeña.\nMás abajo = más lenta y más grande.\n\nMencione caché solo como «copia cercana»; no profundice en L1/L2 salvo que pregunten.\n\nTransición: comunicación.",
+      "[2 MIN · COMUNICACIÓN INTRO]\n\nHasta ahora CPU y memoria internas. Ahora: hablar con otras máquinas.\n\nTres capas: NIC, camino (switch/router/AP), filtro (firewall).\n\nTransición: NIC.",
+      "[3 MIN · NIC]\n\nNetwork Interface Card: convierte bits del PC en señales de red.\nDirección MAC.\nPuede ser integrada o USB.\nSin NIC/Wi-Fi no hay red.\n\nTransición: switch y router.",
+      "[4 MIN · SWITCH Y ROUTER]\n\nSwitch: misma LAN, reenvía por MAC. Repartidor interno.\nRouter: une redes distintas, usa IP. Puerta hacia afuera.\n\nAclare el modem/router casero: mezcla funciones; en clase las separamos.\n\nPregunta: ¿el laboratorio del 214 qué usa para conectar PCs entre sí? (switch / red local).\n\nTransición: AP.",
+      "[3 MIN · ACCESS POINT]\n\nAP = Wi-Fi para clientes. Conectado por cable a switch/router.\nSSID y clave.\nRouters domésticos suelen incluir AP.\n\nTransición: firewall.",
+      "[3 MIN · FIREWALL]\n\nFiltra tráfico por reglas. Software o hardware.\nMencione IDS/IPS solo de pasada.\nVínculo con pensamiento sistémico: seguridad afecta a todo el flujo.\n\nTransición: diagrama de red.",
+      "[4 MIN · DIAGRAMA DE RED]\n\nRecorra PC → Switch → Router → Firewall → Internet, y AP arriba del switch.\n\nLas líneas animadas son el flujo. Si un eslabón falla, el camino se corta.\n\nPida un voluntario que narre el camino de un mensaje de WhatsApp Web desde su laptop.\n\nTransición: qué es un bus.",
+      "[3 MIN · QUÉ ES UN BUS]\n\nBus = carretera compartida de señales entre CPU, memoria y periféricos.\nTres carriles: datos, direcciones, control.\nCuello de botella de Von Neumann si satura.\n\nTransición: los tres buses.",
+      "[4 MIN · TRES BUSES]\n\nDatos: el valor (bidireccional).\nDirección: la casilla (CPU → memoria).\nControl: leer/escribir/reloj/interrupciones.\n\nEjemplo verbal: «quiero el contenido de la casilla 100» usa los tres.\n\nTransición: diagrama animado.",
+      "[4 MIN · DIAGRAMA DE BUSES]\n\nMuestre CPU y RAM conectadas al bus del sistema. Señale las tres líneas animadas.\n\nPregunte: si solo existiera bus de datos sin dirección, ¿qué pasaría? (no sabríamos de dónde leer).\n\nTransición: ejemplo tipado de lectura.",
+      "[5 MIN · EJEMPLO DE LECTURA]\n\nSiga la terminal tipada paso a paso.\n1. Dirección 100 al bus de dirección.\n2. READ al bus de control.\n3. Valor al bus de datos.\n4. CPU lo guarda en registro.\n\nPida que digan qué bus interviene en cada línea.\n\nTransición: vista integrada.",
+      "[3 MIN · SISTEMA COMPLETO]\n\nDiagrama final: CPU, buses, RAM, disco, NIC/AP, switch/router, firewall.\n\nMensaje: nada funciona solo. Esta imagen es el modelo para el ejercicio.\n\nTransición: demo del esquema.",
+      "[20–25 MIN · DEMO ESQUEMA]\n\nInstrucciones en pantalla. Grupos de 3–5.\n\nCircula: verifica que haya flechas con significado (no solo cajas sueltas), un cuello de botella marcado y la frase «Si falla X…».\n\nA los 20 min avise cierre. Pida 1–2 grupos que muestren su esquema en 60 segundos.\n\nTransición: cuestionario.",
+      "[20 MIN · CUESTIONARIO]\n\nActividad obligatoria, ponderación 2. Individual.\n\nTemas: RISC/CISC, memoria, comunicación, buses.\n\nInsista: respondan pensando en relaciones, no solo definiciones.\n\nSi usan enlace en línea, proyecte el QR o URL. Si es hoja, reparta.\n\nTransición: cierre y Corto 1.",
+      "[15 MIN · CIERRE Y CORTO 1]\n\nSíntesis breve: hardware como sistema interconectado.\n\nCORTO 1 — mismo día, individual, sobre lo de hoy. Celulares guardados. Solo dudas de redacción.\n\nRecuerde pendientes: Práctica 1, Tarea 1, horarios de calificación.\n\nPróxima sesión: software (SO, aplicaciones, lenguajes) sobre este hardware.\n\nAgradezca y administre el corto."
+    ]
+    </script>
+
+    <!-- Progress bar -->
+    <div id="deck-progress"><div id="deck-progress-fill"></div></div>
+
+    <!-- Terminal typing engine (vendored) -->
+    <script src="vendor/typed.umd.js"></script>
+    <script>
+      (function () {
+        var stage = document.querySelector("deck-stage");
+        var fill = document.getElementById("deck-progress-fill");
+        if (!stage) return;
+
+        var sources = {};
+        document.querySelectorAll(".tsrc").forEach(function (el) {
+          sources[el.getAttribute("data-for")] = el.innerHTML;
+        });
+
+        var typedOnce = {};
+        var instances = {};
+
+        function runTerminal(target) {
+          var id = target.id;
+          var src = sources[id];
+          if (src == null) return;
+
+          if (typedOnce[id]) {
+            if (instances[id]) { instances[id].destroy(); instances[id] = null; }
+            target.innerHTML = src;
+            return;
+          }
+
+          if (instances[id]) { instances[id].destroy(); }
+          target.innerHTML = "";
+          instances[id] = new Typed("#" + id, {
+            strings: [src],
+            typeSpeed: 14,
+            startDelay: 260,
+            showCursor: true,
+            cursorChar: "▋",
+            contentType: "html",
+            onComplete: function () {
+              typedOnce[id] = true;
+            },
+          });
+        }
+
+        function activate(section) {
+          if (!section) return;
+          section.querySelectorAll("[data-typed-target]").forEach(runTerminal);
+        }
+
+        stage.addEventListener("slidechange", function (e) {
+          var d = e.detail;
+          if (fill && d.total) {
+            fill.style.width = (((d.index + 1) / d.total) * 100).toFixed(2) + "%";
+          }
+          activate(d.slide);
+        });
+      })();
+    </script>
+  </body>
+</html>

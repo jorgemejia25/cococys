@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "sync:guion:flujos": "node public/presentations/scripts/inject-guion.mjs",
+    "sync:guion:flujos:semana3": "node public/presentations/scripts/inject-guion.mjs --deck='Semana 3 - Flujos y Algoritmos.html' --json=semana3-flujos-guion.json",
     "sync:guion:prog2:semana3": "node public/presentations/scripts/inject-guion.mjs --deck='Semana 3 - Programacion 2.html' --json=semana3-programacion2-guion.json"
   },
   "dependencies": {
