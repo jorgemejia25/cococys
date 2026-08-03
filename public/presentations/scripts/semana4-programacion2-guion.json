@@ -1,0 +1,172 @@
+[
+  {
+    "n": 1,
+    "label": "Portada",
+    "guion": "[3 MIN · PORTADA]\n\nBuenos días. Semana 04 de Introducción a la Programación y Computación 2, ECYS 771. Tema central: procesamiento de datos XML — y un puente breve a JSON — con librerías nativas de C#.\n\nTítulo en pantalla: XML Y DATOS. Subtítulo: Lectura, escritura y serialización en C#.\n\nSesión de laboratorio, 80 minutos. Instructor: Jorge Mejía, Guatemala.\n\nObjetivo del bloque: que cada estudiante lea y escriba XML con XDocument, entienda bien formado, y vea serialización XML/JSON.\n\nTransición: agenda."
+  },
+  {
+    "n": 2,
+    "label": "Agenda",
+    "guion": "[2 MIN · AGENDA]\n\nSesión de 80 minutos:\n\n01 — Actitudinal: rigor y precisión (5 min).\n02 — Intro + sintaxis XML (20 min).\n03 — XDocument: lectura, escritura, consultas (20 min).\n04 — Serialización + JSON (10 min).\n05 — Demo CatalogoTicketsXml (15 min).\n06 — Actividad práctica (10 min).\n\nLos ejemplos están en durante-diapositivas 01 a 08 y el programa completo CatalogoTicketsXml.\n\nTransición: valor actitudinal."
+  },
+  {
+    "n": 3,
+    "label": "Rigor y precisión",
+    "guion": "[5 MIN · RIGOR Y PRECISIÓN]\n\nÁrea actitudinal — Saber ser.\n\nEn XML el rigor no es opcional: una etiqueta sin cerrar o un anidamiento cruzado invalida el documento entero.\n\nLea los tres puntos:\n1. Bien formado: apertura y cierre, anidamiento exacto.\n2. Precisión: nombres y atributos como se acordaron.\n3. Consecuencia: XmlException — la app no puede leer datos rotos.\n\nPregunta: ¿qué pasa si entregan un XML mal cerrado a un sistema de facturación?\n\nTransición: competencia de la sesión."
+  },
+  {
+    "n": 4,
+    "label": "Competencia",
+    "guion": "[2 MIN · COMPETENCIA]\n\nLea en voz alta la competencia:\n\n«Procesa información estructurada en formato XML y JSON mediante librerías nativas de C# (serialización, deserialización, lectura y escritura).»\n\nChips: XML · XDocument · JSON.\n\nEnfatice: nativas = System.Xml.Linq, System.Xml.Serialization, System.Text.Json — sin instalar paquetes extra para lo básico.\n\nTransición: ¿qué es XML?"
+  },
+  {
+    "n": 5,
+    "label": "¿Qué es XML?",
+    "guion": "[4 MIN · ¿QUÉ ES XML?]\n\neXtensible Markup Language.\n\nPuntos clave:\n- Describe datos, no presentación (no es HTML).\n- Estructura en árbol: raíz → hijos → hojas.\n- Extensible: usted elige los nombres de etiqueta según el dominio (tickets, productos, etc.).\n\nAnalogía previa: como un archivo de configuración o un contrato de datos entre sistemas.\n\nPregunta: ¿dónde han visto XML fuera de clase? (config, facturas electrónicas, feeds).\n\nTransición: video de introducción."
+  },
+  {
+    "n": 6,
+    "label": "Video · Intro XML",
+    "guion": "[3 MIN · VIDEO: INTRO XML]\n\nReproducir o proyectar el enlace: XML Tutorial for Beginners.\n\nURL: https://www.youtube.com/watch?v=3af0-bwWVvs\n\nPedir atención a: declaración, elementos y anidamiento. Pausar si el tiempo es corto y solo mostrar 2–3 minutos clave.\n\nTransición: analogía del árbol de carpetas."
+  },
+  {
+    "n": 7,
+    "label": "Analogía · Árbol",
+    "guion": "[3 MIN · ANALOGÍA · ÁRBOL / CARPETAS]\n\nMostrar el diagrama: Disco/raíz → Carpetas → Archivo.\n\nMensaje: XML es igual — un contenedor raíz, nodos hijos, y contenido en las hojas.\n\nSi mueven un archivo fuera de su carpeta sin cerrar bien la estructura, el «explorador» (el parser) falla.\n\nPregunta: ¿cuál sería la «carpeta raíz» de un catálogo de tickets?\n\nTransición: sintaxis XML."
+  },
+  {
+    "n": 8,
+    "label": "Sintaxis XML",
+    "guion": "[4 MIN · SINTAXIS XML]\n\nRecorra las seis tarjetas:\n1. Declaración <?xml ...?>.\n2. Raíz única.\n3. Elementos con apertura/cierre.\n4. Atributos en la etiqueta de apertura.\n5. Comentarios <!-- -->.\n6. Anidamiento estricto.\n\nEjemplo mental: libro con isbn, titulo, autor (carpeta 02-SintaxisXml).\n\nTransición: diagrama del árbol de tickets."
+  },
+  {
+    "n": 9,
+    "label": "Diagrama · Árbol XML",
+    "guion": "[3 MIN · DIAGRAMA · ÁRBOL XML]\n\nMostrar: tickets → ticket → titulo / estado.\n\nAtributos id y prioridad viven en <ticket>, no como hijos.\n\nDibuje en pizarra si ayuda: un ticket = un nodo con dos hojas de texto.\n\nPregunta: ¿dónde pondrían la prioridad — atributo o elemento? (ambas válidas; atributo suele usarse para metadatos cortos).\n\nTransición: elementos vs atributos."
+  },
+  {
+    "n": 10,
+    "label": "Elementos vs atributos",
+    "guion": "[3 MIN · ELEMENTOS VS ATRIBUTOS]\n\nComparación en qcards:\n- Elementos: contenido que puede crecer y anidarse (titulo, estado).\n- Atributos: metadatos cortos (id, prioridad).\n\nRegla práctica del curso: id/prioridad como atributos; titulo/estado como elementos — igual que en tickets.xml.\n\nTransición: bien formado."
+  },
+  {
+    "n": 11,
+    "label": "Bien formado",
+    "guion": "[4 MIN · BIEN FORMADO]\n\nReglas:\n1. Una sola raíz.\n2. Toda etiqueta se cierra.\n3. Anidamiento sin cruces.\n4. Atributos entre comillas.\n5. Mayúsculas/minúsculas importan.\n\nDemo mental o carpeta 03-BienFormado: Parse OK vs XmlException por falta de </titulo>.\n\nEnfatice el note: capture XmlException y muestre el mensaje — es feedback inmediato del rigor.\n\nTransición: ejemplo tickets.xml."
+  },
+  {
+    "n": 12,
+    "label": "Ejemplo · tickets.xml",
+    "guion": "[4 MIN · EJEMPLO · tickets.xml]\n\nDeje tipar el terminal (t12). Lea en voz alta la estructura.\n\nCarpeta: 01-DocumentoXml.\n\nSeñale: declaración, comentario, raíz tickets, ticket con atributos, hijos titulo/estado.\n\nSi hay tiempo: dotnet run en 01-DocumentoXml para ver el documento impreso.\n\nTransición: documentación LINQ to XML."
+  },
+  {
+    "n": 13,
+    "label": "Video · XML práctica",
+    "guion": "[3 MIN · VIDEO / DOCS · XML EN LA PRÁCTICA]\n\nAbrir Microsoft Learn — LINQ to XML:\nhttps://learn.microsoft.com/es-es/dotnet/standard/linq/linq-xml-overview\n\nMensaje: a partir de aquí trabajamos con System.Xml.Linq (XDocument / XElement), no con el modelo antiguo XmlDocument salvo que el enunciado lo pida.\n\nTransición: XDocument en C#."
+  },
+  {
+    "n": 14,
+    "label": "XDocument en C#",
+    "guion": "[3 MIN · XDocument EN C#]\n\nTres tipos:\n- XDocument = documento completo.\n- XElement = nodo.\n- XAttribute = atributo.\n\nusing System.Xml.Linq;\n\nPregunta: ¿qué tipo representa <tickets> en nuestro ejemplo? (XElement raíz dentro de XDocument).\n\nTransición: lectura con XDocument."
+  },
+  {
+    "n": 15,
+    "label": "Lectura con XDocument",
+    "guion": "[4 MIN · LECTURA CON XDocument]\n\nFlujo: Load → Root → Elements → Attribute/Element → Value.\n\nCarpeta 04-LeerXDocument.\n\nRecalque el operador ?. para evitar NullReference si falta un nodo.\n\nTransición: ejemplo de código de lectura."
+  },
+  {
+    "n": 16,
+    "label": "Ejemplo · Lectura",
+    "guion": "[4 MIN · EJEMPLO · LECTURA]\n\nTerminal tipado (t16): foreach sobre Elements(\"ticket\").\n\nLea el código línea a línea. Relacione con el XML de la diapositiva 12.\n\nSi el tiempo alcanza: ejecutar 04-LeerXDocument.\n\nTransición: escritura."
+  },
+  {
+    "n": 17,
+    "label": "Escritura con XDocument",
+    "guion": "[3 MIN · ESCRITURA CON XDocument]\n\nFlujo inverso: new XElement anidados → Save.\n\nXDeclaration opcional pero recomendada.\n\nCarpeta 05-EscribirXDocument: crea salida/catalogo.xml.\n\nTransición: ejemplo de escritura."
+  },
+  {
+    "n": 18,
+    "label": "Ejemplo · Escritura",
+    "guion": "[4 MIN · EJEMPLO · ESCRITURA]\n\nTerminal tipado (t18): construcción del árbol y Save.\n\nCompare con lectura: Load consume; Save produce.\n\nPregunta: ¿qué pasa si la carpeta salida no existe? (Directory.CreateDirectory en el ejemplo completo).\n\nTransición: consultar con LINQ."
+  },
+  {
+    "n": 19,
+    "label": "Consultar LINQ",
+    "guion": "[4 MIN · CONSULTAR CON LINQ TO XML]\n\nElements + Where: filtrar estado == \"Abierto\".\n\nCarpeta 06-ConsultarElementos.\n\nTerminal tipado (t19).\n\nMensaje: si ya saben LINQ sobre listas, esto es lo mismo sobre nodos XML.\n\nTransición: serialización (documentación)."
+  },
+  {
+    "n": 20,
+    "label": "Video · Serialización",
+    "guion": "[2 MIN · DOCS · SERIALIZACIÓN]\n\nAbrir Microsoft Learn — Serialización XML:\nhttps://learn.microsoft.com/es-es/dotnet/standard/serialization/xml-serialization\n\nPuente conceptual: a veces no quiere armar el árbol a mano — quiere mapear una clase.\n\nTransición: XmlSerializer."
+  },
+  {
+    "n": 21,
+    "label": "XmlSerializer",
+    "guion": "[4 MIN · XmlSerializer]\n\nSerialize = objeto → XML. Deserialize = XML → objeto.\n\nCarpeta 07-XmlSerializer.\n\nComparar con XDocument: control fino vs automatización.\n\nRequisitos: propiedades public + ctor sin parámetros.\n\nTransición: puente a JSON."
+  },
+  {
+    "n": 22,
+    "label": "Puente a JSON",
+    "guion": "[3 MIN · PUENTE A JSON]\n\nMisma idea, otro formato. System.Text.Json.\n\nXML = etiquetas; JSON = llaves y pares.\n\nEn APIs web predomina JSON; XML sigue en integraciones empresariales.\n\nTransición: ejemplo JSON."
+  },
+  {
+    "n": 23,
+    "label": "Ejemplo · JSON",
+    "guion": "[3 MIN · EJEMPLO · JSON]\n\nTerminal tipado (t23): Serialize + Deserialize<Ticket>.\n\nCarpeta 08-JsonBasico.\n\nWriteIndented = true para ver el JSON legible en consola.\n\nTransición: XML vs JSON."
+  },
+  {
+    "n": 24,
+    "label": "XML vs JSON",
+    "guion": "[3 MIN · XML VS JSON]\n\nCuatro pilares de comparación en pantalla.\n\nMensaje de cierre del bloque teórico: la competencia es procesar datos estructurados; el formato lo impone el contexto.\n\nTransición: demo en vivo."
+  },
+  {
+    "n": 25,
+    "label": "Demo en vivo",
+    "guion": "[2 MIN · DEMO EN VIVO — INTRO]\n\nLIVE. Proyecto: CatalogoTicketsXml en programa-completo.\n\nMenú: listar, agregar, guardar, cargar.\n\nEstudiantes abren la carpeta y siguen en su editor.\n\nTransición: paso 1 — leer."
+  },
+  {
+    "n": 26,
+    "label": "Demo · Leer XML",
+    "guion": "[6 MIN · DEMO · LEER XML]\n\ncd ejemplos-tecnicos/ipc2/Clase 4/programa-completo/CatalogoTicketsXml\ndotnet run\n\nMostrar Cargar(): XDocument.Load + Select a Ticket.\n\nListar tickets existentes en data/tickets.xml.\n\nTransición: paso 2 — escribir."
+  },
+  {
+    "n": 27,
+    "label": "Demo · Escribir",
+    "guion": "[7 MIN · DEMO · ESCRIBIR / AGREGAR]\n\nAgregar un ticket desde el menú. Guardar. Abrir el XML en el editor para ver el cambio.\n\nMostrar Guardar(): reconstrucción del XElement y Save.\n\nRound-trip: salir, volver a correr, listar — el ticket persiste.\n\nTransición: resumen del flujo."
+  },
+  {
+    "n": 28,
+    "label": "Resumen · Flujo",
+    "guion": "[2 MIN · RESUMEN · FLUJO]\n\nTimeline: Load → Root → Consultar → Modificar → Save.\n\nEs el ciclo que usarán en la actividad y en el proyecto del curso.\n\nTransición: estructura de proyecto."
+  },
+  {
+    "n": 29,
+    "label": "Estructura de proyecto",
+    "guion": "[2 MIN · ESTRUCTURA DE PROYECTO]\n\nMostrar ftree: CatalogoTicketsXml/, data/tickets.xml, Program.cs.\n\nTicket = modelo; RepositorioTicketsXml = persistencia.\n\nTransición: actividad práctica."
+  },
+  {
+    "n": 30,
+    "label": "Actividad práctica",
+    "guion": "[10–15 MIN · ACTIVIDAD PRÁCTICA]\n\nChecklist en pantalla. Individual.\n\n1. Load XML.\n2. Listar.\n3. Filtrar Abiertos.\n4. Save de un XML solo con abiertos.\n5. Mostrar al instructor.\n\nCircular por el salón. Aviso a los 5 minutos restantes.\n\nTransición: cierre."
+  },
+  {
+    "n": 31,
+    "label": "Cierre y tarea",
+    "guion": "[3 MIN · CIERRE Y TAREA]\n\nDudas, repaso, tarea: completar filtro + Save; revisar ejemplos 01–08.\n\nPuntos clave: árbol, rigor, Load/Save, serializar objeto ↔ texto.\n\nAgradezca. Transición opcional: tip de namespaces."
+  },
+  {
+    "n": 32,
+    "label": "Tip · Namespaces",
+    "guion": "[2 MIN · TIP · NAMESPACES]\n\nSystem.Xml.Linq → XDocument.\nSystem.Xml.Serialization → XmlSerializer.\nSystem.Text.Json → JsonSerializer.\n\nNo mezclar con XmlDocument clásico sin necesidad.\n\nTransición: repaso de APIs."
+  },
+  {
+    "n": 33,
+    "label": "Repaso · APIs clave",
+    "guion": "[2 MIN · REPASO · APIs CLAVE]\n\nCuatro qcards: Load, Save, Serialize, Json.\n\nPregunta rápida al azar: ¿qué método escribe el árbol a disco?\n\nTransición: recursos."
+  },
+  {
+    "n": 34,
+    "label": "Recursos",
+    "guion": "[2 MIN · RECURSOS]\n\nDejar visibles los tres enlaces y la ruta de ejemplos locales.\n\nInvitar a consultar Microsoft Learn antes de la próxima sesión.\n\nCierre formal de la Semana 04."
+  }
+]

@@ -1,0 +1,1796 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IPC2 — Semana 4 · Procesamiento de datos XML</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      deck-stage:not(:defined) {
+        visibility: hidden;
+      }
+    </style>
+    <script src="deck-stage.js"></script>
+
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #f0eeeb;
+        --fg-dim: rgba(240, 238, 235, 0.52);
+        --fg-muted: rgba(240, 238, 235, 0.22);
+        --fg-faint: rgba(240, 238, 235, 0.12);
+        --accent: #00e8d0;
+        --line: rgba(255, 255, 255, 0.09);
+        --grid: rgba(255, 255, 255, 0.022);
+        --wm: rgba(240, 238, 235, 0.035);
+
+        --sans: "Space Grotesk", "Helvetica Neue", sans-serif;
+        --serif: "Cormorant Garamond", ui-serif, Georgia, serif;
+        --mono: "JetBrains Mono", "Courier New", monospace;
+
+        /* type scale */
+        --th: 116px; /* hero */
+        --td: 88px; /* display */
+        --tt: 66px; /* title */
+        --tct: 58px; /* content title */
+        --ts: 46px; /* subtitle */
+        --tb: 34px; /* body */
+        --tsm: 26px; /* small */
+        --tmeta: 24px; /* meta */
+
+        /* spacing */
+        --px: 120px;
+        --pt: 90px;
+        --pb: 78px;
+        --gxl: 56px;
+        --glg: 40px;
+        --gmd: 28px;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: #000;
+      }
+
+      /* ─── Progress bar (portfolio-style) ──────────────────────── */
+      #deck-progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: rgba(255, 255, 255, 0.05);
+        z-index: 99999;
+      }
+      #deck-progress-fill {
+        height: 100%;
+        width: 2.94%;
+        background: var(--accent);
+        box-shadow: 0 0 14px rgba(0, 232, 208, 0.55);
+        transition: width 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      /* ─── All slides ─────────────────────────────────────────── */
+      deck-stage > section {
+        background: var(--bg);
+        color: var(--fg);
+        display: flex;
+        flex-direction: column;
+        padding: var(--pt) var(--px) var(--pb);
+        overflow: hidden;
+      }
+      /* elevate real content above the decoration layer */
+      deck-stage > section > *:not(.layer) {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* ─── Decoration layer: grid + watermark + geo ───────────── */
+      .layer {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+        pointer-events: none;
+        background-image:
+          linear-gradient(var(--grid) 1px, transparent 1px),
+          linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+        background-size: 88px 88px;
+        background-position: center center;
+      }
+
+      .geo {
+        position: absolute;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+      }
+
+      /* giant ghost watermark */
+      .wm {
+        position: absolute;
+        font-family: var(--sans);
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        color: var(--wm);
+        line-height: 0.78;
+        white-space: nowrap;
+        user-select: none;
+      }
+      .wm.serif {
+        font-family: var(--serif);
+        font-style: italic;
+        font-weight: 600;
+        letter-spacing: 0;
+      }
+
+      /* floating accent dot */
+      .fdot {
+        display: none;
+      }
+      .fdot.white {
+        display: none;
+      }
+
+      /* ─── Reusable type / layout ─────────────────────────────── */
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .meta {
+        font-family: var(--mono);
+        font-size: var(--tmeta);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--fg-muted);
+        white-space: nowrap;
+      }
+      .meta.faint {
+        color: var(--fg-faint);
+      }
+
+      .stag {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-family: var(--mono);
+        font-size: var(--tmeta);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--fg-muted);
+      }
+      .stag .tl {
+        display: inline-block;
+        width: 32px;
+        height: 1px;
+        background: currentColor;
+        flex-shrink: 0;
+      }
+      .stag.ac {
+        color: var(--accent);
+      }
+
+      .cbody {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: var(--glg);
+        max-width: 1180px;
+      }
+      .ctitle {
+        font-family: var(--sans);
+        font-weight: 700;
+        font-size: var(--tct);
+        line-height: 1.08;
+        letter-spacing: -0.025em;
+        color: var(--fg);
+      }
+      .body {
+        font-family: var(--sans);
+        font-size: var(--tb);
+        line-height: 1.6;
+        color: var(--fg-dim);
+      }
+      .note {
+        font-family: var(--mono);
+        font-size: var(--tmeta);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--fg-muted);
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+      }
+      .chip {
+        display: inline-block;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        padding: 11px 26px;
+        font-family: var(--mono);
+        font-size: 24px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--fg-dim);
+        transition:
+          border-color 0.3s,
+          color 0.3s;
+      }
+
+      .hr {
+        width: 100%;
+        height: 1px;
+        background: var(--line);
+        flex-shrink: 0;
+      }
+
+      /* stat box */
+      .sbox {
+        border: 1px solid var(--line);
+        padding: 30px 38px;
+        min-width: 200px;
+        flex: 1;
+      }
+      .sbox-n {
+        font-family: var(--sans);
+        font-size: 76px;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        color: var(--fg);
+        line-height: 1;
+      }
+      .sbox-l {
+        font-family: var(--mono);
+        font-size: 24px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--fg-muted);
+        margin-top: 12px;
+      }
+
+      /* ─── Animations ─────────────────────────────────────────── */
+      @media (prefers-reduced-motion: no-preference) {
+        [data-deck-active] .anim-up {
+          animation: slideUp 0.62s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        [data-deck-active] .anim-up.d2 {
+          animation-delay: 0.09s;
+        }
+        [data-deck-active] .anim-up.d3 {
+          animation-delay: 0.18s;
+        }
+        [data-deck-active] .anim-up.d4 {
+          animation-delay: 0.27s;
+        }
+        [data-deck-active] .anim-up.d5 {
+          animation-delay: 0.36s;
+        }
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(26px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        [data-deck-active] .layer {
+          animation: gridIn 1.1s ease both;
+        }
+        @keyframes gridIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        [data-deck-active] .wm {
+          animation: wmIn 1.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        @keyframes wmIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        [data-deck-active] .grow {
+          animation: grow 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+          transform-origin: left center;
+        }
+        @keyframes grow {
+          from {
+            transform: scaleX(0);
+            opacity: 0;
+          }
+          to {
+            transform: scaleX(1);
+            opacity: 1;
+          }
+        }
+      }
+
+      /* ═══ Terminal / code window ══════════════════════════════ */
+      .term {
+        width: 100%;
+        border: 1px solid var(--line);
+        background: #0d0d0d;
+        box-shadow: 0 40px 90px -50px rgba(0, 0, 0, 0.9);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .term-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 18px 26px;
+        background: #111;
+        border-bottom: 1px solid var(--line);
+      }
+      .term-dot {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .term-dot.r { background: #ff5f56; }
+      .term-dot.y { background: #ffbd2e; }
+      .term-dot.g { background: #27c93f; }
+      .term-name {
+        margin-left: 14px;
+        font-family: var(--mono);
+        font-size: 22px;
+        letter-spacing: 0.04em;
+        color: var(--fg-muted);
+      }
+      .term-body {
+        padding: 34px 40px;
+        font-family: var(--mono);
+        font-size: 28px;
+        line-height: 1.62;
+        color: var(--fg);
+        min-height: 120px;
+        white-space: pre;
+        overflow: hidden;
+      }
+      .term-body.sm { font-size: 24px; line-height: 1.6; }
+      /* typed.js output + cursor */
+      .term-body .typed-cursor {
+        color: var(--accent);
+        opacity: 1;
+        font-weight: 400;
+      }
+      /* syntax accents inside typed strings */
+      .tk { color: #c792ea; }   /* keyword */
+      .ts { color: var(--accent); } /* string */
+      .tn { color: #ffcb6b; }   /* number */
+      .tc { color: var(--fg-muted); font-style: italic; } /* comment */
+      .tf { color: #82aaff; }   /* function */
+      .tp { color: var(--accent); } /* prompt $ */
+
+      /* two-column code layout */
+      .split {
+        display: grid;
+        grid-template-columns: 1fr 1.05fr;
+        gap: var(--gxl);
+        align-items: center;
+        flex: 1;
+      }
+
+      /* live badge */
+      .live {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-family: var(--mono);
+        font-size: 22px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--accent);
+        border: 1px solid rgba(0, 232, 208, 0.35);
+        padding: 9px 22px;
+      }
+      .live::before {
+        content: "";
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 0 0 rgba(0, 232, 208, 0.5);
+        animation: livePulse 1.8s infinite;
+      }
+      @keyframes livePulse {
+        0% { box-shadow: 0 0 0 0 rgba(0, 232, 208, 0.5); }
+        70% { box-shadow: 0 0 0 14px rgba(0, 232, 208, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(0, 232, 208, 0); }
+      }
+
+      /* numbered step list */
+      .steps { display: flex; flex-direction: column; gap: 22px; }
+      .stepr {
+        display: flex;
+        align-items: flex-start;
+        gap: 22px;
+        font-family: var(--sans);
+        font-size: var(--tb);
+        line-height: 1.4;
+        color: var(--fg-dim);
+      }
+      .stepn {
+        flex-shrink: 0;
+        width: 44px;
+        height: 44px;
+        border: 1px solid rgba(0, 232, 208, 0.4);
+        color: var(--accent);
+        font-family: var(--mono);
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* feature / bullet list with tick */
+      .flist { display: flex; flex-direction: column; gap: 24px; }
+      .fitem {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+        font-family: var(--sans);
+        font-size: var(--tb);
+        line-height: 1.4;
+        color: var(--fg-dim);
+      }
+      .fitem b { color: var(--fg); font-weight: 600; }
+      .ftick {
+        flex-shrink: 0;
+        color: var(--accent);
+        font-family: var(--mono);
+        font-size: 30px;
+        line-height: 1.2;
+      }
+
+      /* card grid */
+      .cards3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--gmd);
+      }
+      .qcard { border: 1px solid var(--line); padding: 34px 36px; }
+      .qcard-t {
+        font-family: var(--mono);
+        font-size: 26px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 18px;
+      }
+      .qcard-b {
+        font-family: var(--sans);
+        font-size: 27px;
+        line-height: 1.5;
+        color: var(--fg-dim);
+      }
+      .qcard-b b { color: var(--fg); font-weight: 600; }
+      .qcard-l {
+        display: inline-block;
+        margin-top: 16px;
+        font-family: var(--mono);
+        font-size: 22px;
+        letter-spacing: 0.02em;
+        color: var(--accent);
+        border-bottom: 1px solid rgba(0, 232, 208, 0.4);
+        text-decoration: none;
+      }
+
+      /* agenda rows */
+      .arow {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        padding: 26px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .arow-n {
+        font-family: var(--mono);
+        font-size: 30px;
+        color: var(--accent);
+        width: 60px;
+        flex-shrink: 0;
+      }
+      .arow-t {
+        font-family: var(--sans);
+        font-size: 34px;
+        font-weight: 600;
+        color: var(--fg);
+        flex: 1;
+      }
+      .arow-d {
+        font-family: var(--sans);
+        font-size: 26px;
+        color: var(--fg-dim);
+        flex: 2;
+      }
+      .arow-time {
+        font-family: var(--mono);
+        font-size: 26px;
+        color: var(--fg-muted);
+        letter-spacing: 0.08em;
+      }
+
+      /* ═══ Video cards ═════════════════════════════════════════ */
+      .video-card {
+        display: flex;
+        align-items: center;
+        gap: 36px;
+        border: 1px solid var(--line);
+        padding: 38px 44px;
+        text-decoration: none;
+        color: inherit;
+        transition: border-color 0.3s;
+        max-width: 1200px;
+      }
+      .video-card:hover { border-color: rgba(0, 232, 208, 0.45); }
+      .video-play {
+        flex-shrink: 0;
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        background: rgba(0, 232, 208, 0.1);
+        border: 2px solid rgba(0, 232, 208, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .video-play::after {
+        content: "";
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 15px 0 15px 26px;
+        border-color: transparent transparent transparent var(--accent);
+        margin-left: 7px;
+      }
+      .video-title {
+        font-family: var(--sans);
+        font-size: 32px;
+        font-weight: 600;
+        color: var(--fg);
+        margin-bottom: 10px;
+        line-height: 1.25;
+      }
+      .video-desc {
+        font-family: var(--sans);
+        font-size: 26px;
+        color: var(--fg-dim);
+        line-height: 1.5;
+      }
+      .video-url {
+        font-family: var(--mono);
+        font-size: 22px;
+        color: var(--accent);
+        margin-top: 14px;
+        letter-spacing: 0.02em;
+      }
+
+      /* ═══ Image slides ════════════════════════════════════════ */
+      .img-slide {
+        display: grid;
+        grid-template-columns: 1fr 1.05fr;
+        gap: var(--gxl);
+        align-items: center;
+        flex: 1;
+        margin-top: 20px;
+      }
+      .img-wrap img {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+        border: 1px solid var(--line);
+        display: block;
+      }
+      .img-cap {
+        font-family: var(--mono);
+        font-size: 22px;
+        color: var(--fg-muted);
+        margin-top: 12px;
+        letter-spacing: 0.04em;
+      }
+
+      /* ═══ CSS diagrams ════════════════════════════════════════ */
+      .diagram {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        padding: 20px 0;
+      }
+      .diagram-node {
+        border: 1px solid rgba(0, 232, 208, 0.5);
+        background: rgba(0, 232, 208, 0.06);
+        padding: 22px 52px;
+        font-family: var(--sans);
+        font-size: 30px;
+        font-weight: 600;
+        color: var(--fg);
+        text-align: center;
+        min-width: 220px;
+      }
+      .diagram-node.base {
+        border-color: rgba(0, 232, 208, 0.7);
+        box-shadow: 0 0 30px rgba(0, 232, 208, 0.08);
+      }
+      .diagram-node.child {
+        border-color: var(--line);
+        background: #0d0d0d;
+        font-size: 26px;
+        font-weight: 500;
+        min-width: 180px;
+        padding: 18px 36px;
+      }
+      .diagram-vline {
+        width: 2px;
+        height: 44px;
+        background: rgba(255, 255, 255, 0.28);
+      }
+      .diagram-hline-wrap {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        max-width: 520px;
+      }
+      .diagram-hline-wrap::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 25%;
+        right: 25%;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.28);
+      }
+      .diagram-row {
+        display: flex;
+        gap: 100px;
+        justify-content: center;
+      }
+      .diagram-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .diagram-col .diagram-vline { height: 36px; }
+
+      /* Git flow branch diagram */
+      .git-flow {
+        position: relative;
+        width: 100%;
+        max-width: 1400px;
+        height: 380px;
+        margin-top: 20px;
+      }
+      .git-branch-line {
+        position: absolute;
+        height: 3px;
+        border-radius: 2px;
+      }
+      .git-branch-line.main {
+        top: 80px;
+        left: 60px;
+        right: 60px;
+        background: rgba(255, 255, 255, 0.35);
+      }
+      .git-branch-line.develop {
+        top: 180px;
+        left: 120px;
+        right: 200px;
+        background: rgba(0, 232, 208, 0.45);
+      }
+      .git-branch-line.feature {
+        top: 280px;
+        left: 280px;
+        width: 340px;
+        background: rgba(255, 189, 46, 0.55);
+        transform: rotate(-8deg);
+        transform-origin: left center;
+      }
+      .git-commit {
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 2px solid var(--bg);
+        transform: translate(-50%, -50%);
+      }
+      .git-commit.main-c { background: #f0eeeb; top: 80px; }
+      .git-commit.dev-c { background: var(--accent); top: 180px; }
+      .git-commit.feat-c { background: #ffbd2e; top: 280px; }
+      .git-label {
+        position: absolute;
+        font-family: var(--mono);
+        font-size: 22px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--fg-muted);
+      }
+      .git-label.main-l { top: 42px; left: 60px; color: var(--fg); }
+      .git-label.dev-l { top: 142px; left: 120px; color: var(--accent); }
+      .git-label.feat-l { top: 242px; left: 280px; color: #ffbd2e; }
+      .git-merge-arrow {
+        position: absolute;
+        top: 230px;
+        right: 280px;
+        width: 2px;
+        height: 60px;
+        background: rgba(0, 232, 208, 0.5);
+      }
+      .git-merge-arrow::after {
+        content: "";
+        position: absolute;
+        bottom: -6px;
+        left: -5px;
+        border: 6px solid transparent;
+        border-top-color: rgba(0, 232, 208, 0.7);
+      }
+
+      /* ═══ Timeline ════════════════════════════════════════════ */
+      .timeline {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        position: relative;
+        padding: 50px 20px 10px;
+        margin-top: 20px;
+      }
+      .timeline::before {
+        content: "";
+        position: absolute;
+        top: 58px;
+        left: 50px;
+        right: 50px;
+        height: 2px;
+        background: var(--line);
+      }
+      .tl-step {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 0 6px;
+        position: relative;
+        z-index: 1;
+      }
+      .tl-dot {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--accent);
+        border: 3px solid var(--bg);
+        margin-bottom: 18px;
+        box-shadow: 0 0 12px rgba(0, 232, 208, 0.4);
+      }
+      .tl-label {
+        font-family: var(--mono);
+        font-size: 22px;
+        color: var(--accent);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+      .tl-desc {
+        font-family: var(--sans);
+        font-size: 23px;
+        color: var(--fg-dim);
+        line-height: 1.35;
+      }
+
+      /* ═══ Pillars grid ════════════════════════════════════════ */
+      .pillars {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--gmd);
+        margin-top: 10px;
+      }
+      .pillar {
+        border: 1px solid var(--line);
+        padding: 36px 34px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .pillar-ico {
+        font-family: var(--mono);
+        font-size: 42px;
+        color: var(--accent);
+        line-height: 1;
+      }
+      .pillar-n {
+        font-family: var(--sans);
+        font-size: 32px;
+        font-weight: 600;
+        color: var(--fg);
+      }
+      .pillar-d {
+        font-family: var(--sans);
+        font-size: 25px;
+        color: var(--fg-dim);
+        line-height: 1.45;
+      }
+
+      /* ═══ Folder tree ═════════════════════════════════════════ */
+      .ftree {
+        font-family: var(--mono);
+        font-size: 26px;
+        line-height: 1.85;
+        color: var(--fg-dim);
+        border: 1px solid var(--line);
+        padding: 38px 46px;
+        background: #0d0d0d;
+      }
+      .ftree .fd { color: var(--accent); }
+      .ftree .fl { color: var(--fg); }
+      .ftree .fi { color: var(--fg-muted); font-size: 22px; }
+
+      /* merge step visual */
+      .merge-visual {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--gxl);
+        align-items: stretch;
+        flex: 1;
+        margin-top: 20px;
+      }
+      .branch-mini {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 28px;
+        border: 1px solid var(--line);
+        background: #0d0d0d;
+      }
+      .branch-mini-t {
+        font-family: var(--mono);
+        font-size: 24px;
+        color: var(--accent);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .branch-dots {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px 0;
+      }
+      .bdot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--fg-muted);
+      }
+      .bdot.ac { background: var(--accent); box-shadow: 0 0 10px rgba(0,232,208,0.5); }
+      .bline { flex: 1; height: 2px; background: var(--line); min-width: 30px; }
+    </style>
+  </head>
+    <deck-stage width="1920" height="1080">
+      <!-- ═══ 01 · PORTADA ═══ -->
+      <section data-label="01" data-screen-label="Portada">
+        <div class="layer">
+          <div class="geo" style="width: 520px; height: 620px; top: 70px; left: 560px"></div>
+          <div class="geo" style="width: 320px; height: 420px; top: 150px; left: 820px; border-color: rgba(0,232,208,0.05)"></div>
+          <div class="wm" style="bottom: -100px; right: -30px; font-size: 320px; color: rgba(240,238,235,0.028)">XML</div>
+        </div>
+        <div class="topbar">
+          <div style="display: flex; align-items: center; gap: 14px">
+            <span style="width: 9px; height: 9px; border-radius: 50%; background: var(--accent); display: inline-block"></span>
+            <span class="meta" style="letter-spacing: 0.12em">ECYS · 771 — IPC2</span>
+          </div>
+          <span class="meta">2S · 2026</span>
+        </div>
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 6px">
+          <div class="stag ac anim-up" style="margin-bottom: 34px">
+            <span class="tl grow"></span>
+            <span>Semana 04 — Sesión de laboratorio</span>
+          </div>
+          <h1 class="anim-up d2" style="font-family: var(--sans); font-size: var(--th); font-weight: 700; line-height: 0.9; letter-spacing: -0.03em; color: var(--fg)">
+            XML Y DATOS
+          </h1>
+          <h1 class="anim-up d3" style="font-family: var(--serif); font-size: var(--th); font-weight: 400; font-style: italic; line-height: 1; letter-spacing: -0.01em; color: rgba(240,238,235,0.62)">
+            Lectura, escritura y serialización en C#.
+          </h1>
+          <div class="anim-up d4" style="display: flex; gap: 18px; margin-top: 44px">
+            <span class="chip">80 min</span>
+          </div>
+        </div>
+        <div class="hr" style="margin-bottom: 28px"></div>
+        <div class="topbar">
+          <span class="meta">Jorge Mejía</span>
+          <span class="meta faint">Guatemala, GT</span>
+        </div>
+      </section>
+
+      <!-- ═══ 02 · AGENDA ═══ -->
+      <section data-label="02" data-screen-label="Agenda">
+        <div class="layer">
+          <div class="wm serif" style="bottom: -70px; right: -30px; font-size: 300px; color: rgba(0,232,208,0.04)">04</div>
+        </div>
+        <div class="topbar">
+          <span class="stag ac"><span class="tl"></span><span>Ruta de la sesión</span></span>
+          <span class="meta">80 MIN</span>
+        </div>
+        <div class="cbody" style="max-width: 1500px">
+          <h2 class="ctitle anim-up">Lo que haremos hoy</h2>
+          <div style="display: flex; flex-direction: column">
+            <div class="arow anim-up d2"><span class="arow-n">01</span><span class="arow-t">Actitudinal</span><span class="arow-d">Rigor y precisión en datos bien formados</span><span class="arow-time">5 min</span></div>
+            <div class="arow anim-up d3"><span class="arow-n">02</span><span class="arow-t">Intro + sintaxis XML</span><span class="arow-d">Qué es XML, árbol, elementos, atributos y bien formado</span><span class="arow-time">20 min</span></div>
+            <div class="arow anim-up d4"><span class="arow-n">03</span><span class="arow-t">XDocument</span><span class="arow-d">Lectura, escritura y consultas LINQ to XML</span><span class="arow-time">20 min</span></div>
+            <div class="arow anim-up d5"><span class="arow-n">04</span><span class="arow-t">Serialización + JSON</span><span class="arow-d">XmlSerializer y System.Text.Json</span><span class="arow-time">10 min</span></div>
+            <div class="arow anim-up d5"><span class="arow-n">05</span><span class="arow-t">Demo</span><span class="arow-d">CatalogoTicketsXml en vivo</span><span class="arow-time">15 min</span></div>
+            <div class="arow anim-up d5"><span class="arow-n">06</span><span class="arow-t">Actividad</span><span class="arow-d">Práctica individual de lectura y escritura XML</span><span class="arow-time">10 min</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 03 · RIGOR Y PRECISIÓN ═══ -->
+      <section data-label="03" data-screen-label="Rigor y precisión">
+        <div class="layer">
+          <div class="geo" style="width: 620px; height: 620px; top: -150px; right: -130px; border-color: rgba(0,232,208,0.05)"></div>
+          <div class="wm serif" style="bottom: -60px; left: -30px; font-size: 260px; color: rgba(0,232,208,0.04)">Ser</div>
+        </div>
+        <div class="topbar">
+          <span class="stag ac"><span class="tl"></span><span>Área actitudinal — Saber ser</span></span>
+          <span class="meta">5 MIN</span>
+        </div>
+        <div class="split" style="margin-top: 40px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Rigor y precisión</h2>
+            <p class="body anim-up d2">En XML no hay margen para la improvisación: una etiqueta sin cerrar, un anidamiento incorrecto o un carácter mal escapado rompe el documento completo. El rigor es profesionalismo aplicado a los datos.</p>
+          </div>
+          <div class="flist">
+            <div class="fitem anim-up d3"><span class="ftick">▹</span><span><b>Bien formado.</b> Cada etiqueta de apertura tiene su cierre; el anidamiento es exacto.</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">▹</span><span><b>Precisión.</b> Nombres, atributos y valores se escriben como se acordó — sin variantes improvisadas.</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">▹</span><span><b>Consecuencia.</b> Un XML inválido no se lee: la aplicación lanza <b>XmlException</b>.</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 04 · COMPETENCIA ═══ -->
+      <section data-label="04" data-screen-label="Competencia">
+        <div class="layer">
+          <div class="wm" style="bottom: -90px; right: -20px; font-size: 280px; color: rgba(240,238,235,0.025)">comp</div>
+        </div>
+        <div class="topbar">
+          <span class="stag ac"><span class="tl"></span><span>Saber — Competencia de la sesión</span></span>
+          <span class="meta">SEMANA 04</span>
+        </div>
+        <div class="cbody" style="max-width: 1600px; gap: var(--glg); margin-top: 40px">
+          <h2 class="ctitle anim-up">Competencia de la sesión</h2>
+          <p class="body anim-up d2" style="font-size: 36px; line-height: 1.45; max-width: 1500px">Procesa información estructurada en formato <b style="color:var(--fg)">XML</b> y <b style="color:var(--fg)">JSON</b> mediante librerías nativas de C# (serialización, deserialización, lectura y escritura).</p>
+          <div class="anim-up d3 chips" style="display: flex; gap: 16px; margin-top: 12px">
+            <span class="chip">XML</span>
+            <span class="chip">XDocument</span>
+            <span class="chip">JSON</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 05 · QUÉ ES XML ═══ -->
+      <section data-label="05" data-screen-label="¿Qué es XML?">
+        <div class="layer">
+          <div class="wm" style="bottom: -90px; right: -20px; font-size: 300px; color: rgba(240,238,235,0.025)">XML</div>
+        </div>
+        <div class="topbar">
+          <span class="stag ac"><span class="tl"></span><span>Saber — Fundamentos</span></span>
+          <span class="meta">INTRO</span>
+        </div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">¿Qué es XML?</h2>
+            <p class="body anim-up d2"><b style="color:var(--fg)">eXtensible Markup Language</b>: lenguaje de marcado extensible. Describe <b style="color:var(--fg)">datos</b>, no presentación. La estructura es un <b style="color:var(--fg)">árbol</b> de elementos anidados.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">▹</span><span><b>Marcado</b> — etiquetas que delimitan el significado de cada dato.</span></div>
+              <div class="fitem anim-up d4"><span class="ftick">▹</span><span><b>Extensible</b> — usted define los nombres de las etiquetas según el dominio.</span></div>
+              <div class="fitem anim-up d5"><span class="ftick">▹</span><span><b>Árbol</b> — un elemento raíz; hijos y nietos forman la jerarquía.</span></div>
+            </div>
+          </div>
+          <div class="cards3 anim-up d3" style="grid-template-columns: 1fr; gap: var(--gmd)">
+            <div class="qcard"><div class="qcard-t">No es HTML</div><div class="qcard-b">HTML presenta páginas. XML transporta y organiza <b>información</b> intercambiable.</div></div>
+            <div class="qcard"><div class="qcard-t">Legible por humanos y máquinas</div><div class="qcard-b">Texto plano con estructura explícita: fácil de inspeccionar y de parsear en C#.</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 06 · VIDEO INTRO XML ═══ -->
+      <section data-label="06" data-screen-label="Video · Intro XML">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">▶</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Video recomendado</span></span><span class="meta">XML</span></div>
+        <div class="cbody" style="gap: var(--glg)">
+          <h2 class="ctitle anim-up">Video: introducción a XML</h2>
+          <p class="body anim-up d2">Introducción clara al marcado y a la estructura de un documento XML antes de pasar al código en C#.</p>
+          <a class="video-card anim-up d3" href="https://www.youtube.com/watch?v=3af0-bwWVvs" target="_blank" rel="noopener">
+            <div class="video-play"></div>
+            <div>
+              <div class="video-title">XML Tutorial for Beginners</div>
+              <div class="video-desc">Introducción clara al marcado y a la estructura: declaración, elementos y anidamiento.</div>
+              <div class="video-url">youtube.com/watch?v=3af0-bwWVvs</div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- ═══ 07 · ANALOGÍA ÁRBOL ═══ -->
+      <section data-label="07" data-screen-label="Analogía · Árbol">
+        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:280px; color:rgba(240,238,235,0.022)">tree</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Analogía visual</span></span><span class="meta">ÁRBOL / CARPETAS</span></div>
+        <div class="cbody" style="gap: var(--gmd)">
+          <h2 class="ctitle anim-up">Analogía: árbol de carpetas</h2>
+          <p class="body anim-up d2">Un documento XML se comporta como un sistema de carpetas: una carpeta raíz contiene subcarpetas y archivos. Cada etiqueta es un nodo del árbol.</p>
+          <div class="diagram anim-up d3">
+            <div class="diagram-node base">Disco / raíz</div>
+            <div class="diagram-vline"></div>
+            <div class="diagram-hline-wrap">
+              <div class="diagram-row">
+                <div class="diagram-col">
+                  <div class="diagram-vline"></div>
+                  <div class="diagram-node child">Carpeta A</div>
+                </div>
+                <div class="diagram-col">
+                  <div class="diagram-vline"></div>
+                  <div class="diagram-node child">Carpeta B</div>
+                </div>
+                <div class="diagram-col">
+                  <div class="diagram-vline"></div>
+                  <div class="diagram-node child">Archivo</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="note anim-up d4" style="margin-top: 20px">En XML: elemento raíz → elementos hijos → texto o atributos en las hojas.</p>
+        </div>
+      </section>
+
+      <!-- ═══ 08 · SINTAXIS XML ═══ -->
+      <section data-label="08" data-screen-label="Sintaxis XML">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">syn</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — Sintaxis</span></span><span class="meta">XML</span></div>
+        <div class="cbody" style="max-width: 1600px; gap: var(--gmd); margin-top: 20px">
+          <h2 class="ctitle anim-up">Sintaxis XML</h2>
+          <p class="body anim-up d2">Cinco piezas que aparecen en casi todo documento bien formado.</p>
+          <div class="cards3 anim-up d3" style="grid-template-columns: repeat(3, 1fr); gap: var(--gmd)">
+            <div class="qcard"><div class="qcard-t">Declaración</div><div class="qcard-b"><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;</code> — opcional pero recomendada.</div></div>
+            <div class="qcard"><div class="qcard-t">Raíz única</div><div class="qcard-b">Un solo elemento raíz envuelve todo el documento.</div></div>
+            <div class="qcard"><div class="qcard-t">Elementos</div><div class="qcard-b">Pares <code>&lt;etiqueta&gt;...&lt;/etiqueta&gt;</code> o vacíos <code>&lt;br/&gt;</code>.</div></div>
+            <div class="qcard"><div class="qcard-t">Atributos</div><div class="qcard-b">Metadatos en la etiqueta de apertura: <code>id="1"</code>.</div></div>
+            <div class="qcard"><div class="qcard-t">Comentarios</div><div class="qcard-b"><code>&lt;!-- texto --&gt;</code> — no forman parte de los datos.</div></div>
+            <div class="qcard"><div class="qcard-t">Anidamiento</div><div class="qcard-b">Los hijos cierran antes que el padre. Orden estricto.</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 09 · DIAGRAMA ÁRBOL XML ═══ -->
+      <section data-label="09" data-screen-label="Diagrama · Árbol XML">
+        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:260px; color:rgba(240,238,235,0.022)">xml</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Diagrama visual</span></span><span class="meta">ÁRBOL</span></div>
+        <div class="cbody" style="gap: var(--gmd)">
+          <h2 class="ctitle anim-up">Diagrama: árbol XML de tickets</h2>
+          <p class="body anim-up d2">Raíz <b style="color:var(--fg)">tickets</b>, hijo <b style="color:var(--fg)">ticket</b>, y hojas con el contenido: título y estado.</p>
+          <div class="diagram anim-up d3">
+            <div class="diagram-node base">&lt;tickets&gt;</div>
+            <div class="diagram-vline"></div>
+            <div class="diagram-hline-wrap">
+              <div class="diagram-row">
+                <div class="diagram-col">
+                  <div class="diagram-vline"></div>
+                  <div class="diagram-node child">&lt;ticket&gt;</div>
+                  <div class="diagram-vline"></div>
+                  <div class="diagram-hline-wrap">
+                    <div class="diagram-row">
+                      <div class="diagram-col">
+                        <div class="diagram-vline"></div>
+                        <div class="diagram-node child">&lt;titulo&gt;</div>
+                      </div>
+                      <div class="diagram-col">
+                        <div class="diagram-vline"></div>
+                        <div class="diagram-node child">&lt;estado&gt;</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="note anim-up d4" style="margin-top: 16px">Atributos como <b>id</b> y <b>prioridad</b> viven en la etiqueta &lt;ticket&gt;, no como nodos hijos.</p>
+        </div>
+      </section>
+
+      <!-- ═══ 10 · ELEMENTOS VS ATRIBUTOS ═══ -->
+      <section data-label="10" data-screen-label="Elementos vs atributos">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:240px; color:rgba(0,232,208,0.035)">vs</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — Diseño del documento</span></span><span class="meta">COMPARACIÓN</span></div>
+        <div class="cbody" style="max-width: 1600px; gap: var(--gmd); margin-top: 30px">
+          <h2 class="ctitle anim-up">Elementos vs atributos</h2>
+          <p class="body anim-up d2">Ambos guardan información; la diferencia es semántica y de estructura.</p>
+          <div class="cards3 anim-up d3" style="grid-template-columns: 1fr 1fr; gap: var(--gmd)">
+            <div class="qcard">
+              <div class="qcard-t">Elementos</div>
+              <div class="qcard-b">Contenido principal. Pueden anidarse y crecer. Ideal para <b>titulo</b>, <b>estado</b>, <b>descripción</b>.</div>
+            </div>
+            <div class="qcard">
+              <div class="qcard-t">Atributos</div>
+              <div class="qcard-b">Metadatos cortos en la etiqueta. Ideal para <b>id</b>, <b>prioridad</b>, códigos. No anidan.</div>
+            </div>
+            <div class="qcard">
+              <div class="qcard-t">Ejemplo elemento</div>
+              <div class="qcard-b"><code>&lt;titulo&gt;No enciende&lt;/titulo&gt;</code></div>
+            </div>
+            <div class="qcard">
+              <div class="qcard-t">Ejemplo atributo</div>
+              <div class="qcard-b"><code>&lt;ticket id="1" prioridad="alta"&gt;</code></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 11 · BIEN FORMADO ═══ -->
+      <section data-label="11" data-screen-label="Bien formado">
+        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:240px; color:rgba(240,238,235,0.022)">ok</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — Validación básica</span></span><span class="meta">WELL-FORMED</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Bien formado</h2>
+            <p class="body anim-up d2">Un documento bien formado cumple reglas estructurales mínimas. Sin ellas, el parser no puede construir el árbol.</p>
+            <p class="note anim-up d5">En C#: <b>XElement.Parse</b> / <b>XDocument.Load</b> lanzan <b>XmlException</b> si el XML está mal formado. Captúrela y muestre el mensaje.</p>
+          </div>
+          <div class="flist">
+            <div class="fitem anim-up d2"><span class="ftick">1</span><span>Una sola <b>raíz</b> en el documento.</span></div>
+            <div class="fitem anim-up d3"><span class="ftick">2</span><span>Toda etiqueta abierta se <b>cierra</b>.</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">3</span><span>Anidamiento <b>correcto</b> (sin cruces).</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">4</span><span>Atributos entre <b>comillas</b>.</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">5</span><span>Nombres sensibles a mayúsculas (<b>Ticket</b> ≠ <b>ticket</b>).</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 12 · EJEMPLO tickets.xml ═══ -->
+      <section data-label="12" data-screen-label="Ejemplo · tickets.xml">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:240px; color:rgba(0,232,208,0.035)">xml</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Ejemplo — Documento</span></span><span class="meta">01-DocumentoXml</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Ejemplo: tickets.xml</h2>
+            <p class="body anim-up d2">Catálogo mínimo de soporte técnico. Observe la raíz, los atributos y los elementos hijos.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">▹</span><span>Raíz: <b>tickets</b></span></div>
+              <div class="fitem anim-up d4"><span class="ftick">▹</span><span>Atributos: <b>id</b>, <b>prioridad</b></span></div>
+              <div class="fitem anim-up d5"><span class="ftick">▹</span><span>Hijos: <b>titulo</b>, <b>estado</b>, <b>tecnico</b></span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">tickets.xml</span></div>
+            <div class="term-body sm"><span id="t12" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t12" hidden><span class="tc">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="tc">&lt;!-- Catálogo de tickets de soporte --&gt;</span>
+&lt;<span class="tf">tickets</span>&gt;
+  &lt;<span class="tf">ticket</span> <span class="tk">id</span>=<span class="ts">"1"</span> <span class="tk">prioridad</span>=<span class="ts">"alta"</span>&gt;
+    &lt;<span class="tf">titulo</span>&gt;No enciende el equipo&lt;/<span class="tf">titulo</span>&gt;
+    &lt;<span class="tf">estado</span>&gt;Abierto&lt;/<span class="tf">estado</span>&gt;
+  &lt;/<span class="tf">ticket</span>&gt;
+&lt;/<span class="tf">tickets</span>&gt;</div>
+        </div>
+      </section>
+
+      <!-- ═══ 13 · VIDEO XML EN LA PRÁCTICA ═══ -->
+      <section data-label="13" data-screen-label="Video · XML práctica">
+        <div class="layer"><div class="wm" style="bottom:-80px; right:-20px; font-size:260px; color:rgba(240,238,235,0.022)">▶</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Video / documentación</span></span><span class="meta">MICROSOFT</span></div>
+        <div class="cbody" style="gap: var(--glg)">
+          <h2 class="ctitle anim-up">XML en la práctica con .NET</h2>
+          <p class="body anim-up d2">Antes de escribir código: panorama oficial de LINQ to XML — el modelo que usaremos con XDocument.</p>
+          <a class="video-card anim-up d3" href="https://learn.microsoft.com/es-es/dotnet/standard/linq/linq-xml-overview" target="_blank" rel="noopener">
+            <div class="video-play"></div>
+            <div>
+              <div class="video-title">Microsoft Learn — LINQ to XML</div>
+              <div class="video-desc">Visión general de XDocument, XElement y consultas sobre XML en .NET.</div>
+              <div class="video-url">learn.microsoft.com · LINQ to XML</div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- ═══ 14 · XDocument EN C# ═══ -->
+      <section data-label="14" data-screen-label="XDocument en C#">
+        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:240px; color:rgba(240,238,235,0.022)">linq</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — API nativa</span></span><span class="meta">System.Xml.Linq</span></div>
+        <div class="cbody" style="max-width: 1600px; gap: var(--gmd); margin-top: 30px">
+          <h2 class="ctitle anim-up">XDocument en C#</h2>
+          <p class="body anim-up d2">Namespace <b style="color:var(--fg)">System.Xml.Linq</b>. Tres tipos que modelan el árbol XML en memoria.</p>
+          <div class="cards3 anim-up d3" style="grid-template-columns: repeat(3, 1fr); gap: var(--gmd)">
+            <div class="qcard"><div class="qcard-t">XDocument</div><div class="qcard-b">El documento completo: declaración + raíz. Entrada con <b>Load</b> / <b>Parse</b>.</div></div>
+            <div class="qcard"><div class="qcard-t">XElement</div><div class="qcard-b">Un nodo del árbol: nombre, valor, hijos y atributos.</div></div>
+            <div class="qcard"><div class="qcard-t">XAttribute</div><div class="qcard-b">Par nombre=valor en la etiqueta de apertura.</div></div>
+          </div>
+          <p class="note anim-up d4" style="margin-top: 12px">using System.Xml.Linq; — disponible en .NET sin paquetes extra.</p>
+        </div>
+      </section>
+
+      <!-- ═══ 15 · LECTURA CON XDocument ═══ -->
+      <section data-label="15" data-screen-label="Lectura con XDocument">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:240px; color:rgba(0,232,208,0.035)">Load</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber hacer — Lectura</span></span><span class="meta">04-LeerXDocument</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Lectura con XDocument</h2>
+            <p class="body anim-up d2">Flujo típico: cargar el archivo, tomar la raíz y recorrer los elementos hijos.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">1</span><span><b>XDocument.Load(ruta)</b> — construye el árbol.</span></div>
+              <div class="fitem anim-up d4"><span class="ftick">2</span><span><b>doc.Root</b> — elemento raíz.</span></div>
+              <div class="fitem anim-up d5"><span class="ftick">3</span><span><b>Elements("ticket")</b> — hijos con ese nombre.</span></div>
+              <div class="fitem anim-up d5"><span class="ftick">4</span><span><b>Attribute("id")</b> / <b>Element("titulo")</b> — datos.</span></div>
+            </div>
+          </div>
+          <div class="sbox anim-up d3">
+            <div class="steps">
+              <div class="stepr"><span class="stepn">a</span><span>Load → Root</span></div>
+              <div class="stepr"><span class="stepn">b</span><span>Elements → foreach</span></div>
+              <div class="stepr"><span class="stepn">c</span><span>Attribute / Element → Value</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 16 · EJEMPLO LECTURA ═══ -->
+      <section data-label="16" data-screen-label="Ejemplo · Lectura">
+        <div class="layer"></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Ejemplo — Código</span></span><span class="meta">LECTURA</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Ejemplo: lectura</h2>
+            <p class="body anim-up d2">Recorre cada <b style="color:var(--fg)">ticket</b>, lee atributos y elementos hijos, e imprime un resumen en consola.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">▹</span><span>Carpeta: <b>04-LeerXDocument</b></span></div>
+              <div class="fitem anim-up d4"><span class="ftick">▹</span><span>Operador <b>?.</b> evita null si falta un nodo.</span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">Program.cs — lectura</span></div>
+            <div class="term-body sm"><span id="t16" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t16" hidden><span class="tk">using</span> System.Xml.Linq;
+
+<span class="tk">var</span> doc = <span class="tf">XDocument</span>.<span class="tf">Load</span>(ruta);
+
+<span class="tk">foreach</span> (<span class="tk">var</span> ticket <span class="tk">in</span> doc.Root!.Elements(<span class="ts">"ticket"</span>))
+{
+    <span class="tk">string</span> id = ticket.Attribute(<span class="ts">"id"</span>)?.Value ?? <span class="ts">"?"</span>;
+    <span class="tk">string</span> titulo = ticket.Element(<span class="ts">"titulo"</span>)?.Value ?? <span class="ts">""</span>;
+    <span class="tk">string</span> estado = ticket.Element(<span class="ts">"estado"</span>)?.Value ?? <span class="ts">""</span>;
+    Console.<span class="tf">WriteLine</span>(<span class="ts">$"#{id} {titulo} — {estado}"</span>);
+}</div>
+        </div>
+      </section>
+
+      <!-- ═══ 17 · ESCRITURA CON XDocument ═══ -->
+      <section data-label="17" data-screen-label="Escritura con XDocument">
+        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:240px; color:rgba(240,238,235,0.022)">Save</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber hacer — Escritura</span></span><span class="meta">05-EscribirXDocument</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Escritura con XDocument</h2>
+            <p class="body anim-up d2">Se construye el árbol en memoria con <b style="color:var(--fg)">new XElement</b> y se persiste con <b style="color:var(--fg)">Save</b>.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">1</span><span><b>new XDocument</b> + <b>XDeclaration</b></span></div>
+              <div class="fitem anim-up d4"><span class="ftick">2</span><span><b>new XElement</b> / <b>XAttribute</b> anidados</span></div>
+              <div class="fitem anim-up d5"><span class="ftick">3</span><span><b>doc.Save(ruta)</b> — escribe el archivo</span></div>
+            </div>
+          </div>
+          <div class="sbox anim-up d3">
+            <div class="steps">
+              <div class="stepr"><span class="stepn">a</span><span>Construir árbol</span></div>
+              <div class="stepr"><span class="stepn">b</span><span>Crear carpeta si falta</span></div>
+              <div class="stepr"><span class="stepn">c</span><span>Save → disco</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 18 · EJEMPLO ESCRITURA ═══ -->
+      <section data-label="18" data-screen-label="Ejemplo · Escritura">
+        <div class="layer"></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Ejemplo — Código</span></span><span class="meta">ESCRITURA</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Ejemplo: escritura</h2>
+            <p class="body anim-up d2">Crea un catálogo con dos tickets y lo guarda en <b style="color:var(--fg)">salida/catalogo.xml</b>.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">▹</span><span>Carpeta: <b>05-EscribirXDocument</b></span></div>
+              <div class="fitem anim-up d4"><span class="ftick">▹</span><span>API clave: <b>new XElement(...)</b> + <b>Save</b></span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">Program.cs — escritura</span></div>
+            <div class="term-body sm"><span id="t18" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t18" hidden><span class="tk">var</span> doc = <span class="tk">new</span> <span class="tf">XDocument</span>(
+    <span class="tk">new</span> <span class="tf">XDeclaration</span>(<span class="ts">"1.0"</span>, <span class="ts">"UTF-8"</span>, <span class="tk">null</span>),
+    <span class="tk">new</span> <span class="tf">XElement</span>(<span class="ts">"tickets"</span>,
+        <span class="tk">new</span> <span class="tf">XElement</span>(<span class="ts">"ticket"</span>,
+            <span class="tk">new</span> <span class="tf">XAttribute</span>(<span class="ts">"id"</span>, <span class="tn">1</span>),
+            <span class="tk">new</span> <span class="tf">XElement</span>(<span class="ts">"titulo"</span>, <span class="ts">"Pantalla azul"</span>),
+            <span class="tk">new</span> <span class="tf">XElement</span>(<span class="ts">"estado"</span>, <span class="ts">"Abierto"</span>)
+        )
+    )
+);
+doc.<span class="tf">Save</span>(ruta);</div>
+        </div>
+      </section>
+
+      <!-- ═══ 19 · CONSULTAR LINQ ═══ -->
+      <section data-label="19" data-screen-label="Consultar LINQ">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:240px; color:rgba(0,232,208,0.035)">Where</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber hacer — Consultas</span></span><span class="meta">06-ConsultarElementos</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Consultar con LINQ to XML</h2>
+            <p class="body anim-up d2">Combine <b style="color:var(--fg)">Elements</b> con <b style="color:var(--fg)">Where</b> para filtrar. Ejemplo: solo tickets con estado <b style="color:var(--fg)">Abierto</b>.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">▹</span><span><b>Parse</b> o <b>Load</b> del documento</span></div>
+              <div class="fitem anim-up d4"><span class="ftick">▹</span><span><b>.Where(t =&gt; ...)</b> sobre cada elemento</span></div>
+              <div class="fitem anim-up d5"><span class="ftick">▹</span><span>Misma idea que LINQ sobre colecciones</span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">filtro — Abierto</span></div>
+            <div class="term-body sm"><span id="t19" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t19" hidden><span class="tk">var</span> abiertos = doc.Root!
+    .Elements(<span class="ts">"ticket"</span>)
+    .Where(t =&gt; t.Element(<span class="ts">"estado"</span>)?.Value == <span class="ts">"Abierto"</span>);
+
+<span class="tk">foreach</span> (<span class="tk">var</span> t <span class="tk">in</span> abiertos)
+    Console.<span class="tf">WriteLine</span>(t.Element(<span class="ts">"titulo"</span>)?.Value);</div>
+        </div>
+      </section>
+
+      <!-- ═══ 20 · VIDEO SERIALIZACIÓN ═══ -->
+      <section data-label="20" data-screen-label="Video · Serialización">
+        <div class="layer"><div class="wm" style="bottom:-80px; right:-20px; font-size:260px; color:rgba(240,238,235,0.022)">▶</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Documentación recomendada</span></span><span class="meta">MICROSOFT</span></div>
+        <div class="cbody" style="gap: var(--glg)">
+          <h2 class="ctitle anim-up">Serialización XML en .NET</h2>
+          <p class="body anim-up d2">Puente oficial: convertir objetos C# a XML y viceversa con XmlSerializer.</p>
+          <a class="video-card anim-up d3" href="https://learn.microsoft.com/es-es/dotnet/standard/serialization/xml-serialization" target="_blank" rel="noopener">
+            <div class="video-play"></div>
+            <div>
+              <div class="video-title">Microsoft Learn — Serialización XML</div>
+              <div class="video-desc">Documentación de XmlSerializer: objeto ↔ XML con atributos y propiedades públicas.</div>
+              <div class="video-url">learn.microsoft.com · XML serialization</div>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- ═══ 21 · XmlSerializer ═══ -->
+      <section data-label="21" data-screen-label="XmlSerializer">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; left:-20px; font-size:220px; color:rgba(0,232,208,0.035)">ser</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — Serialización</span></span><span class="meta">07-XmlSerializer</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">XmlSerializer</h2>
+            <p class="body anim-up d2">Convierte un <b style="color:var(--fg)">objeto</b> C# en XML y el XML de vuelta en objeto. Ideal cuando ya tiene una clase de dominio.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">→</span><span><b>Serialize</b> — objeto → XML (archivo o stream)</span></div>
+              <div class="fitem anim-up d4"><span class="ftick">←</span><span><b>Deserialize</b> — XML → objeto tipado</span></div>
+              <div class="fitem anim-up d5"><span class="ftick">▹</span><span>Requiere propiedades <b>public</b> y constructor sin parámetros</span></div>
+            </div>
+          </div>
+          <div class="cards3 anim-up d3" style="grid-template-columns: 1fr; gap: var(--gmd)">
+            <div class="qcard"><div class="qcard-t">XDocument</div><div class="qcard-b">Control fino del árbol: usted arma cada nodo.</div></div>
+            <div class="qcard"><div class="qcard-t">XmlSerializer</div><div class="qcard-b">Automático desde la clase: menos código, menos control de formato.</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 22 · PUENTE A JSON ═══ -->
+      <section data-label="22" data-screen-label="Puente a JSON">
+        <div class="layer"><div class="wm" style="bottom:-80px; right:-20px; font-size:240px; color:rgba(240,238,235,0.022)">JSON</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber — Otro formato nativo</span></span><span class="meta">System.Text.Json</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Puente a JSON</h2>
+            <p class="body anim-up d2">Misma idea que XmlSerializer: <b style="color:var(--fg)">objeto ↔ texto</b>. Formato distinto, API nativa <b style="color:var(--fg)">System.Text.Json</b>.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">▹</span><span><b>JsonSerializer.Serialize</b> — objeto → JSON</span></div>
+              <div class="fitem anim-up d4"><span class="ftick">▹</span><span><b>JsonSerializer.Deserialize&lt;T&gt;</b> — JSON → objeto</span></div>
+              <div class="fitem anim-up d5"><span class="ftick">▹</span><span>Muy usado en APIs web; XML sigue vivo en integraciones empresariales</span></div>
+            </div>
+          </div>
+          <div class="qcard anim-up d3"><div class="qcard-t">Mensaje clave</div><div class="qcard-b">Si entiende serializar/deserializar en XML, el salto a JSON es principalmente de sintaxis, no de concepto.</div></div>
+        </div>
+      </section>
+
+      <!-- ═══ 23 · EJEMPLO JSON ═══ -->
+      <section data-label="23" data-screen-label="Ejemplo · JSON">
+        <div class="layer"></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Ejemplo — Código</span></span><span class="meta">08-JsonBasico</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Ejemplo: JSON básico</h2>
+            <p class="body anim-up d2">Serializa un <b style="color:var(--fg)">Ticket</b> a JSON indentado y lo recupera con <b style="color:var(--fg)">Deserialize</b>.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">▹</span><span>using <b>System.Text.Json</b></span></div>
+              <div class="fitem anim-up d4"><span class="ftick">▹</span><span><b>WriteIndented = true</b> para lectura humana</span></div>
+            </div>
+          </div>
+          <div class="term anim-up d3">
+            <div class="term-head"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-name">Program.cs — JSON</span></div>
+            <div class="term-body sm"><span id="t23" data-typed-target></span></div>
+          </div>
+          <div class="tsrc" data-for="t23" hidden><span class="tk">using</span> System.Text.Json;
+
+<span class="tk">var</span> original = <span class="tk">new</span> <span class="tf">Ticket</span> {
+    Id = <span class="tn">10</span>, Titulo = <span class="ts">"Impresora sin papel"</span>,
+    Estado = <span class="ts">"Abierto"</span>
+};
+
+<span class="tk">var</span> opts = <span class="tk">new</span> <span class="tf">JsonSerializerOptions</span> { WriteIndented = <span class="tk">true</span> };
+<span class="tk">string</span> json = <span class="tf">JsonSerializer</span>.<span class="tf">Serialize</span>(original, opts);
+<span class="tk">var</span> recuperado = <span class="tf">JsonSerializer</span>.<span class="tf">Deserialize</span>&lt;<span class="tf">Ticket</span>&gt;(json);</div>
+        </div>
+      </section>
+
+      <!-- ═══ 24 · XML VS JSON ═══ -->
+      <section data-label="24" data-screen-label="XML vs JSON">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.04)">vs</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Resumen visual</span></span><span class="meta">COMPARACIÓN</span></div>
+        <div class="cbody" style="max-width: 1600px; gap: var(--gmd)">
+          <h2 class="ctitle anim-up">XML vs JSON</h2>
+          <div class="pillars anim-up d2">
+            <div class="pillar"><div class="pillar-ico">◇</div><div class="pillar-n">XML</div><div class="pillar-d">Etiquetas anidadas, atributos, namespaces. Robusto para documentos e integraciones legacy.</div></div>
+            <div class="pillar"><div class="pillar-ico">{}</div><div class="pillar-n">JSON</div><div class="pillar-d">Pares clave:valor, arrays. Ligero y dominante en APIs REST modernas.</div></div>
+            <div class="pillar"><div class="pillar-ico">⇄</div><div class="pillar-n">En C#</div><div class="pillar-d">XDocument / XmlSerializer para XML; System.Text.Json para JSON. Misma competencia: procesar datos estructurados.</div></div>
+            <div class="pillar"><div class="pillar-ico">✓</div><div class="pillar-n">Cuándo</div><div class="pillar-d">XML si el sistema lo exige; JSON si consume/produce APIs web. Ambos bien formados.</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 25 · DEMO EN VIVO ═══ -->
+      <section data-label="25" data-screen-label="Demo en vivo">
+        <div class="layer">
+          <div class="geo" style="width: 640px; height: 640px; top: -150px; right: -140px; border-color: rgba(0,232,208,0.06)"></div>
+          <div class="wm" style="bottom: -100px; left: -30px; font-size: 300px; color: rgba(0,232,208,0.04)">LIVE</div>
+        </div>
+        <div class="topbar">
+          <span class="live anim-up">Programación en vivo</span>
+          <span class="meta">15 MIN</span>
+        </div>
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 6px">
+          <h1 class="anim-up d2" style="font-family: var(--sans); font-size: var(--td); font-weight: 700; line-height: 0.95; letter-spacing: -0.03em; color: var(--fg)">
+            Demo en vivo
+          </h1>
+          <h1 class="anim-up d3" style="font-family: var(--serif); font-size: var(--td); font-weight: 400; font-style: italic; color: var(--accent)">
+            CatalogoTicketsXml.
+          </h1>
+          <p class="body anim-up d4" style="margin-top: 34px; max-width: 1100px">Menú de consola: listar, agregar, guardar y cargar tickets desde un archivo XML con <b style="color:var(--fg)">XDocument</b>.</p>
+        </div>
+        <div class="hr" style="margin-bottom: 28px"></div>
+        <div class="topbar"><span class="meta">programa-completo</span><span class="meta faint">dotnet run</span></div>
+      </section>
+
+      <!-- ═══ 26 · DEMO LEER ═══ -->
+      <section data-label="26" data-screen-label="Demo · Leer XML">
+        <div class="layer"></div>
+        <div class="topbar"><span class="live">En vivo</span><span class="meta">PASO 1 / 2</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Demo: leer XML</h2>
+            <p class="body anim-up d2">Abrir <b style="color:var(--fg)">CatalogoTicketsXml</b>, cargar <b style="color:var(--fg)">data/tickets.xml</b> y listar los tickets en pantalla.</p>
+            <div class="steps">
+              <div class="stepr anim-up d3"><span class="stepn">a</span><span><b>cd</b> programa-completo/CatalogoTicketsXml</span></div>
+              <div class="stepr anim-up d4"><span class="stepn">b</span><span><b>dotnet run</b> → opción listar / cargar</span></div>
+              <div class="stepr anim-up d5"><span class="stepn">c</span><span>Mostrar <b>RepositorioTicketsXml.Cargar()</b></span></div>
+            </div>
+          </div>
+          <div class="flist">
+            <div class="fitem anim-up d3"><span class="ftick">▹</span><span><b>XDocument.Load</b> sobre la ruta del archivo</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">▹</span><span>Mapear cada <b>&lt;ticket&gt;</b> a la clase <b>Ticket</b></span></div>
+            <div class="fitem anim-up d5"><span class="ftick">▹</span><span>Si no existe el archivo → lista vacía</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 27 · DEMO ESCRIBIR ═══ -->
+      <section data-label="27" data-screen-label="Demo · Escribir">
+        <div class="layer"></div>
+        <div class="topbar"><span class="live">En vivo</span><span class="meta">PASO 2 / 2</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Demo: escribir / agregar</h2>
+            <p class="body anim-up d2">Agregar un ticket desde el menú y persistir con <b style="color:var(--fg)">Guardar</b>: reconstrucción del árbol y <b style="color:var(--fg)">Save</b>.</p>
+            <div class="steps">
+              <div class="stepr anim-up d3"><span class="stepn">a</span><span>Opción <b>agregar</b> — capturar título y prioridad</span></div>
+              <div class="stepr anim-up d4"><span class="stepn">b</span><span>Actualizar lista en memoria</span></div>
+              <div class="stepr anim-up d5"><span class="stepn">c</span><span><b>Guardar()</b> → sobrescribe el XML</span></div>
+            </div>
+          </div>
+          <div class="flist">
+            <div class="fitem anim-up d3"><span class="ftick">▹</span><span>Construir <b>XElement("tickets", ...)</b> desde la lista</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">▹</span><span>Verificar el archivo en disco tras guardar</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">▹</span><span>Recargar para demostrar round-trip</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 28 · RESUMEN FLUJO ═══ -->
+      <section data-label="28" data-screen-label="Resumen · Flujo">
+        <div class="layer"><div class="wm" style="bottom:-80px; right:-20px; font-size:260px; color:rgba(0,232,208,0.035)">flow</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Resumen visual</span></span><span class="meta">XDocument</span></div>
+        <div class="cbody" style="max-width: 1600px; gap: var(--gmd)">
+          <h2 class="ctitle anim-up">Flujo: Load → Consultar → Save</h2>
+          <p class="body anim-up d2">Ciclo completo de trabajo con un archivo XML en la aplicación.</p>
+          <div class="timeline anim-up d3">
+            <div class="tl-step"><div class="tl-dot"></div><div class="tl-label">Load</div><div class="tl-desc">Leer archivo → árbol</div></div>
+            <div class="tl-step"><div class="tl-dot"></div><div class="tl-label">Root</div><div class="tl-desc">Tomar elemento raíz</div></div>
+            <div class="tl-step"><div class="tl-dot"></div><div class="tl-label">Consultar</div><div class="tl-desc">Elements + Where</div></div>
+            <div class="tl-step"><div class="tl-dot"></div><div class="tl-label">Modificar</div><div class="tl-desc">Agregar / editar nodos</div></div>
+            <div class="tl-step"><div class="tl-dot"></div><div class="tl-label">Save</div><div class="tl-desc">Persistir en disco</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 29 · ESTRUCTURA PROYECTO ═══ -->
+      <section data-label="29" data-screen-label="Estructura de proyecto">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; left:-20px; font-size:260px; color:rgba(240,238,235,0.022)">dir</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Resumen visual</span></span><span class="meta">ESTRUCTURA</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Estructura del proyecto</h2>
+            <p class="body anim-up d2">Programa completo de la sesión. El XML vive en <b style="color:var(--fg)">data/</b>; la lógica de persistencia en <b style="color:var(--fg)">Program.cs</b>.</p>
+            <div class="flist">
+              <div class="fitem anim-up d3"><span class="ftick">✓</span><span><b>Ticket</b> — modelo en memoria</span></div>
+              <div class="fitem anim-up d4"><span class="ftick">✓</span><span><b>RepositorioTicketsXml</b> — Cargar / Guardar</span></div>
+            </div>
+          </div>
+          <div class="ftree anim-up d3">
+<span class="fd">CatalogoTicketsXml/</span>
+├── <span class="fd">data/</span>
+│   └── <span class="fl">tickets.xml</span>     <span class="fi"># persistencia</span>
+├── <span class="fl">CatalogoTicketsXml.csproj</span>
+└── <span class="fl">Program.cs</span>         <span class="fi"># menú + repo</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 30 · ACTIVIDAD ═══ -->
+      <section data-label="30" data-screen-label="Actividad práctica">
+        <div class="layer">
+          <div class="geo" style="width: 560px; height: 560px; top: -120px; left: -120px; border-color: rgba(0,232,208,0.05)"></div>
+          <div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.04)">10m</div>
+        </div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Saber hacer — Actividad obligatoria</span></span><span class="meta">10–15 MIN · INDIVIDUAL</span></div>
+        <div class="split" style="margin-top: 30px">
+          <div class="cbody" style="gap: var(--gmd)">
+            <h2 class="ctitle anim-up">Actividad práctica</h2>
+            <p class="body anim-up d2">Leer un XML de tickets, filtrar los <b style="color:var(--fg)">Abiertos</b> y escribir un archivo de salida con XDocument.</p>
+            <div class="anim-up d3" style="display: flex; gap: 16px; margin-top: 8px">
+              <span class="chip">10–15 min</span><span class="chip">Individual</span>
+            </div>
+          </div>
+          <div class="flist">
+            <div class="fitem anim-up d2"><span class="ftick">1</span><span>Partir de <b>04-LeerXDocument</b> o crear consola nueva</span></div>
+            <div class="fitem anim-up d3"><span class="ftick">2</span><span><b>Load</b> del XML y listar todos los tickets</span></div>
+            <div class="fitem anim-up d4"><span class="ftick">3</span><span>Filtrar estado <b>Abierto</b> con LINQ</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">4</span><span><b>Save</b> de un XML nuevo solo con abiertos</span></div>
+            <div class="fitem anim-up d5"><span class="ftick">5</span><span>Mostrar salida en consola al instructor</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 31 · CIERRE ═══ -->
+      <section data-label="31" data-screen-label="Cierre y tarea">
+        <div class="layer"><div class="wm serif" style="bottom:-70px; right:-30px; font-size:300px; color:rgba(0,232,208,0.04)">fin</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Cierre</span></span><span class="meta">CIERRE</span></div>
+        <div class="cbody" style="max-width: 1600px; gap: var(--glg)">
+          <h2 class="ctitle anim-up">Cierre y tarea</h2>
+          <div class="cards3">
+            <div class="qcard anim-up d2"><div class="qcard-t">Dudas</div><div class="qcard-b">Resolver dudas sobre XDocument, bien formado o serialización.</div></div>
+            <div class="qcard anim-up d3"><div class="qcard-t">Repaso</div><div class="qcard-b">Árbol XML, Load/Save, Where, XmlSerializer y JSON.</div></div>
+            <div class="qcard anim-up d4"><div class="qcard-t">Tarea</div><div class="qcard-b">Completar la actividad: filtrar Abiertos y guardar XML de salida. Revisar ejemplos 01–08.</div></div>
+          </div>
+          <p class="body anim-up d5" style="margin-top: 10px"><b style="color:var(--fg)">Puntos clave:</b> XML es un árbol; el rigor evita XmlException; XDocument lee y escribe; serializar es objeto ↔ texto (XML o JSON).</p>
+        </div>
+      </section>
+
+      <!-- ═══ 32 · TIP NAMESPACES ═══ -->
+      <section data-label="32" data-screen-label="Tip · Namespaces">
+        <div class="layer"><div class="wm" style="bottom:-80px; left:-20px; font-size:220px; color:rgba(240,238,235,0.022)">using</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Tip rápido</span></span><span class="meta">NAMESPACES</span></div>
+        <div class="cbody" style="max-width: 1600px; gap: var(--gmd); margin-top: 40px">
+          <h2 class="ctitle anim-up">Tip: namespaces correctos</h2>
+          <p class="body anim-up d2">No mezclar APIs. Cada formato tiene su espacio de nombres nativo.</p>
+          <div class="cards3 anim-up d3" style="grid-template-columns: 1fr 1fr; gap: var(--gmd)">
+            <div class="qcard"><div class="qcard-t">System.Xml.Linq</div><div class="qcard-b"><b>XDocument</b>, <b>XElement</b>, <b>XAttribute</b>. Lectura y escritura del árbol XML.</div></div>
+            <div class="qcard"><div class="qcard-t">System.Text.Json</div><div class="qcard-b"><b>JsonSerializer</b>. Serialización JSON nativa de .NET.</div></div>
+            <div class="qcard"><div class="qcard-t">System.Xml.Serialization</div><div class="qcard-b"><b>XmlSerializer</b>. Objeto ↔ XML automático.</div></div>
+            <div class="qcard"><div class="qcard-t">Evitar confusión</div><div class="qcard-b">No use APIs antiguas de XmlDocument salvo que el enunciado lo pida.</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 33 · REPASO APIs ═══ -->
+      <section data-label="33" data-screen-label="Repaso · APIs clave">
+        <div class="layer"><div class="wm serif" style="bottom:-60px; right:-20px; font-size:260px; color:rgba(0,232,208,0.04)">api</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Repaso visual</span></span><span class="meta">4 APIs</span></div>
+        <div class="cbody" style="max-width: 1600px; gap: var(--gmd); margin-top: 30px">
+          <h2 class="ctitle anim-up">APIs clave de la sesión</h2>
+          <div class="cards3 anim-up d2" style="grid-template-columns: 1fr 1fr; gap: var(--gmd)">
+            <div class="qcard"><div class="qcard-t">Load</div><div class="qcard-b"><b>XDocument.Load(ruta)</b> — archivo → árbol en memoria.</div></div>
+            <div class="qcard"><div class="qcard-t">Save</div><div class="qcard-b"><b>doc.Save(ruta)</b> — árbol → archivo en disco.</div></div>
+            <div class="qcard"><div class="qcard-t">Serialize</div><div class="qcard-b"><b>XmlSerializer.Serialize</b> — objeto C# → XML.</div></div>
+            <div class="qcard"><div class="qcard-t">Json</div><div class="qcard-b"><b>JsonSerializer.Serialize / Deserialize</b> — objeto ↔ JSON.</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ 34 · RECURSOS ═══ -->
+      <section data-label="34" data-screen-label="Recursos">
+        <div class="layer"><div class="wm" style="bottom:-80px; right:-20px; font-size:260px; color:rgba(240,238,235,0.022)">ref</div></div>
+        <div class="topbar"><span class="stag ac"><span class="tl"></span><span>Material de apoyo</span></span><span class="meta">ENLACES</span></div>
+        <div class="cbody" style="gap: var(--gmd)">
+          <h2 class="ctitle anim-up">Recursos</h2>
+          <p class="body anim-up d2">Documentación y ejemplos para reforzar fuera de clase.</p>
+          <div style="display: flex; flex-direction: column; gap: 18px">
+            <a class="video-card anim-up d3" href="https://www.youtube.com/watch?v=3af0-bwWVvs" target="_blank" rel="noopener">
+              <div class="video-play"></div>
+              <div>
+                <div class="video-title">XML Tutorial for Beginners</div>
+                <div class="video-desc">Introducción al marcado y la estructura XML.</div>
+                <div class="video-url">youtube.com/watch?v=3af0-bwWVvs</div>
+              </div>
+            </a>
+            <a class="video-card anim-up d4" href="https://learn.microsoft.com/es-es/dotnet/standard/linq/linq-xml-overview" target="_blank" rel="noopener">
+              <div class="video-play"></div>
+              <div>
+                <div class="video-title">Microsoft Learn — LINQ to XML</div>
+                <div class="video-desc">XDocument, XElement y consultas sobre XML.</div>
+                <div class="video-url">learn.microsoft.com · LINQ to XML</div>
+              </div>
+            </a>
+            <a class="video-card anim-up d5" href="https://learn.microsoft.com/es-es/dotnet/standard/serialization/system-text-json/overview" target="_blank" rel="noopener">
+              <div class="video-play"></div>
+              <div>
+                <div class="video-title">Microsoft Learn — System.Text.Json</div>
+                <div class="video-desc">Serialización JSON nativa en .NET.</div>
+                <div class="video-url">learn.microsoft.com · System.Text.Json</div>
+              </div>
+            </a>
+          </div>
+          <p class="note anim-up d5" style="margin-top: 8px">Ejemplos locales: <b>ejemplos-tecnicos/ipc2/Clase 4/durante-diapositivas/</b> (01–08) y <b>programa-completo/CatalogoTicketsXml</b>.</p>
+        </div>
+      </section>
+
+    </deck-stage>
+
+    <script type="application/json" id="speaker-notes">
+    [
+      "[3 MIN · PORTADA]\n\nBuenos días. Semana 04 de Introducción a la Programación y Computación 2, ECYS 771. Tema central: procesamiento de datos XML — y un puente breve a JSON — con librerías nativas de C#.\n\nTítulo en pantalla: XML Y DATOS. Subtítulo: Lectura, escritura y serialización en C#.\n\nSesión de laboratorio, 80 minutos. Instructor: Jorge Mejía, Guatemala.\n\nObjetivo del bloque: que cada estudiante lea y escriba XML con XDocument, entienda bien formado, y vea serialización XML/JSON.\n\nTransición: agenda.",
+      "[2 MIN · AGENDA]\n\nSesión de 80 minutos:\n\n01 — Actitudinal: rigor y precisión (5 min).\n02 — Intro + sintaxis XML (20 min).\n03 — XDocument: lectura, escritura, consultas (20 min).\n04 — Serialización + JSON (10 min).\n05 — Demo CatalogoTicketsXml (15 min).\n06 — Actividad práctica (10 min).\n\nLos ejemplos están en durante-diapositivas 01 a 08 y el programa completo CatalogoTicketsXml.\n\nTransición: valor actitudinal.",
+      "[5 MIN · RIGOR Y PRECISIÓN]\n\nÁrea actitudinal — Saber ser.\n\nEn XML el rigor no es opcional: una etiqueta sin cerrar o un anidamiento cruzado invalida el documento entero.\n\nLea los tres puntos:\n1. Bien formado: apertura y cierre, anidamiento exacto.\n2. Precisión: nombres y atributos como se acordaron.\n3. Consecuencia: XmlException — la app no puede leer datos rotos.\n\nPregunta: ¿qué pasa si entregan un XML mal cerrado a un sistema de facturación?\n\nTransición: competencia de la sesión.",
+      "[2 MIN · COMPETENCIA]\n\nLea en voz alta la competencia:\n\n«Procesa información estructurada en formato XML y JSON mediante librerías nativas de C# (serialización, deserialización, lectura y escritura).»\n\nChips: XML · XDocument · JSON.\n\nEnfatice: nativas = System.Xml.Linq, System.Xml.Serialization, System.Text.Json — sin instalar paquetes extra para lo básico.\n\nTransición: ¿qué es XML?",
+      "[4 MIN · ¿QUÉ ES XML?]\n\neXtensible Markup Language.\n\nPuntos clave:\n- Describe datos, no presentación (no es HTML).\n- Estructura en árbol: raíz → hijos → hojas.\n- Extensible: usted elige los nombres de etiqueta según el dominio (tickets, productos, etc.).\n\nAnalogía previa: como un archivo de configuración o un contrato de datos entre sistemas.\n\nPregunta: ¿dónde han visto XML fuera de clase? (config, facturas electrónicas, feeds).\n\nTransición: video de introducción.",
+      "[3 MIN · VIDEO: INTRO XML]\n\nReproducir o proyectar el enlace: XML Tutorial for Beginners.\n\nURL: https://www.youtube.com/watch?v=3af0-bwWVvs\n\nPedir atención a: declaración, elementos y anidamiento. Pausar si el tiempo es corto y solo mostrar 2–3 minutos clave.\n\nTransición: analogía del árbol de carpetas.",
+      "[3 MIN · ANALOGÍA · ÁRBOL / CARPETAS]\n\nMostrar el diagrama: Disco/raíz → Carpetas → Archivo.\n\nMensaje: XML es igual — un contenedor raíz, nodos hijos, y contenido en las hojas.\n\nSi mueven un archivo fuera de su carpeta sin cerrar bien la estructura, el «explorador» (el parser) falla.\n\nPregunta: ¿cuál sería la «carpeta raíz» de un catálogo de tickets?\n\nTransición: sintaxis XML.",
+      "[4 MIN · SINTAXIS XML]\n\nRecorra las seis tarjetas:\n1. Declaración <?xml ...?>.\n2. Raíz única.\n3. Elementos con apertura/cierre.\n4. Atributos en la etiqueta de apertura.\n5. Comentarios <!-- -->.\n6. Anidamiento estricto.\n\nEjemplo mental: libro con isbn, titulo, autor (carpeta 02-SintaxisXml).\n\nTransición: diagrama del árbol de tickets.",
+      "[3 MIN · DIAGRAMA · ÁRBOL XML]\n\nMostrar: tickets → ticket → titulo / estado.\n\nAtributos id y prioridad viven en <ticket>, no como hijos.\n\nDibuje en pizarra si ayuda: un ticket = un nodo con dos hojas de texto.\n\nPregunta: ¿dónde pondrían la prioridad — atributo o elemento? (ambas válidas; atributo suele usarse para metadatos cortos).\n\nTransición: elementos vs atributos.",
+      "[3 MIN · ELEMENTOS VS ATRIBUTOS]\n\nComparación en qcards:\n- Elementos: contenido que puede crecer y anidarse (titulo, estado).\n- Atributos: metadatos cortos (id, prioridad).\n\nRegla práctica del curso: id/prioridad como atributos; titulo/estado como elementos — igual que en tickets.xml.\n\nTransición: bien formado.",
+      "[4 MIN · BIEN FORMADO]\n\nReglas:\n1. Una sola raíz.\n2. Toda etiqueta se cierra.\n3. Anidamiento sin cruces.\n4. Atributos entre comillas.\n5. Mayúsculas/minúsculas importan.\n\nDemo mental o carpeta 03-BienFormado: Parse OK vs XmlException por falta de </titulo>.\n\nEnfatice el note: capture XmlException y muestre el mensaje — es feedback inmediato del rigor.\n\nTransición: ejemplo tickets.xml.",
+      "[4 MIN · EJEMPLO · tickets.xml]\n\nDeje tipar el terminal (t12). Lea en voz alta la estructura.\n\nCarpeta: 01-DocumentoXml.\n\nSeñale: declaración, comentario, raíz tickets, ticket con atributos, hijos titulo/estado.\n\nSi hay tiempo: dotnet run en 01-DocumentoXml para ver el documento impreso.\n\nTransición: documentación LINQ to XML.",
+      "[3 MIN · VIDEO / DOCS · XML EN LA PRÁCTICA]\n\nAbrir Microsoft Learn — LINQ to XML:\nhttps://learn.microsoft.com/es-es/dotnet/standard/linq/linq-xml-overview\n\nMensaje: a partir de aquí trabajamos con System.Xml.Linq (XDocument / XElement), no con el modelo antiguo XmlDocument salvo que el enunciado lo pida.\n\nTransición: XDocument en C#.",
+      "[3 MIN · XDocument EN C#]\n\nTres tipos:\n- XDocument = documento completo.\n- XElement = nodo.\n- XAttribute = atributo.\n\nusing System.Xml.Linq;\n\nPregunta: ¿qué tipo representa <tickets> en nuestro ejemplo? (XElement raíz dentro de XDocument).\n\nTransición: lectura con XDocument.",
+      "[4 MIN · LECTURA CON XDocument]\n\nFlujo: Load → Root → Elements → Attribute/Element → Value.\n\nCarpeta 04-LeerXDocument.\n\nRecalque el operador ?. para evitar NullReference si falta un nodo.\n\nTransición: ejemplo de código de lectura.",
+      "[4 MIN · EJEMPLO · LECTURA]\n\nTerminal tipado (t16): foreach sobre Elements(\"ticket\").\n\nLea el código línea a línea. Relacione con el XML de la diapositiva 12.\n\nSi el tiempo alcanza: ejecutar 04-LeerXDocument.\n\nTransición: escritura.",
+      "[3 MIN · ESCRITURA CON XDocument]\n\nFlujo inverso: new XElement anidados → Save.\n\nXDeclaration opcional pero recomendada.\n\nCarpeta 05-EscribirXDocument: crea salida/catalogo.xml.\n\nTransición: ejemplo de escritura.",
+      "[4 MIN · EJEMPLO · ESCRITURA]\n\nTerminal tipado (t18): construcción del árbol y Save.\n\nCompare con lectura: Load consume; Save produce.\n\nPregunta: ¿qué pasa si la carpeta salida no existe? (Directory.CreateDirectory en el ejemplo completo).\n\nTransición: consultar con LINQ.",
+      "[4 MIN · CONSULTAR CON LINQ TO XML]\n\nElements + Where: filtrar estado == \"Abierto\".\n\nCarpeta 06-ConsultarElementos.\n\nTerminal tipado (t19).\n\nMensaje: si ya saben LINQ sobre listas, esto es lo mismo sobre nodos XML.\n\nTransición: serialización (documentación).",
+      "[2 MIN · DOCS · SERIALIZACIÓN]\n\nAbrir Microsoft Learn — Serialización XML:\nhttps://learn.microsoft.com/es-es/dotnet/standard/serialization/xml-serialization\n\nPuente conceptual: a veces no quiere armar el árbol a mano — quiere mapear una clase.\n\nTransición: XmlSerializer.",
+      "[4 MIN · XmlSerializer]\n\nSerialize = objeto → XML. Deserialize = XML → objeto.\n\nCarpeta 07-XmlSerializer.\n\nComparar con XDocument: control fino vs automatización.\n\nRequisitos: propiedades public + ctor sin parámetros.\n\nTransición: puente a JSON.",
+      "[3 MIN · PUENTE A JSON]\n\nMisma idea, otro formato. System.Text.Json.\n\nXML = etiquetas; JSON = llaves y pares.\n\nEn APIs web predomina JSON; XML sigue en integraciones empresariales.\n\nTransición: ejemplo JSON.",
+      "[3 MIN · EJEMPLO · JSON]\n\nTerminal tipado (t23): Serialize + Deserialize<Ticket>.\n\nCarpeta 08-JsonBasico.\n\nWriteIndented = true para ver el JSON legible en consola.\n\nTransición: XML vs JSON.",
+      "[3 MIN · XML VS JSON]\n\nCuatro pilares de comparación en pantalla.\n\nMensaje de cierre del bloque teórico: la competencia es procesar datos estructurados; el formato lo impone el contexto.\n\nTransición: demo en vivo.",
+      "[2 MIN · DEMO EN VIVO — INTRO]\n\nLIVE. Proyecto: CatalogoTicketsXml en programa-completo.\n\nMenú: listar, agregar, guardar, cargar.\n\nEstudiantes abren la carpeta y siguen en su editor.\n\nTransición: paso 1 — leer.",
+      "[6 MIN · DEMO · LEER XML]\n\ncd ejemplos-tecnicos/ipc2/Clase 4/programa-completo/CatalogoTicketsXml\ndotnet run\n\nMostrar Cargar(): XDocument.Load + Select a Ticket.\n\nListar tickets existentes en data/tickets.xml.\n\nTransición: paso 2 — escribir.",
+      "[7 MIN · DEMO · ESCRIBIR / AGREGAR]\n\nAgregar un ticket desde el menú. Guardar. Abrir el XML en el editor para ver el cambio.\n\nMostrar Guardar(): reconstrucción del XElement y Save.\n\nRound-trip: salir, volver a correr, listar — el ticket persiste.\n\nTransición: resumen del flujo.",
+      "[2 MIN · RESUMEN · FLUJO]\n\nTimeline: Load → Root → Consultar → Modificar → Save.\n\nEs el ciclo que usarán en la actividad y en el proyecto del curso.\n\nTransición: estructura de proyecto.",
+      "[2 MIN · ESTRUCTURA DE PROYECTO]\n\nMostrar ftree: CatalogoTicketsXml/, data/tickets.xml, Program.cs.\n\nTicket = modelo; RepositorioTicketsXml = persistencia.\n\nTransición: actividad práctica.",
+      "[10–15 MIN · ACTIVIDAD PRÁCTICA]\n\nChecklist en pantalla. Individual.\n\n1. Load XML.\n2. Listar.\n3. Filtrar Abiertos.\n4. Save de un XML solo con abiertos.\n5. Mostrar al instructor.\n\nCircular por el salón. Aviso a los 5 minutos restantes.\n\nTransición: cierre.",
+      "[3 MIN · CIERRE Y TAREA]\n\nDudas, repaso, tarea: completar filtro + Save; revisar ejemplos 01–08.\n\nPuntos clave: árbol, rigor, Load/Save, serializar objeto ↔ texto.\n\nAgradezca. Transición opcional: tip de namespaces.",
+      "[2 MIN · TIP · NAMESPACES]\n\nSystem.Xml.Linq → XDocument.\nSystem.Xml.Serialization → XmlSerializer.\nSystem.Text.Json → JsonSerializer.\n\nNo mezclar con XmlDocument clásico sin necesidad.\n\nTransición: repaso de APIs.",
+      "[2 MIN · REPASO · APIs CLAVE]\n\nCuatro qcards: Load, Save, Serialize, Json.\n\nPregunta rápida al azar: ¿qué método escribe el árbol a disco?\n\nTransición: recursos.",
+      "[2 MIN · RECURSOS]\n\nDejar visibles los tres enlaces y la ruta de ejemplos locales.\n\nInvitar a consultar Microsoft Learn antes de la próxima sesión.\n\nCierre formal de la Semana 04."
+    ]
+    </script>
+
+    <!-- Progress bar -->
+    <div id="deck-progress"><div id="deck-progress-fill"></div></div>
+
+    <!-- Terminal typing engine (vendored) -->
+    <script src="vendor/typed.umd.js"></script>
+    <script>
+      (function () {
+        var stage = document.querySelector("deck-stage");
+        var fill = document.getElementById("deck-progress-fill");
+        if (!stage) return;
+
+        // Map every hidden source (.tsrc) to its target span id.
+        var sources = {};
+        document.querySelectorAll(".tsrc").forEach(function (el) {
+          sources[el.getAttribute("data-for")] = el.innerHTML;
+        });
+
+        var typedOnce = {};   // id -> true once fully typed
+        var instances = {};   // id -> Typed instance (to destroy on re-entry)
+
+        function runTerminal(target) {
+          var id = target.id;
+          var src = sources[id];
+          if (src == null) return;
+
+          // Already typed before: just restore full text instantly, no re-anim.
+          if (typedOnce[id]) {
+            if (instances[id]) { instances[id].destroy(); instances[id] = null; }
+            target.innerHTML = src;
+            return;
+          }
+
+          if (instances[id]) { instances[id].destroy(); }
+          target.innerHTML = "";
+          instances[id] = new Typed("#" + id, {
+            strings: [src],
+            typeSpeed: 14,
+            startDelay: 260,
+            showCursor: true,
+            cursorChar: "▋",
+            contentType: "html",
+            onComplete: function () {
+              typedOnce[id] = true;
+            },
+          });
+        }
+
+        function activate(section) {
+          if (!section) return;
+          section.querySelectorAll("[data-typed-target]").forEach(runTerminal);
+        }
+
+        stage.addEventListener("slidechange", function (e) {
+          var d = e.detail;
+          if (fill && d.total) {
+            fill.style.width = (((d.index + 1) / d.total) * 100).toFixed(2) + "%";
+          }
+          activate(d.slide);
+        });
+      })();
+    </script>
+  </body>
+</html>
