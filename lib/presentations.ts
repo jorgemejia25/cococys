@@ -86,6 +86,11 @@ export const COURSES: Course[] = [
         file: "Semana 5 - Programacion 2.html",
         slides: 19,
       },
+      {
+        label: "Semana 6 — Proyecto 1: Chapin Warriors",
+        file: "Semana 6 - Programacion 2.html",
+        slides: 27,
+      },
     ],
   },
 ];
