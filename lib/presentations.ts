@@ -52,6 +52,11 @@ export const COURSES: Course[] = [
         file: "Semana 3 - Flujos y Algoritmos.html",
         slides: 29,
       },
+      {
+        label: "Semana 6 — Codificación de la información",
+        file: "Semana 6 - Flujos y Algoritmos.html",
+        slides: 31,
+      },
     ],
   },
   {
