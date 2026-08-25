@@ -96,6 +96,11 @@ export const COURSES: Course[] = [
         file: "Semana 6 - Programacion 2.html",
         slides: 27,
       },
+      {
+        label: "Semana 7 — Árboles, ABB y AVL",
+        file: "Semana 7 - Programacion 2.html",
+        slides: 36,
+      },
     ],
   },
 ];
